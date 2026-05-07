@@ -1,0 +1,22 @@
+# Laravel
+backend-api/vendor
+backend-api/.env
+backend-api/storage/*.key
+backend-api/public/storage
+
+# Next.js
+frontend-user/node_modules
+frontend-user/.next
+frontend-user/.env.local
+
+# Root env
+.env.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
