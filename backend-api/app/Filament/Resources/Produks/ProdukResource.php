@@ -88,6 +88,7 @@ class ProdukResource extends Resource
 
                         FileUpload::make('thumbnail')
                             ->image()
+                            ->disk('public')
                             ->directory('produk'),
 
                     ]),
