@@ -1,0 +1,133 @@
+/* =========================
+   DEFAULT THEME
+========================= */
+
+:root {
+  --primary: #ef4444;
+  --secondary: #000000;
+  --background: #ffffff;
+  --text: #111827;
+  --subtext: #6b7280;
+  --badge-bg: #fee2e2;
+  --card-bg: #f3f4f6;
+  --border: #d1d5db;
+}
+
+/* =========================
+   SUMMER THEME
+========================= */
+
+.theme-summer {
+  --primary: #f59e0b;
+  --secondary: #78350f;
+  --background: #fff7ed;
+  --text: #7c2d12;
+  --subtext: #9a3412;
+  --badge-bg: #fed7aa;
+  --card-bg: #ffedd5;
+  --border: #fdba74;
+}
+
+/* =========================
+   WINTER THEME
+========================= */
+
+.theme-winter {
+  --primary: #3b82f6;
+  --secondary: #1e3a8a;
+  --background: #eff6ff;
+  --text: #1e3a8a;
+  --subtext: #475569;
+  --badge-bg: #dbeafe;
+  --card-bg: #bfdbfe;
+  --border: #93c5fd;
+}
+
+/* =========================
+   FALL THEME
+========================= */
+
+.theme-fall {
+  --primary: #b45309;
+  --secondary: #78350f;
+  --background: #fffbeb;
+  --text: #92400e;
+  --subtext: #a16207;
+  --badge-bg: #fde68a;
+  --card-bg: #fef3c7;
+  --border: #fcd34d;
+}
+
+/* =========================
+   SPRING THEME
+========================= */
+
+.theme-spring {
+  --primary: #ec4899;
+  --secondary: #166534;
+  --background: #fdf2f8;
+  --text: #831843;
+  --subtext: #4d7c0f;
+  --badge-bg: #fbcfe8;
+  --card-bg: #fce7f3;
+  --border: #f9a8d4;
+}
+
+/* =========================
+   GLOBAL BODY
+========================= */
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+/* =========================
+   THEME SWITCHER
+========================= */
+
+.theme-switcher {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 40px;
+}
+
+.theme-select {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background-color: white;
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: 0.3s;
+}
+
+.theme-select:hover {
+  opacity: 0.9;
+}
+
+.theme-spring .hero-image {
+  background-image: url("/themes/spring 2.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.theme-fall .hero-image {
+  background-image: url("/themes/fall.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.theme-winter .hero-image {
+  background-image: url("/themes/winter.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.theme-summer .hero-image {
+  background-image: url("/themes/summer.jpg");
+  background-size: cover;
+  background-position: center;
+}

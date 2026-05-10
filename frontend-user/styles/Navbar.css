@@ -1,0 +1,15 @@
+.navbar {
+  background-color: black !important;
+  color: white;
+  padding: 20px;
+}
+
+.nav-links a {
+  color: rgb(255, 255, 255);
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: red;
+}
