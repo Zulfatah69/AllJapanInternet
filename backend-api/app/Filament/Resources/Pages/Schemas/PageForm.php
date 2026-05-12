@@ -1,29 +1,26 @@
 <?php
 
-namespace App\Filament\Resources\SeoPages\Schemas;
+namespace App\Filament\Resources\Pages\Schemas;
 
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
-class SeoPageForm
+class PageForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('halaman')
+                TextInput::make('judul')
                     ->required(),
-                TextInput::make('meta_title')
+                TextInput::make('slug')
                     ->required(),
-                Textarea::make('meta_description')
+                TextInput::make('thumbnail'),
+                Textarea::make('konten')
+                    ->required()
                     ->columnSpanFull(),
-                Textarea::make('meta_keyword')
-                    ->columnSpanFull(),
-                FileUpload::make('og_image')
-                    ->image(),
                 Toggle::make('status_aktif')
                     ->required(),
             ]);

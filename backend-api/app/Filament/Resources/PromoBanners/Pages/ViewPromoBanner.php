@@ -3,19 +3,17 @@
 namespace App\Filament\Resources\PromoBanners\Pages;
 
 use App\Filament\Resources\PromoBanners\PromoBannerResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditPromoBanner extends EditRecord
+class ViewPromoBanner extends ViewRecord
 {
     protected static string $resource = PromoBannerResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

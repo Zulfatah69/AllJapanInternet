@@ -10,25 +10,21 @@ class PageController extends Controller
 {
     public function show($slug)
     {
-        $page = Page::where(
-            'slug',
-            $slug
-        )
-        ->where(
-            'status_aktif',
-            true
-        )
-        ->first();
+        $page = Page::where('slug', $slug)
+            ->where('status_aktif', true)
+            ->first();
 
         if (!$page) {
 
             return response()->json([
-                'message' => 'Page not found',
+                'success' => false,
+                'message' => 'Halaman tidak ditemukan'
             ], 404);
         }
 
         return response()->json([
-            'data' => $page,
+            'success' => true,
+            'data' => $page
         ]);
     }
 }

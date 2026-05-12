@@ -90,7 +90,6 @@ class ProdukResource extends Resource
                             ->image()
                             ->disk('public')
                             ->directory('produk'),
-
                     ]),
 
                 Section::make('Status')

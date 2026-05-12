@@ -2,29 +2,31 @@
 
 namespace App\Filament\Resources\WebsiteSettings\Tables;
 
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Table;
-
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
 
 class WebsiteSettingsTable
 {
-    public static function configure(
-        Table $table
-    ): Table {
-
+    public static function configure(Table $table): Table
+    {
         return $table
             ->columns([
-
-                ImageColumn::make('logo'),
-
-                TextColumn::make('nama_website')
-                    ->searchable(),
-
-                TextColumn::make('email'),
-
-                TextColumn::make('no_wa'),
-
+                //
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }

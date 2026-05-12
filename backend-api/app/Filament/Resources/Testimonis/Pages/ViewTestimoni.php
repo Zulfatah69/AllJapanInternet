@@ -3,19 +3,17 @@
 namespace App\Filament\Resources\Testimonis\Pages;
 
 use App\Filament\Resources\Testimonis\TestimoniResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
-use Filament\Resources\Pages\EditRecord;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 
-class EditTestimoni extends EditRecord
+class ViewTestimoni extends ViewRecord
 {
     protected static string $resource = TestimoniResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            EditAction::make(),
         ];
     }
 }

@@ -6,27 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class WebsiteSetting extends Model
 {
-    protected $fillable = [
+    protected $guarded = [];
 
-        'nama_website',
-
-        'logo',
-
-        'favicon',
-
-        'email',
-
-        'no_wa',
-
-        'alamat',
-
-        'facebook',
-
-        'instagram',
-
-        'tiktok',
-
-        'youtube',
-
-    ];
+    public static function getValue($key)
+    {
+        return self::where('key', $key)
+            ->value('value');
+    }
 }
