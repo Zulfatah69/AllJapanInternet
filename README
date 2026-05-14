@@ -1,0 +1,532 @@
+
+## Project Overview
+
+Backend sudah dibangun menggunakan:
+
+* Laravel 13
+* REST API
+* MySQL
+* Image Optimization
+* Dynamic Product System
+
+---
+
+# Current Backend Features
+
+Backend yang sudah tersedia:
+
+## Authentication Admin
+
+* Login admin
+* Dashboard admin
+* CRUD system
+
+---
+
+## Category System
+
+Admin dapat:
+
+* tambah category
+* edit category
+* delete category
+* aktif/nonaktif category
+
+API category sudah siap digunakan.
+
+---
+
+## Product System
+
+Admin dapat:
+
+* tambah product
+* edit product
+* delete product
+* upload thumbnail
+* toggle active/inactive
+* best seller toggle
+
+Setiap product memiliki:
+
+* category
+* provider
+* type
+* billing_type
+* code
+* variants
+* prices
+
+---
+
+## Product Variant System
+
+Setiap product dapat memiliki:
+
+* banyak variant
+* banyak harga
+* banyak purchase period
+
+Contoh:
+
+Softbank →
+
+* 20GB
+* 50GB
+* Unlimited
+
+---
+
+## Purchase Period System
+
+Digunakan untuk:
+
+* bulanan
+* 3 bulan
+* 6 bulan
+* 12 bulan
+
+---
+
+## Variant Price System
+
+Digunakan untuk:
+
+* harga tiap variant
+* harga tiap periode
+
+Contoh:
+
+50GB:
+
+* Monthly → ¥3000
+* 6 Months → ¥15000
+
+---
+
+## Promo System
+
+Admin dapat:
+
+* tambah promo
+* upload banner
+* jadwalkan promo
+* promo auto expired
+
+Promo memiliki:
+
+* title
+* description
+* image
+* link
+* start_date
+* end_date
+
+---
+
+## Homepage API
+
+Backend sudah menyediakan:
+
+```bash
+/api/home
+```
+
+Return:
+
+* promos
+* best sellers
+* new products
+* categories
+
+Frontend homepage cukup 1 fetch.
+
+---
+
+## Product API
+
+### Product List
+
+```bash
+/api/products
+```
+
+---
+
+### Product Detail
+
+```bash
+/api/products/{slug}
+```
+
+---
+
+## Search + Filter API
+
+Backend support:
+
+### Search
+
+```bash
+/api/products?search=softbank
+```
+
+---
+
+### Filter by Category
+
+```bash
+/api/products?category=esim
+```
+
+---
+
+### Filter by Type
+
+```bash
+/api/products?type=esim
+```
+
+---
+
+### Filter by Billing
+
+```bash
+/api/products?billing=monthly
+```
+
+---
+
+### Filter by Provider
+
+```bash
+/api/products?provider=docomo
+```
+
+---
+
+### Combined Filter
+
+```bash
+/api/products?type=esim&billing=monthly
+```
+
+---
+
+# Dynamic Order Form System
+
+Frontend wajib menggunakan:
+
+* code
+* type
+* billing_type
+
+untuk menentukan:
+
+* form order
+* note order
+* checkout flow
+
+---
+
+## Contoh
+
+### Product Response
+
+```json
+{
+  "code": "VT",
+  "type": "esim",
+  "billing_type": "monthly"
+}
+```
+
+Frontend menentukan:
+
+* form mana yang dirender
+* field mana yang muncul
+* note mana yang tampil
+
+---
+
+# Important Business Logic
+
+## VT Product
+
+Pembayaran bulanan:
+
+* tanggal 20-28
+
+---
+
+## GJ Product
+
+Pembayaran bulanan:
+
+* tanggal 18-24
+
+---
+
+## E-SIM Product
+
+Harus meminta:
+
+* EID
+
+---
+
+## Phone + Internet Product
+
+Harus meminta:
+
+* eKYC
+
+---
+
+# Frontend Responsibilities
+
+Frontend bertanggung jawab untuk:
+
+## 1. Dynamic Form Rendering
+
+Contoh:
+
+```ts
+if(product.code === 'VT')
+```
+
+render:
+
+* VT Form
+
+---
+
+## 2. Dynamic Notes
+
+Notes tidak disimpan di backend.
+
+Frontend wajib menyediakan:
+
+* note VT
+* note GJ
+* note E-SIM
+* note Phone
+
+---
+
+## 3. WhatsApp Checkout Generator
+
+Frontend wajib:
+
+* collect form data
+* generate WhatsApp text
+* redirect ke WhatsApp
+
+Backend tidak generate chat.
+
+---
+
+## 4. Theme System
+
+Backend menyediakan setting theme.
+
+Frontend wajib:
+
+* membaca API theme
+* apply warna/theme website
+
+Theme concept:
+
+* Spring
+* Summer
+* Autumn
+* Winter
+
+---
+
+# Recommended Frontend Pages
+
+## Homepage
+
+Features:
+
+* Hero banner
+* Promo slider
+* Best seller
+* New products
+* Categories
+
+API:
+
+```bash
+/api/home
+```
+
+---
+
+## Product List Page
+
+Features:
+
+* filter
+* search
+* category
+* pagination (future)
+
+API:
+
+```bash
+/api/products
+```
+
+---
+
+## Product Detail Page
+
+Features:
+
+* product detail
+* variants
+* pricing
+* dynamic form
+* WhatsApp checkout
+
+API:
+
+```bash
+/api/products/{slug}
+```
+
+---
+
+## Search Component
+
+Features:
+
+* realtime search
+* debounce
+
+API:
+
+```bash
+/api/products?search=
+```
+
+---
+
+# API Response Format
+
+Semua API menggunakan:
+
+```json
+{
+  "success": true,
+  "message": "Success",
+  "data": []
+}
+```
+
+Frontend wajib membaca:
+
+* success
+* message
+* data
+
+---
+
+# Image System
+
+Backend sudah otomatis:
+
+* compress image
+* convert webp
+* resize image
+
+Frontend tinggal gunakan URL image.
+
+---
+
+# Recommended Frontend Stack
+
+Recommended:
+
+* Next.js App Router
+* Tailwind CSS
+* Axios
+* Zustand / Context API
+* SwiperJS
+* Framer Motion
+
+---
+
+# Important Notes
+
+## Jangan hardcode product
+
+Semua product wajib dari API.
+
+---
+
+## Jangan hardcode pricing
+
+Semua pricing wajib dari API.
+
+---
+
+## Jangan hardcode variants
+
+Semua variants wajib dari API.
+
+---
+
+## Form harus dynamic
+
+Karena tiap product bisa beda flow.
+
+---
+
+# Suggested Frontend Architecture
+
+```bash
+src/
+ ├── app/
+ ├── components/
+ ├── services/
+ ├── hooks/
+ ├── types/
+ ├── lib/
+ └── store/
+```
+
+---
+
+# Recommended API Service Layer
+
+Contoh:
+
+```ts
+services/product.ts
+services/home.ts
+services/promo.ts
+```
+
+---
+
+# Final Notes
+
+Backend sudah siap untuk:
+
+* marketplace scale
+* dynamic products
+* dynamic pricing
+* dynamic forms
+* production image handling
+
+Frontend tinggal fokus:
+
+* UI/UX
+* form logic
+* WhatsApp flow
+* responsive design
+* animations
+* SEO
