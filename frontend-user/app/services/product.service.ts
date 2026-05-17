@@ -1,4 +1,4 @@
-import api from '../lib/api';
+import api, { asArray } from '../lib/api';
 
 export async function getProducts() {
 
@@ -7,7 +7,7 @@ export async function getProducts() {
             '/products'
         );
 
-    return response.data;
+    return asArray(response.data);
 }
 
 export async function getProduct(

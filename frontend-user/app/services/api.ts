@@ -1,5 +1,6 @@
-const API =
-  process.env.NEXT_PUBLIC_API_URL;
+import { API_BASE_URL, asArray } from '../lib/api';
+
+const API = API_BASE_URL;
 
 export async function getHomepage() {
 
@@ -32,7 +33,7 @@ export async function getProducts() {
 
   }
 
-  return res.json();
+  return asArray(await res.json());
 }
 
 export async function getProduct(
@@ -68,7 +69,7 @@ export async function getPromos() {
 
   }
 
-  return res.json();
+  return asArray(await res.json());
 }
 
 export async function orderPreview(
