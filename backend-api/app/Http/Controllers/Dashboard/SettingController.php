@@ -12,31 +12,89 @@ class SettingController extends Controller
 {
     public function edit()
     {
-        $theme = Setting::where(
-            'key',
-            'active_theme'
-        )->first();
+        $setting = Setting::first();
+
+        if (!$setting) {
+
+            $setting = Setting::create([]);
+        }
 
         return view(
             'dashboard.settings.edit',
-            compact('theme')
+            compact('setting')
         );
     }
 
     public function update(Request $request)
     {
-        Setting::updateOrCreate(
+        $setting = Setting::first();
 
-            [
-                'key' => 'active_theme'
-            ],
+        $logo = $setting->logo;
 
-            [
-                'value' => $request->theme
-            ]
+        if ($request->hasFile('logo')) {
 
+            $logo = $request
+                ->file('logo')
+                ->store(
+                    'settings',
+                    'public'
+                );
+        }
+
+        $favicon = $setting->favicon;
+
+        if ($request->hasFile('favicon')) {
+
+            $favicon = $request
+                ->file('favicon')
+                ->store(
+                    'settings',
+                    'public'
+                );
+        }
+
+        $setting->update([
+
+            'website_name'
+                => $request->website_name,
+
+            'whatsapp'
+                => $request->whatsapp,
+
+            'telegram'
+                => $request->telegram,
+
+            'line'
+                => $request->line,
+
+            'email'
+                => $request->email,
+
+            'instagram'
+                => $request->instagram,
+
+            'tiktok'
+                => $request->tiktok,
+
+            'youtube'
+                => $request->youtube,
+
+            'footer_text'
+                => $request->footer_text,
+
+            'logo'
+                => $logo,
+
+            'favicon'
+                => $favicon,
+
+            'theme'
+                => $request->theme,
+        ]);
+
+        return back()->with(
+            'success',
+            'Settings updated successfully.'
         );
-
-        return back();
     }
 }

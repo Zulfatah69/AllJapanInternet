@@ -13,8 +13,10 @@ use App\Models\Setting;
 
 class OrderController extends Controller
 {
-    public function preview(Request $request)
-    {
+    public function preview(
+        Request $request
+    ) {
+
         $request->validate([
 
             'variant_id'
@@ -24,6 +26,18 @@ class OrderController extends Controller
                 => 'required',
 
             'shipping_method_id'
+                => 'required',
+
+            'name'
+                => 'required',
+
+            'email'
+                => 'required|email',
+
+            'address'
+                => 'required',
+
+            'postcode'
                 => 'required',
 
         ]);
@@ -51,9 +65,11 @@ class OrderController extends Controller
             $request->shipping_method_id
         );
 
-        $subtotal = $price->harga;
+        $subtotal =
+            $price->harga;
 
-        $shippingPrice = $shipping->harga;
+        $shippingPrice =
+            $shipping->harga;
 
         $total =
             $subtotal +
@@ -61,25 +77,45 @@ class OrderController extends Controller
 
         $message =
 
-"Hallo Admin, saya ingin memesan:
+        "Hallo Admin, saya ingin memesan:
 
-Produk: {$variant->product->nama}
-Variant: {$variant->nama}
-Periode Pembelian: {$price->period->nama}
-Pengiriman: {$shipping->nama}
+        ====================
 
-Subtotal: ¥{$subtotal}
-Ongkir: ¥{$shippingPrice}
+        DATA CUSTOMER
 
-Total: ¥{$total}
-";
+        Nama: {$request->name}
+        Email: {$request->email}
+        Address: {$request->address}
+        Postcode: {$request->postcode}
+
+        ====================
+
+        DETAIL ORDER
+
+        Produk: {$variant->product->nama}
+        Variant: {$variant->nama}
+        Periode Pembelian: {$price->period->nama}
+        Pengiriman: {$shipping->nama}
+
+        ====================
+
+        RINCIAN HARGA
+
+        Subtotal: ¥{$subtotal}
+        Ongkir: ¥{$shippingPrice}
+
+        Total: ¥{$total}
+        ";
 
         $whatsappNumber = Setting::where(
+
             'key',
             'whatsapp_number'
+
         )->value('value');
 
         $waLink =
+
             "https://wa.me/" .
             $whatsappNumber .
             "?text=" .
@@ -87,32 +123,38 @@ Total: ¥{$total}
 
         return response()->json([
 
-            'product'
-                => $variant->product->nama,
+            'success' => true,
 
-            'variant'
-                => $variant->nama,
+            'data' => [
 
-            'period'
-                => $price->period->nama,
+                'product'
+                    => $variant->product->nama,
 
-            'shipping'
-                => $shipping->nama,
+                'variant'
+                    => $variant->nama,
 
-            'subtotal'
-                => $subtotal,
+                'period'
+                    => $price->period->nama,
 
-            'shipping_price'
-                => $shippingPrice,
+                'shipping'
+                    => $shipping->nama,
 
-            'total'
-                => $total,
+                'subtotal'
+                    => $subtotal,
 
-            'wa_message'
-                => $message,
+                'shipping_price'
+                    => $shippingPrice,
 
-            'wa_link'
-                => $waLink,
+                'total'
+                    => $total,
+
+                'wa_message'
+                    => $message,
+
+                'wa_link'
+                    => $waLink,
+
+            ]
 
         ]);
     }

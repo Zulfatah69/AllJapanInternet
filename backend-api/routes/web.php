@@ -5,12 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 
 use App\Http\Controllers\Dashboard\CategoryController;
-use App\Http\Controllers\Dashboard\ProductController;
-use App\Http\Controllers\Dashboard\ProductVariantController;
-use App\Http\Controllers\Dashboard\ShippingMethodController;
-use App\Http\Controllers\Dashboard\PurchasePeriodController;
+use App\Http\Controllers\Dashboard\ProviderController;
+use App\Http\Controllers\Dashboard\MonthlyProductController;
+use App\Http\Controllers\Dashboard\YearlyProductController;
 use App\Http\Controllers\Dashboard\PromoController;
-use App\Http\Controllers\Dashboard\VariantPriceController;
+use App\Http\Controllers\Dashboard\TestimonialController;
 use App\Http\Controllers\Dashboard\SettingController;
 
 Route::get('/', function () {
@@ -33,17 +32,26 @@ Route::middleware([
             'totalProducts'
                 => \App\Models\Product::count(),
 
-            'activeProducts'
+            'monthlyProducts'
                 => \App\Models\Product::where(
-                    'is_active',
-                    true
+                    'type',
+                    'monthly'
+                )->count(),
+
+            'yearlyProducts'
+                => \App\Models\Product::where(
+                    'type',
+                    'yearly'
                 )->count(),
 
             'totalCategories'
                 => \App\Models\Category::count(),
 
-            'totalPromos'
-                => \App\Models\Promo::count(),
+            'totalProviders'
+                => \App\Models\Provider::count(),
+
+            'totalTestimonials'
+                => \App\Models\Testimonial::count(),
 
         ]);
 
@@ -55,38 +63,38 @@ Route::middleware([
     );
 
     Route::resource(
-        'products',
-        ProductController::class
-    );
-
-    Route::patch(
-        'products/{product}/toggle',
-        [ProductController::class, 'toggle']
-    )->name('products.toggle');
-
-    Route::resource(
-        'product-variants',
-        ProductVariantController::class
+        'providers',
+        ProviderController::class
     );
 
     Route::resource(
-        'variant-prices',
-        VariantPriceController::class
+        'monthly-products',
+        MonthlyProductController::class
     );
 
-    Route::resource(
-        'shipping-methods',
-        ShippingMethodController::class
-    );
+    Route::delete(
+        'monthly-products/{product}/delete-image',
+        [MonthlyProductController::class, 'deleteImage']
+    )->name('monthly-products.delete-image');
 
     Route::resource(
-        'purchase-periods',
-        PurchasePeriodController::class
+        'yearly-products',
+        YearlyProductController::class
     );
+
+    Route::delete(
+        'yearly-products/{product}/delete-image',
+        [YearlyProductController::class, 'deleteImage']
+    )->name('yearly-products.delete-image');
 
     Route::resource(
         'promos',
         PromoController::class
+    );
+
+    Route::resource(
+        'testimonials',
+        TestimonialController::class
     );
 
     Route::get(
@@ -102,7 +110,7 @@ Route::middleware([
 });
 
 Route::middleware('auth')
-    ->group(function () {
+->group(function () {
 
     Route::get(
         '/profile',

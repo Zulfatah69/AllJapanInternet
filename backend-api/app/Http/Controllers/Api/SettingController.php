@@ -10,16 +10,25 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $theme = Setting::where(
-            'key',
-            'active_theme'
-        )->first();
-
         return response()->json([
 
-            'theme'
-                => $theme?->value
-                    ?? 'spring',
+            'success' => true,
+
+            'data' => [
+
+                'theme'
+                    => Setting::where(
+                        'key',
+                        'theme'
+                    )->value('value'),
+
+                'whatsapp_number'
+                    => Setting::where(
+                        'key',
+                        'whatsapp_number'
+                    )->value('value'),
+
+            ]
 
         ]);
     }

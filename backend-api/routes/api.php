@@ -2,56 +2,124 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\PromoController;
-use App\Http\Controllers\Api\ShippingMethodController;
-use App\Http\Controllers\Api\PurchasePeriodController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\SettingController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\HomeController;
+use App\Models\Product;
+use App\Models\Promo;
+use App\Models\Testimonial;
+use App\Models\Provider;
+use App\Models\Category;
+use App\Models\Setting;
 
-Route::get(
-    '/products',
-    [ProductController::class, 'index']
-);
+Route::get('/products', function () {
 
-Route::get(
-    '/products/{slug}',
-    [ProductController::class, 'show']
-);
+    return Product::with([
 
-Route::get(
-    '/promos',
-    [PromoController::class, 'index']
-);
+        'provider',
 
-Route::get(
-    '/shipping-methods',
-    [ShippingMethodController::class, 'index']
-);
+        'category',
 
-Route::get(
-    '/purchase-periods',
-    [PurchasePeriodController::class, 'index']
-);
+        'variants.billingPeriods',
 
-Route::get(
-    '/categories',
-    [CategoryController::class, 'index']
-);
+        'paymentMethods',
 
-Route::get(
-    '/settings',
-    [SettingController::class, 'index']
-);
+    ])
+    ->where('is_active', true)
+    ->get()
+    ->map(function ($product) {
 
-Route::post(
-    '/order-preview',
-    [OrderController::class, 'preview']
-);
+        return [
 
-Route::get(
-    '/home',
-    [HomeController::class, 'index']
-);
+            'id'
+                => $product->id,
+
+            'nama'
+                => $product->nama,
+
+            'slug'
+                => $product->slug,
+
+            'type'
+                => $product->type,
+
+            'deskripsi'
+                => $product->deskripsi,
+
+            'thumbnail'
+                => $product->thumbnail,
+
+            'thumbnail_url'
+                => $product->thumbnail_url,
+
+            'provider'
+                => $product->provider,
+
+            'category'
+                => $product->category,
+
+            'variants'
+                => $product->variants,
+
+            'payment_methods'
+                => $product->paymentMethods,
+
+            'is_best_seller'
+                => $product->is_best_seller,
+
+            'lowest_price'
+                => $product->variants
+                    ->min('monthly_price'),
+
+        ];
+    });
+
+});
+
+Route::get('/products/{slug}', function ($slug) {
+
+    return Product::with([
+
+        'provider',
+
+        'category',
+
+        'variants.billingPeriods',
+
+        'paymentMethods',
+
+    ])
+    ->where('slug', $slug)
+    ->firstOrFail();
+
+});
+
+Route::get('/providers', function () {
+
+    return Provider::all();
+
+});
+
+Route::get('/categories', function () {
+
+    return Category::all();
+
+});
+
+Route::get('/promos', function () {
+
+    return Promo::where(
+        'is_active',
+        true
+    )->get();
+
+});
+
+Route::get('/testimonials', function () {
+
+    return Testimonial::all();
+
+});
+
+Route::get('/settings', function () {
+
+    return Setting::first();
+
+});

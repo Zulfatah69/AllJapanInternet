@@ -9,23 +9,36 @@ class Promo extends Model
     protected $fillable = [
 
         'judul',
-
         'deskripsi',
-
         'gambar',
-
         'link',
-
+        'start_date',
+        'end_date',
         'is_active',
+
     ];
 
     protected $casts = [
 
         'is_active' => 'boolean',
 
-        'start_date' => 'date',
+    ];
 
-        'end_date' => 'date',
+    protected $appends = [
+
+        'gambar_url',
 
     ];
+
+    public function getGambarUrlAttribute()
+    {
+        if (!$this->gambar) {
+
+            return null;
+        }
+
+        return asset(
+            'storage/' . $this->gambar
+        );
+    }
 }

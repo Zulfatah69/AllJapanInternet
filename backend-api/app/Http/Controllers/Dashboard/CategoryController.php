@@ -12,15 +12,28 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | INDEX
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::latest()
+            ->get();
 
         return view(
             'dashboard.categories.index',
             compact('categories')
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
 
     public function create()
     {
@@ -29,19 +42,30 @@ class CategoryController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | STORE
+    |--------------------------------------------------------------------------
+    */
+
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
+
+            'nama'
+                => 'required|max:255',
+
         ]);
 
         Category::create([
 
-            'nama' => $request->nama,
+            'nama'
+                => $request->nama,
 
-            'slug' => Str::slug(
-                $request->nama
-            ),
+            'slug'
+                => Str::slug(
+                    $request->nama
+                ),
 
         ]);
 
@@ -49,17 +73,31 @@ class CategoryController extends Controller
             ->route('categories.index')
             ->with(
                 'success',
-                'Category created'
+                'Category created successfully.'
             );
     }
 
-    public function edit(Category $category)
-    {
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT
+    |--------------------------------------------------------------------------
+    */
+
+    public function edit(
+        Category $category
+    ) {
+
         return view(
             'dashboard.categories.edit',
             compact('category')
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
 
     public function update(
         Request $request,
@@ -67,16 +105,21 @@ class CategoryController extends Controller
     ) {
 
         $request->validate([
-            'nama' => 'required',
+
+            'nama'
+                => 'required|max:255',
+
         ]);
 
         $category->update([
 
-            'nama' => $request->nama,
+            'nama'
+                => $request->nama,
 
-            'slug' => Str::slug(
-                $request->nama
-            ),
+            'slug'
+                => Str::slug(
+                    $request->nama
+                ),
 
         ]);
 
@@ -84,9 +127,15 @@ class CategoryController extends Controller
             ->route('categories.index')
             ->with(
                 'success',
-                'Category updated'
+                'Category updated successfully.'
             );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE
+    |--------------------------------------------------------------------------
+    */
 
     public function destroy(
         Category $category
@@ -94,9 +143,10 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return back()->with(
-            'success',
-            'Category deleted'
-        );
+        return back()
+            ->with(
+                'success',
+                'Category deleted successfully.'
+            );
     }
 }

@@ -2,49 +2,119 @@
 
 @section('content')
 
-<h1 class="text-4xl font-bold mb-10">
-    Add Category
-</h1>
+<div class="max-w-3xl">
 
-<div class="bg-white rounded-2xl shadow p-8 max-w-2xl">
+    <div class="mb-10">
 
-    <form
-        action="{{ route('categories.store') }}"
-        method="POST"
+        <h1
+            class="
+                text-4xl
+                font-black
+                mb-2
+            "
+        >
+            Add Category
+        </h1>
+
+        <p class="text-gray-500">
+            Create new product category
+        </p>
+
+    </div>
+
+    <div
+        class="
+            bg-white
+            rounded-3xl
+            shadow
+            p-10
+        "
     >
 
-        @csrf
-
-        <div class="mb-6">
-
-            <label class="block mb-3 font-semibold">
-                Category Name
-            </label>
-
-            <input
-                type="text"
-                name="nama"
-                class="w-full border rounded-xl px-5 py-4"
-                placeholder="Internet Bulanan"
-            >
-
-            @error('nama')
-
-                <p class="text-red-500 mt-2">
-                    {{ $message }}
-                </p>
-
-            @enderror
-
-        </div>
-
-        <button
-            class="bg-black text-white px-8 py-4 rounded-xl"
+        <form
+            action="{{ route('categories.store') }}"
+            method="POST"
         >
-            Save Category
-        </button>
 
-    </form>
+            @csrf
+
+            {{-- NAME --}}
+            <div class="mb-10">
+
+                <label
+                    class="
+                        block
+                        mb-3
+                        font-semibold
+                    "
+                >
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    name="nama"
+                    value="{{ old('nama') }}"
+                    class="
+                        w-full
+                        border
+                        rounded-2xl
+                        px-5
+                        py-4
+                    "
+                    placeholder="KARTU INTERNET BULANAN"
+                >
+
+                @error('nama')
+
+                    <p
+                        class="
+                            text-red-500
+                            mt-2
+                            text-sm
+                        "
+                    >
+                        {{ $message }}
+                    </p>
+
+                @enderror
+
+            </div>
+
+            {{-- BUTTON --}}
+            <div class="flex items-center gap-4">
+
+                <button
+                    class="
+                        bg-black
+                        text-white
+                        px-8
+                        py-4
+                        rounded-2xl
+                        font-bold
+                    "
+                >
+                    Save Category
+                </button>
+
+                <a
+                    href="{{ route('categories.index') }}"
+                    class="
+                        border
+                        px-8
+                        py-4
+                        rounded-2xl
+                        font-semibold
+                    "
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

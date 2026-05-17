@@ -2,38 +2,78 @@
 
 @section('content')
 
-<div class="flex items-center justify-between mb-10">
+<div
+    class="
+        flex
+        items-center
+        justify-between
+        mb-10
+    "
+>
 
-    <h1 class="text-4xl font-bold">
-        Categories
-    </h1>
+    <div>
+
+        <h1
+            class="
+                text-4xl
+                font-black
+                mb-2
+            "
+        >
+            Categories
+        </h1>
+
+        <p class="text-gray-500">
+            Manage product categories
+        </p>
+
+    </div>
 
     <a
         href="{{ route('categories.create') }}"
-        class="bg-black text-white px-6 py-3 rounded-xl"
+        class="
+            bg-black
+            text-white
+            px-6
+            py-4
+            rounded-2xl
+            font-bold
+        "
     >
-        Add Category
+        + Add Category
     </a>
 
 </div>
 
-<div class="bg-white rounded-2xl shadow overflow-hidden">
+<div
+    class="
+        bg-white
+        rounded-3xl
+        shadow
+        overflow-hidden
+    "
+>
 
     <table class="w-full">
 
-        <thead class="bg-gray-100">
+        <thead
+            class="
+                bg-gray-100
+                text-left
+            "
+        >
 
             <tr>
 
-                <th class="text-left p-5">
-                    Name
+                <th class="p-6">
+                    Category Name
                 </th>
 
-                <th class="text-left p-5">
+                <th class="p-6">
                     Slug
                 </th>
 
-                <th class="text-right p-5">
+                <th class="p-6 text-right">
                     Action
                 </th>
 
@@ -43,25 +83,42 @@
 
         <tbody>
 
-            @foreach($categories as $category)
+            @forelse($categories as $category)
 
                 <tr class="border-t">
 
-                    <td class="p-5">
+                    <td class="p-6 font-bold">
+
                         {{ $category->nama }}
+
                     </td>
 
-                    <td class="p-5">
+                    <td class="p-6 text-gray-500">
+
                         {{ $category->slug }}
+
                     </td>
 
-                    <td class="p-5 text-right">
+                    <td class="p-6">
 
-                        <div class="flex justify-end gap-3">
+                        <div
+                            class="
+                                flex
+                                items-center
+                                justify-end
+                                gap-3
+                            "
+                        >
 
                             <a
                                 href="{{ route('categories.edit', $category->id) }}"
-                                class="px-4 py-2 bg-yellow-400 rounded-lg"
+                                class="
+                                    px-5
+                                    py-3
+                                    rounded-2xl
+                                    border
+                                    font-semibold
+                                "
                             >
                                 Edit
                             </a>
@@ -70,11 +127,24 @@
                                 action="{{ route('categories.destroy', $category->id) }}"
                                 method="POST"
                             >
+
                                 @csrf
                                 @method('DELETE')
 
                                 <button
-                                    class="px-4 py-2 bg-red-500 text-white rounded-lg"
+                                    onclick="
+                                        return confirm(
+                                            'Delete this category?'
+                                        )
+                                    "
+                                    class="
+                                        px-5
+                                        py-3
+                                        rounded-2xl
+                                        bg-red-500
+                                        text-white
+                                        font-semibold
+                                    "
                                 >
                                     Delete
                                 </button>
@@ -87,7 +157,24 @@
 
                 </tr>
 
-            @endforeach
+            @empty
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="
+                            p-10
+                            text-center
+                            text-gray-400
+                        "
+                    >
+                        No categories found
+                    </td>
+
+                </tr>
+
+            @endforelse
 
         </tbody>
 

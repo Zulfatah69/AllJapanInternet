@@ -10,8 +10,6 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
 
-use Intervention\Image\Laravel\Facades\Image;
-
 class PromoController extends Controller
 {
     public function index()
@@ -58,17 +56,62 @@ class PromoController extends Controller
             $filename =
                 time() . '.webp';
 
-            $image = Image::read($file)
-                ->resize(1920, 1080)
-                ->toWebp(80);
+            $image = imagecreatefromstring(
+                file_get_contents($file)
+            );
+
+            $width =
+                imagesx($image);
+
+            $height =
+                imagesy($image);
+
+            $newImage = imagecreatetruecolor(
+                1200,
+                1200
+            );
+
+            imagecopyresampled(
+
+                $newImage,
+
+                $image,
+
+                0,
+                0,
+                0,
+                0,
+
+                1200,
+                1200,
+
+                $width,
+                $height
+
+            );
+
+            ob_start();
+
+            imagewebp(
+                $newImage,
+                null,
+                80
+            );
+
+            $webpImage =
+                ob_get_clean();
 
             Storage::disk('public')->put(
 
                 'promos/' . $filename,
 
-                (string) $image
+                $webpImage
 
             );
+
+            imagedestroy($image);
+
+            imagedestroy($newImage);
 
             $gambar =
                 'promos/' . $filename;
@@ -149,17 +192,62 @@ class PromoController extends Controller
             $filename =
                 time() . '.webp';
 
-            $image = Image::read($file)
-                ->resize(1920, 1080)
-                ->toWebp(80);
+            $image = imagecreatefromstring(
+                file_get_contents($file)
+            );
+
+            $width =
+                imagesx($image);
+
+            $height =
+                imagesy($image);
+
+            $newImage = imagecreatetruecolor(
+                1200,
+                1200
+            );
+
+            imagecopyresampled(
+
+                $newImage,
+
+                $image,
+
+                0,
+                0,
+                0,
+                0,
+
+                1200,
+                1200,
+
+                $width,
+                $height
+
+            );
+
+            ob_start();
+
+            imagewebp(
+                $newImage,
+                null,
+                80
+            );
+
+            $webpImage =
+                ob_get_clean();
 
             Storage::disk('public')->put(
 
                 'promos/' . $filename,
 
-                (string) $image
+                $webpImage
 
             );
+
+            imagedestroy($image);
+
+            imagedestroy($newImage);
 
             $gambar =
                 'promos/' . $filename;

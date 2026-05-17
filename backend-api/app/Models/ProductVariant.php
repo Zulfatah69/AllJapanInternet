@@ -9,8 +9,13 @@ class ProductVariant extends Model
     protected $fillable = [
 
         'product_id',
-        'nama',
+
         'gb',
+
+        'cycle_type',
+
+        'monthly_price',
+
         'is_active',
 
     ];
@@ -28,10 +33,10 @@ class ProductVariant extends Model
         );
     }
 
-    public function prices()
+    public function billingPeriods()
     {
         return $this->hasMany(
-            VariantPrice::class
+            BillingPeriod::class,
         );
     }
 }

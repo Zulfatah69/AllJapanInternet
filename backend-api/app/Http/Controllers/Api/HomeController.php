@@ -21,8 +21,17 @@ class HomeController extends Controller
         ->get();
 
         $bestSellers = Product::with([
-            'variants.prices',
-            'category'
+
+            'category',
+
+            'provider',
+
+            'variants.billingPeriods',
+
+            'paymentMethods',
+
+            'yearlyActivePeriods',
+
         ])
         ->where(
             'is_active',
@@ -37,8 +46,17 @@ class HomeController extends Controller
         ->get();
 
         $newProducts = Product::with([
-            'variants.prices',
-            'category'
+
+            'category',
+
+            'provider',
+
+            'variants.billingPeriods',
+
+            'paymentMethods',
+
+            'yearlyActivePeriods',
+
         ])
         ->where(
             'is_active',
@@ -54,81 +72,112 @@ class HomeController extends Controller
 
         return response()->json([
 
-            'promos'
-                => $promos->map(function ($promo) {
+            'success'
+                => true,
 
-                return [
+            'data' => [
 
-                    'id'
-                        => $promo->id,
+                'promos'
+                    => $promos->map(function ($promo) {
 
-                    'judul'
-                        => $promo->judul,
+                    return [
 
-                    'gambar'
-                        => $promo->gambar
-                            ? asset(
-                                'storage/' .
-                                $promo->gambar
-                            )
-                            : null,
+                        'id'
+                            => $promo->id,
 
-                    'link'
-                        => $promo->link,
+                        'judul'
+                            => $promo->judul,
 
-                ];
+                        'deskripsi'
+                            => $promo->deskripsi,
 
-            }),
+                        'gambar'
+                            => $promo->gambar
+                                ? asset(
+                                    'storage/' .
+                                    $promo->gambar
+                                )
+                                : null,
 
-            'best_sellers'
-                => $bestSellers->map(function ($product) {
+                        'link'
+                            => $promo->link,
 
-                return $this->formatProduct(
-                    $product
-                );
+                    ];
 
-            }),
+                }),
 
-            'new_products'
-                => $newProducts->map(function ($product) {
+                'best_sellers'
+                    => $bestSellers->map(function ($product) {
 
-                return $this->formatProduct(
-                    $product
-                );
+                    return $this->formatProduct(
+                        $product
+                    );
 
-            }),
+                }),
 
-            'categories'
-                => $categories->map(function ($category) {
+                'new_products'
+                    => $newProducts->map(function ($product) {
 
-                return [
+                    return $this->formatProduct(
+                        $product
+                    );
 
-                    'id'
-                        => $category->id,
+                }),
 
-                    'nama'
-                        => $category->nama,
+                'categories'
+                    => $categories->map(function ($category) {
 
-                    'slug'
-                        => $category->slug,
+                    return [
 
-                ];
+                        'id'
+                            => $category->id,
 
-            }),
+                        'nama'
+                            => $category->nama,
+
+                        'slug'
+                            => $category->slug,
+
+                    ];
+
+                }),
+
+            ]
 
         ]);
     }
 
     private function formatProduct($product)
     {
-        $allPrices = [];
+        $prices = [];
 
-        foreach ($product->variants as $variant) {
+        if ($product->type === 'monthly') {
 
-            foreach ($variant->prices as $price) {
+            foreach ($product->variants as $variant) {
 
-                $allPrices[] = $price->harga;
+                $prices[] =
+                    $variant->monthly_price;
 
+                foreach (
+                    $variant->billingPeriods
+                    as $period
+                ) {
+
+                    $prices[] =
+                        $variant->monthly_price
+                        +
+                        $period->initial_price;
+                }
+            }
+
+        } else {
+
+            foreach (
+                $product->yearlyActivePeriods
+                as $period
+            ) {
+
+                $prices[] = $period->harga;
             }
         }
 
@@ -143,17 +192,8 @@ class HomeController extends Controller
             'slug'
                 => $product->slug,
 
-            'provider'
-                => $product->provider,
-
-            'code'
-                => $product->code,
-
             'type'
                 => $product->type,
-
-            'billing_type'
-                => $product->billing_type,
 
             'thumbnail'
                 => $product->thumbnail
@@ -167,11 +207,18 @@ class HomeController extends Controller
                 => $product->best_seller,
 
             'category'
-                => $product->category->nama,
+                => $product->category
+                    ? $product->category->nama
+                    : null,
+
+            'provider'
+                => $product->provider
+                    ? $product->provider->nama
+                    : null,
 
             'lowest_price'
-                => count($allPrices)
-                    ? min($allPrices)
+                => count($prices)
+                    ? min($prices)
                     : null,
 
         ];

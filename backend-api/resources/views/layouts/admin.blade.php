@@ -6,10 +6,15 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="
+            width=device-width,
+            initial-scale=1.0
+        "
     >
 
-    <title>Admin Panel</title>
+    <title>
+        AJI Admin
+    </title>
 
     @vite([
         'resources/css/app.css',
@@ -20,103 +25,190 @@
 
 <body class="bg-gray-100">
 
-    <div class="min-h-screen flex">
+<div class="flex min-h-screen">
 
-        {{-- SIDEBAR --}}
-        <aside class="w-64 bg-black text-white p-6">
+    <aside
+        class="
+            w-72
+            bg-black
+            text-white
+            p-8
+            flex
+            flex-col
+        "
+    >
 
-            <h1 class="text-2xl font-bold mb-10">
+        <div class="mb-12">
+
+            <h1
+                class="
+                    text-4xl
+                    font-black
+                "
+            >
                 AJI Admin
             </h1>
 
-            <nav class="space-y-3">
+            <p
+                class="
+                    text-gray-400
+                    mt-2
+                "
+            >
+                All Japan Internet
+            </p>
 
-                <a
-                    href="/dashboard"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
+        </div>
+
+        <nav class="space-y-3">
+
+            <a
+                href="{{ route('dashboard') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Dashboard
+            </a>
+
+            <a
+                href="{{ route('categories.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Categories
+            </a>
+
+            <a
+                href="{{ route('providers.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Providers
+            </a>
+
+            <a
+                href="{{ route('monthly-products.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Monthly Products
+            </a>
+
+            <a
+                href="{{ route('yearly-products.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Yearly Products
+            </a>
+
+            <a
+                href="{{ route('testimonials.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Testimonials
+            </a>
+
+            <a
+                href="{{ route('promos.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Promos
+            </a>
+
+            <a
+                href="{{ route('settings.edit') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="mt-auto pt-10">
+
+            <form
+                action="{{ route('logout') }}"
+                method="POST"
+            >
+
+                @csrf
+
+                <button
+                    class="
+                        w-full
+                        bg-red-500
+                        hover:bg-red-600
+                        transition
+                        py-4
+                        rounded-2xl
+                        font-bold
+                    "
                 >
-                    Dashboard
-                </a>
+                    Logout
+                </button>
 
-                <a
-                    href="/dashboard/categories"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Categories
-                </a>
+            </form>
 
-                <a
-                    href="/dashboard/products"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Products
-                </a>
-                <a
-                    href="/dashboard/product-variants"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Product Variants
-                </a>
-                <a
-                    href="/dashboard/shipping-methods"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Shipping Methods
-                </a>
-                <a
-                    href="/dashboard/purchase-periods"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Purchase Periods
-                </a>
+        </div>
 
-                <a
-                    href="/dashboard/variant-prices"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Variant Prices
-                </a>
+    </aside>
 
-                <a
-                    href="/dashboard/promos"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Promos
-                </a>
-                <a
-                    href="/dashboard/settings"
-                    class="block px-4 py-3 rounded hover:bg-gray-800"
-                >
-                    Theme Settings
-                </a>
-                <form
-                    method="POST"
-                    action="{{ route('logout') }}"
-                    class="mt-10"
-                >
+    <main
+        class="
+            flex-1
+            p-10
+        "
+    >
 
-                    @csrf
+        @yield('content')
 
-                    <button
-                        type="submit"
-                        class="w-full text-left px-4 py-3 rounded hover:bg-red-600 transition"
-                    >
-                        Logout
-                    </button>
+    </main>
 
-                </form>
-            </nav>
-
-        </aside>
-
-        {{-- CONTENT --}}
-        <main class="flex-1 p-10">
-
-            @yield('content')
-
-        </main>
-
-    </div>
+</div>
 
 </body>
 </html>
