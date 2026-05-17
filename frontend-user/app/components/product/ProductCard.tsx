@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FiArrowUpRight } from 'react-icons/fi';
 
+import { isBestSeller } from '../../lib/product';
 import { formatYen } from '../../lib/utils';
 import { easeLuxury } from '../../lib/motion';
 
@@ -56,7 +57,7 @@ export function ProductCard({
                         </span>
                     )}
 
-                    {product.is_best_seller && (
+                    {isBestSeller(product) && (
                         <span
                             className="absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-lg"
                             style={{ background: 'var(--gradient-accent)' }}

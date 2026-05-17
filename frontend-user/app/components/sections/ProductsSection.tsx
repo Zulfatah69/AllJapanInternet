@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { staggerContainer, fadeUp } from '../../lib/motion';
@@ -28,6 +28,17 @@ export function ProductsSection({
     const [selectedType, setSelectedType] = useState('all');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedProvider, setSelectedProvider] = useState('all');
+    const [selectedBilling, setSelectedBilling] = useState('all');
+    const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const slug = (e as CustomEvent<string>).detail;
+            if (slug) setSelectedCategory(slug);
+        };
+        window.addEventListener('aji-filter-category', handler);
+        return () => window.removeEventListener('aji-filter-category', handler);
+    }, []);
 
     const filtered = useMemo(
         () =>
@@ -37,9 +48,20 @@ export function ProductsSection({
                 const matchType = selectedType === 'all' || product.type === selectedType;
                 const matchProvider =
                     selectedProvider === 'all' || product.provider?.slug === selectedProvider;
-                return matchCategory && matchType && matchProvider;
+                const matchBilling =
+                    selectedBilling === 'all' ||
+                    product.billing_type === selectedBilling;
+                const q = search.trim().toLowerCase();
+                const matchSearch =
+                    !q ||
+                    [product.nama, product.type, product.code, product.category?.nama]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLowerCase()
+                        .includes(q);
+                return matchCategory && matchType && matchProvider && matchBilling && matchSearch;
             }),
-        [products, selectedCategory, selectedType, selectedProvider],
+        [products, selectedCategory, selectedType, selectedProvider, selectedBilling, search],
     );
 
     const typeChips = [
@@ -55,6 +77,11 @@ export function ProductsSection({
         { id: 'all', label: copy.products.allProviders },
         ...providers.map((p) => ({ id: p.slug, label: p.nama })),
     ];
+    const billingChips = [
+        { id: 'all', label: copy.products.all },
+        { id: 'monthly', label: copy.products.monthly },
+        { id: 'yearly', label: copy.products.yearly },
+    ];
 
     return (
         <SectionShell id="products" variant="default">
@@ -64,16 +91,29 @@ export function ProductsSection({
                     subtitle={copy.products.subtitle}
                     eyebrow="Catalog"
                 />
+                <div className="mb-8">
+                    <input
+                        type="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder={copy.search.placeholder}
+                        className="w-full max-w-md rounded-2xl border bg-[var(--bg-elevated)] px-5 py-3 outline-none transition-colors focus:border-[var(--primary)]"
+                        style={{ borderColor: 'var(--border)' }}
+                    />
+                </div>
                 <ProductFilters
                     typeChips={typeChips}
                     categoryChips={categoryChips}
                     providerChips={providerChips}
+                    billingChips={billingChips}
                     selectedType={selectedType}
                     selectedCategory={selectedCategory}
                     selectedProvider={selectedProvider}
+                    selectedBilling={selectedBilling}
                     onType={setSelectedType}
                     onCategory={setSelectedCategory}
                     onProvider={setSelectedProvider}
+                    onBilling={setSelectedBilling}
                 />
                 {loading ? (
                     <ProductGridSkeleton />

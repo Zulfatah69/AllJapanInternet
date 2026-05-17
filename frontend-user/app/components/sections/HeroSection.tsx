@@ -29,7 +29,10 @@ export function HeroSection({
 
     const promo = promos[index];
     const floatProducts = products.slice(0, 3);
-    const bgImage = promo?.gambar_url || AMBIENT_IMAGES.tokyoNight;
+    const bgImage =
+        promo?.gambar_url ||
+        (promo?.gambar?.startsWith('http') ? promo.gambar : undefined) ||
+        AMBIENT_IMAGES.tokyoNight;
     const brandName = settings?.website_name || 'All Japan Internet';
 
     return (

@@ -8,26 +8,35 @@ export function ProductFilters({
     typeChips,
     categoryChips,
     providerChips,
+    billingChips,
     selectedType,
     selectedCategory,
     selectedProvider,
+    selectedBilling,
     onType,
     onCategory,
     onProvider,
+    onBilling,
 }: {
     typeChips: FilterChip[];
     categoryChips: FilterChip[];
     providerChips: FilterChip[];
+    billingChips?: FilterChip[];
     selectedType: string;
     selectedCategory: string;
     selectedProvider: string;
+    selectedBilling?: string;
     onType: (v: string) => void;
     onCategory: (v: string) => void;
     onProvider: (v: string) => void;
+    onBilling?: (v: string) => void;
 }) {
     return (
         <div className="space-y-5 mb-10">
             <ChipRow chips={typeChips} selected={selectedType} onSelect={onType} />
+            {billingChips && onBilling && selectedBilling !== undefined && (
+                <ChipRow chips={billingChips} selected={selectedBilling} onSelect={onBilling} />
+            )}
             <ChipRow chips={categoryChips} selected={selectedCategory} onSelect={onCategory} />
             <ChipRow chips={providerChips} selected={selectedProvider} onSelect={onProvider} />
         </div>

@@ -319,3 +319,15 @@ body {
 .animate-float-slow {
   animation: float-slow 6s ease-in-out infinite;
 }
+
+.promo-swiper .swiper-pagination-bullet,
+.testimonial-swiper .swiper-pagination-bullet {
+  background: var(--primary);
+  opacity: 0.35;
+}
+.promo-swiper .swiper-pagination-bullet-active,
+.testimonial-swiper .swiper-pagination-bullet-active {
+  opacity: 1;
+  width: 1.5rem;
+  border-radius: 999px;
+}

@@ -120,6 +120,36 @@ export const translations = {
             email: 'Email',
             map: 'Find Us',
         },
+        categories: {
+            title: 'Product Categories',
+            subtitle: 'Find the right plan for your lifestyle in Japan',
+        },
+        payment: {
+            title: 'Payment Methods',
+            subtitle: 'Flexible options shown per product at checkout',
+            fallback: ['Bank Transfer', 'Cash on Delivery', 'Konbini', 'Initial + Monthly'],
+        },
+        shipping: {
+            title: 'Shipping & Delivery',
+            subtitle: 'Reliable delivery across Japan',
+            items: [
+                {
+                    title: 'Nationwide Shipping',
+                    desc: 'SIM and devices shipped via Japan Post and Yamato Transport to addresses across Japan.',
+                },
+                {
+                    title: 'Typical Delivery Time',
+                    desc: 'Most orders ship within 2–5 business days after payment confirmation. Express options may apply per product.',
+                },
+            ],
+        },
+        search: {
+            placeholder: 'Search plans…',
+            empty: 'No products found.',
+        },
+        order: {
+            formTitle: 'Order Details',
+        },
         footer: {
             narrative: 'All Japan Internet — premium connectivity for life in Japan.',
             rights: 'All rights reserved.',
@@ -253,6 +283,36 @@ export const translations = {
             whatsapp: 'WhatsAppで相談',
             email: 'メール',
             map: '所在地',
+        },
+        categories: {
+            title: 'カテゴリ',
+            subtitle: '日本生活に合ったプランをお選びください',
+        },
+        payment: {
+            title: 'お支払い方法',
+            subtitle: '商品ごとに表示される柔軟なオプション',
+            fallback: ['銀行振込', '代金引換', 'コンビニ', '初回＋月額'],
+        },
+        shipping: {
+            title: '配送について',
+            subtitle: '日本全国へ確実にお届け',
+            items: [
+                {
+                    title: '全国配送',
+                    desc: '日本郵便・ヤマト運輸で日本全国の住所へお届けします。',
+                },
+                {
+                    title: 'お届け目安',
+                    desc: 'お支払い確認後、通常2〜5営業日で発送。商品により速達オプションあり。',
+                },
+            ],
+        },
+        search: {
+            placeholder: 'プランを検索…',
+            empty: '商品が見つかりません。',
+        },
+        order: {
+            formTitle: '注文情報',
         },
         footer: {
             narrative: 'All Japan Internet — 日本生活のためのプレミアム接続。',

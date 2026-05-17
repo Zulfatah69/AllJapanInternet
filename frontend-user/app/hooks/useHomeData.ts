@@ -3,42 +3,46 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import api, { asArray } from '../lib/api';
-import { getProducts } from '../services/product.service';
+import { getHomeData } from '../services/home.service';
+import { getSettings } from '../services/settings.service';
+import type { Category, Product, Promo, Settings, Testimonial } from '../types/api';
+import type { Provider } from '../types/api';
 
 export function useHomeData() {
-    const [products, setProducts] = useState<any[]>([]);
-    const [promos, setPromos] = useState<any[]>([]);
-    const [testimonials, setTestimonials] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [providers, setProviders] = useState<any[]>([]);
-    const [settings, setSettings] = useState<any>(null);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [bestSellers, setBestSellers] = useState<Product[]>([]);
+    const [newProducts, setNewProducts] = useState<Product[]>([]);
+    const [promos, setPromos] = useState<Promo[]>([]);
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [providers, setProviders] = useState<Provider[]>([]);
+    const [settings, setSettings] = useState<Settings | null>(null);
     const [loading, setLoading] = useState(true);
 
     const load = useCallback(async () => {
         setLoading(true);
         try {
-            const [
-                productsData,
-                promosRes,
-                testimonialsRes,
-                categoriesRes,
-                providersRes,
-                settingsRes,
-            ] = await Promise.all([
-                getProducts(),
-                api.get('/promos'),
-                api.get('/testimonials'),
-                api.get('/categories'),
-                api.get('/providers'),
-                api.get('/settings'),
-            ]);
+            const [home, settingsData, testimonialsRes, providersRes, categoriesRes] =
+                await Promise.all([
+                    getHomeData(),
+                    getSettings(),
+                    api.get('/testimonials'),
+                    api.get('/providers'),
+                    api.get('/categories'),
+                ]);
 
-            setProducts(productsData);
-            setPromos(asArray(promosRes.data));
-            setTestimonials(asArray(testimonialsRes.data));
-            setCategories(asArray(categoriesRes.data));
-            setProviders(asArray(providersRes.data));
-            setSettings(settingsRes.data);
+            setProducts(home.products);
+            setBestSellers(home.best_sellers);
+            setNewProducts(home.new_products);
+            setPromos(home.promos);
+            setCategories(
+                home.categories.length
+                    ? home.categories
+                    : asArray<Category>(categoriesRes.data),
+            );
+            setTestimonials(asArray<Testimonial>(testimonialsRes.data));
+            setProviders(asArray<Provider>(providersRes.data));
+            setSettings(settingsData);
         } catch (error) {
             console.error(error);
         } finally {
@@ -50,11 +54,10 @@ export function useHomeData() {
         load();
     }, [load]);
 
-    const bestSellers = products.filter((p) => p.is_best_seller);
-
     return {
         products,
         bestSellers,
+        newProducts,
         promos,
         testimonials,
         categories,

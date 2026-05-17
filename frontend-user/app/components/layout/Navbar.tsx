@@ -7,6 +7,7 @@ import { FiMenu, FiX } from 'react-icons/fi';
 
 import { storageUrl } from '../../lib/utils';
 import { THEME_LABELS, type ThemeKey } from '../../lib/theme';
+import { GlobalSearch } from '../search/GlobalSearch';
 import { useApp } from '../../providers/AppProvider';
 
 const NAV_IDS = [
@@ -76,6 +77,7 @@ export default function Navbar() {
                 </nav>
 
                 <div className="hidden items-center gap-3 lg:flex">
+                    <GlobalSearch />
                     <select
                         value={locale}
                         onChange={(e) => setLocale(e.target.value as 'en' | 'ja')}
