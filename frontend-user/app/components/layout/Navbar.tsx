@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX } from 'react-icons/fi';
 
 import { storageUrl } from '../../lib/utils';
-import { THEME_LABELS, type ThemeKey } from '../../lib/theme';
 import { GlobalSearch } from '../search/GlobalSearch';
 import { useApp } from '../../providers/AppProvider';
 
@@ -24,7 +23,7 @@ const NAV_IDS = [
 ] as const;
 
 export default function Navbar() {
-    const { copy, locale, setLocale, themeKey, setThemeKey, settings } = useApp();
+    const { copy, locale, setLocale, settings } = useApp();
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
@@ -51,7 +50,17 @@ export default function Navbar() {
 
     return (
         <header
-            className={`fixed top-0 z-50 w-full transition-all duration-500 ${scrolled ? 'glass-nav' : 'bg-transparent'}`}
+            className={`fixed top-0 z-50 w-full transition-all duration-500 ${
+                scrolled ? 'glass-nav' : 'border-b border-transparent'
+            }`}
+            style={
+                scrolled
+                    ? undefined
+                    : {
+                          background:
+                              'linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 85%, transparent), transparent)',
+                      }
+            }
         >
             <div className="container-aji flex items-center justify-between py-4">
                 <Link href="/" className="flex items-center gap-3">
@@ -88,19 +97,6 @@ export default function Navbar() {
                         <option value="en">EN</option>
                         <option value="ja">JA</option>
                     </select>
-                    <select
-                        value={themeKey}
-                        onChange={(e) => setThemeKey(e.target.value as ThemeKey)}
-                        className="rounded-full border bg-transparent px-3 py-1.5 text-sm"
-                        style={{ borderColor: 'var(--border)' }}
-                        aria-label={copy.footer.theme}
-                    >
-                        {(Object.keys(THEME_LABELS) as ThemeKey[]).map((key) => (
-                            <option key={key} value={key}>
-                                {THEME_LABELS[key][locale]}
-                            </option>
-                        ))}
-                    </select>
                 </div>
 
                 <button
@@ -133,29 +129,15 @@ export default function Navbar() {
                                     {navLabels[id]}
                                 </a>
                             ))}
-                            <div className="flex gap-3 pt-2">
-                                <select
-                                    value={locale}
-                                    onChange={(e) => setLocale(e.target.value as 'en' | 'ja')}
-                                    className="flex-1 rounded-full border px-3 py-2 text-sm"
-                                    style={{ borderColor: 'var(--border)' }}
-                                >
-                                    <option value="en">English</option>
-                                    <option value="ja">日本語</option>
-                                </select>
-                                <select
-                                    value={themeKey}
-                                    onChange={(e) => setThemeKey(e.target.value as ThemeKey)}
-                                    className="flex-1 rounded-full border px-3 py-2 text-sm"
-                                    style={{ borderColor: 'var(--border)' }}
-                                >
-                                    {(Object.keys(THEME_LABELS) as ThemeKey[]).map((key) => (
-                                        <option key={key} value={key}>
-                                            {THEME_LABELS[key][locale]}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                            <select
+                                value={locale}
+                                onChange={(e) => setLocale(e.target.value as 'en' | 'ja')}
+                                className="mt-2 w-full rounded-full border px-3 py-2 text-sm"
+                                style={{ borderColor: 'var(--border)' }}
+                            >
+                                <option value="en">English</option>
+                                <option value="ja">日本語</option>
+                            </select>
                         </div>
                     </motion.div>
                 )}

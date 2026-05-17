@@ -4,11 +4,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 import { storageUrl } from '../../lib/utils';
-import { THEME_LABELS, type ThemeKey } from '../../lib/theme';
 import { useApp } from '../../providers/AppProvider';
 
 export default function Footer() {
-    const { copy, locale, setLocale, themeKey, setThemeKey, settings } = useApp();
+    const { copy, locale, setLocale, settings } = useApp();
     const year = new Date().getFullYear();
     const narrative = settings?.footer_text || copy.footer.narrative;
     const logo = storageUrl(settings?.logo);
@@ -71,17 +70,6 @@ export default function Footer() {
                         >
                             <option value="en">English</option>
                             <option value="ja">日本語</option>
-                        </select>
-                        <select
-                            value={themeKey}
-                            onChange={(e) => setThemeKey(e.target.value as ThemeKey)}
-                            className="rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-sm text-white backdrop-blur-sm"
-                        >
-                            {(Object.keys(THEME_LABELS) as ThemeKey[]).map((key) => (
-                                <option key={key} value={key}>
-                                    {THEME_LABELS[key][locale]}
-                                </option>
-                            ))}
                         </select>
                     </div>
                     <div className="flex flex-wrap gap-5 text-sm text-white/75">

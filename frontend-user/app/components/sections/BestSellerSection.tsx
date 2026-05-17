@@ -38,10 +38,10 @@ export function BestSellerSection({
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
-                        className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"
+                        className="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
                     >
                         {products.map((product, i) => (
-                            <motion.div key={product.id} variants={fadeUp} custom={i}>
+                            <motion.div key={product.id} variants={fadeUp} custom={i} className="h-full">
                                 <ProductCard
                                     product={product}
                                     index={i}

@@ -1,22 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FiArrowRight, FiWifi } from 'react-icons/fi';
+import { FiArrowRight, FiShield, FiSmartphone, FiWifi } from 'react-icons/fi';
 
+import { resolveMediaUrl } from '../../lib/media';
 import { AMBIENT_IMAGES } from '../../lib/visuals';
-import { formatYen } from '../../lib/utils';
 import { easeLuxury } from '../../lib/motion';
 import { Button } from '../ui/Button';
+import { MediaImage } from '../ui/MediaImage';
 import { useApp } from '../../providers/AppProvider';
+import type { Promo } from '../../types/api';
 
 export function HeroSection({
     promos,
-    products = [],
+    planCount = 0,
 }: {
-    promos: any[];
-    products?: any[];
+    promos: Promo[];
+    planCount?: number;
 }) {
     const { copy, settings } = useApp();
     const [index, setIndex] = useState(0);
@@ -28,16 +29,25 @@ export function HeroSection({
     }, [promos.length]);
 
     const promo = promos[index];
-    const floatProducts = products.slice(0, 3);
-    const bgImage =
-        promo?.gambar_url ||
-        (promo?.gambar?.startsWith('http') ? promo.gambar : undefined) ||
-        AMBIENT_IMAGES.tokyoNight;
+    const promoImage =
+        resolveMediaUrl(promo?.gambar_url) ?? resolveMediaUrl(promo?.gambar) ?? null;
+    const bgImage = promoImage || AMBIENT_IMAGES.tokyoNight;
     const brandName = settings?.website_name || 'All Japan Internet';
+    const logoUrl = resolveMediaUrl(settings?.logo);
+
+    const highlights = [
+        { icon: FiWifi, label: 'Nationwide coverage' },
+        { icon: FiSmartphone, label: 'SIM & eSIM ready' },
+        { icon: FiShield, label: 'EN / JA support' },
+    ];
 
     return (
         <section id="home" className="relative min-h-[100svh] overflow-hidden">
-            <div className="absolute inset-0 hero-mesh" />
+            <motion.div
+                className="absolute inset-0 hero-mesh pointer-events-none"
+                style={{ background: 'var(--gradient-hero)' }}
+                aria-hidden
+            />
 
             <div className="absolute inset-0">
                 <AnimatePresence mode="wait">
@@ -45,37 +55,34 @@ export function HeroSection({
                         key={bgImage}
                         src={bgImage}
                         alt=""
-                        initial={{ opacity: 0, scale: 1.08 }}
+                        initial={{ opacity: 0, scale: 1.06 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1.2, ease: easeLuxury }}
                         className="h-full w-full object-cover"
                     />
                 </AnimatePresence>
-                <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-contrast)]/92 via-[var(--bg-contrast)]/55 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-contrast)]/80 via-transparent to-transparent" />
-                <div
-                    className="absolute inset-0 opacity-40"
-                    style={{ background: 'var(--gradient-mesh)' }}
-                />
+                <div className="absolute inset-0" style={{ background: 'var(--hero-overlay)' }} />
+                <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-contrast)]/78 via-[var(--bg-contrast)]/40 to-transparent" />
+                <div className="absolute inset-0 opacity-45" style={{ background: 'var(--gradient-mesh)' }} />
             </div>
 
-            <div className="container-aji relative z-10 grid min-h-[100svh] items-center gap-12 py-28 lg:grid-cols-[1.1fr_0.9fr] lg:py-32">
+            <div className="container-aji relative z-10 grid min-h-[100svh] items-center gap-12 py-28 lg:grid-cols-[1.15fr_0.85fr] lg:py-32">
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, ease: easeLuxury }}
                 >
-                    <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/90 backdrop-blur-md">
+                    <span className="hero-badge mb-6 inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] backdrop-blur-md">
                         <FiWifi className="text-[var(--accent)]" />
                         {copy.hero.badge}
                     </span>
 
-                    <h1 className="mb-6 max-w-2xl text-4xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl lg:text-7xl">
+                    <h1 className="mb-6 max-w-2xl text-4xl font-semibold leading-[1.05] tracking-tight text-white drop-shadow-sm md:text-6xl lg:text-7xl">
                         {promo?.judul || brandName}
                     </h1>
 
-                    <p className="mb-10 max-w-xl text-lg leading-relaxed text-white/80 md:text-xl">
+                    <p className="mb-10 max-w-xl text-lg leading-relaxed text-white/90 md:text-xl">
                         {promo?.deskripsi || copy.products.subtitle}
                     </p>
 
@@ -84,90 +91,80 @@ export function HeroSection({
                             {copy.hero.cta}
                             <FiArrowRight />
                         </Button>
-                        <Button
-                            href={promo?.link || '/promos'}
-                            variant="outline"
-                            className="!border-white/35 !bg-white/10 !text-white backdrop-blur-md hover:!bg-white/20"
-                        >
+                        <Button href={promo?.link || '#promos'} variant="outline" className="hero-ghost-btn">
                             {copy.hero.ctaSecondary}
                         </Button>
                     </div>
 
-                    <div className="mt-14 flex flex-wrap gap-10 border-t border-white/15 pt-10">
+                    <div className="mt-14 flex flex-wrap gap-10 border-t border-white/20 pt-10">
                         {[
                             { label: 'Japan', value: 'Nationwide' },
-                            { label: 'Plans', value: `${products.length}+` },
+                            { label: 'Plans', value: planCount > 0 ? `${planCount}+` : '—' },
                             { label: 'Support', value: 'EN / JA' },
                         ].map((stat) => (
                             <div key={stat.label}>
-                                <p className="text-xs uppercase tracking-widest text-white/50">{stat.label}</p>
+                                <p className="text-xs uppercase tracking-widest text-white/65">{stat.label}</p>
                                 <p className="text-xl font-semibold text-white">{stat.value}</p>
                             </div>
                         ))}
                     </div>
                 </motion.div>
 
-                <div className="relative hidden min-h-[420px] lg:block">
+                <div className="relative hidden lg:block">
                     <motion.div
-                        className="absolute right-0 top-8 w-[280px] animate-float-slow"
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25, duration: 0.8, ease: easeLuxury }}
+                        className="hero-showcase-card overflow-hidden rounded-[2rem] border border-white/20 shadow-[var(--shadow-soft)]"
                     >
-                        <div className="premium-card overflow-hidden rounded-3xl p-1">
-                            <div className="rounded-[1.25rem] bg-[var(--bg-elevated)] p-5">
-                                <p className="eyebrow mb-2 !text-[var(--primary-strong)]">eSIM / SIM</p>
-                                <p className="text-lg font-semibold text-[var(--fg)]">{brandName}</p>
-                                <p className="mt-2 text-sm text-[var(--fg-muted)]">{copy.products.subtitle}</p>
+                        <div className="relative aspect-[4/5] max-h-[520px] w-full">
+                            <MediaImage
+                                src={promoImage || bgImage}
+                                alt={promo?.judul || brandName}
+                                className="h-full w-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-8">
+                                {logoUrl ? (
+                                    <img
+                                        src={logoUrl}
+                                        alt={brandName}
+                                        className="mb-4 h-10 w-auto brightness-0 invert"
+                                    />
+                                ) : (
+                                    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-white/70">
+                                        {brandName}
+                                    </p>
+                                )}
+                                <p className="text-2xl font-semibold text-white">
+                                    {promo?.judul || copy.products.subtitle}
+                                </p>
+                                {promo?.deskripsi && (
+                                    <p className="mt-2 line-clamp-2 text-sm text-white/80">{promo.deskripsi}</p>
+                                )}
                             </div>
                         </div>
                     </motion.div>
 
-                    {floatProducts.map((product, i) => (
-                        <motion.div
-                            key={product.id}
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 + i * 0.15, duration: 0.7, ease: easeLuxury }}
-                            className="absolute w-[240px]"
-                            style={{
-                                left: i === 0 ? '0%' : i === 1 ? '18%' : '8%',
-                                top: i === 0 ? '38%' : i === 1 ? '58%' : '18%',
-                            }}
-                        >
-                            <Link
-                                href={`/products/${product.slug}`}
-                                className="premium-card group block overflow-hidden rounded-2xl"
+                    <div className="mt-6 grid gap-3">
+                        {highlights.map((item, i) => (
+                            <motion.div
+                                key={item.label}
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 + i * 0.1 }}
+                                className="hero-highlight flex items-center gap-4 rounded-2xl border border-white/15 px-5 py-4 backdrop-blur-md"
                             >
-                                {product.thumbnail_url && (
-                                    <div className="relative h-28 overflow-hidden">
-                                        <img
-                                            src={product.thumbnail_url}
-                                            alt={product.nama}
-                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                                    </div>
-                                )}
-                                <div className="p-4">
-                                    <p className="truncate text-sm font-semibold">{product.nama}</p>
-                                    <p className="text-gradient text-lg font-bold">
-                                        {formatYen(product.lowest_price)}
-                                    </p>
-                                </div>
-                            </Link>
-                        </motion.div>
-                    ))}
-
-                    {promos.length > 0 && (
-                        <motion.div
-                            animate={{ y: [0, -8, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                            className="absolute bottom-4 right-4 max-w-[200px] rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-xl"
-                        >
-                            <p className="text-xs text-white/60">Promo</p>
-                            <p className="line-clamp-2 text-sm font-medium text-white">
-                                {promos[index]?.judul}
-                            </p>
-                        </motion.div>
-                    )}
+                                <span
+                                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
+                                    style={{ background: 'var(--gradient-accent)' }}
+                                >
+                                    <item.icon size={20} />
+                                </span>
+                                <p className="text-sm font-medium text-white/95">{item.label}</p>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -182,7 +179,7 @@ export function HeroSection({
                             className="h-1 rounded-full transition-all duration-300"
                             style={{
                                 width: i === index ? 40 : 10,
-                                background: i === index ? 'white' : 'rgba(255,255,255,0.35)',
+                                background: i === index ? 'var(--accent)' : 'rgba(255,255,255,0.4)',
                             }}
                         />
                     ))}

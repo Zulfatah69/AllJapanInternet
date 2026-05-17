@@ -1,11 +1,7 @@
-import { API_BASE_URL } from './api';
-
-const STORAGE_BASE = API_BASE_URL.replace(/\/api\/?$/, '');
+import { resolveMediaUrl } from './media';
 
 export function storageUrl(path?: string | null): string | undefined {
-    if (!path) return undefined;
-    if (path.startsWith('http')) return path;
-    return `${STORAGE_BASE}/storage/${path.replace(/^\//, '')}`;
+    return resolveMediaUrl(path);
 }
 
 export function formatYen(value?: number | string | null): string {

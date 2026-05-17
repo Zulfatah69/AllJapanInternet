@@ -1,8 +1,8 @@
-import api, { unwrapData } from '../lib/api';
+import api from '../lib/api';
+import { normalizeSettings } from '../lib/normalize-settings';
 import type { Settings } from '../types/api';
 
 export async function getSettings(): Promise<Settings | null> {
     const response = await api.get('/settings');
-    const data = unwrapData<Settings>(response.data);
-    return data ?? null;
+    return normalizeSettings(response.data);
 }

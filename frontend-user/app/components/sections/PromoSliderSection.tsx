@@ -58,9 +58,9 @@ export function PromoSliderSection({ promos }: { promos: Promo[] }) {
                                     whileHover={{ scale: 1.02 }}
                                     transition={{ duration: 0.6 }}
                                 >
-                                    {promo.gambar_url ? (
+                                    {(promo.gambar_url || promo.gambar) ? (
                                         <img
-                                            src={promo.gambar_url}
+                                            src={promo.gambar_url || promo.gambar || ''}
                                             alt={promo.judul}
                                             className="absolute inset-0 h-full w-full object-cover"
                                         />

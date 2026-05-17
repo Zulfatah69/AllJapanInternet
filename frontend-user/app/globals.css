@@ -4,13 +4,16 @@
 [data-theme="spring"] {
   --bg: #fffbfc;
   --bg-elevated: #ffffff;
-  --bg-muted: #fff0f4;
+  --bg-muted: #ffe8ef;
   --bg-contrast: #2a1520;
   --fg: #1a1218;
-  --fg-muted: #7a6570;
+  --fg-muted: #6b5560;
   --primary: #e8919f;
   --primary-strong: #c75b73;
   --accent: #ffc4d4;
+  --hero-overlay: color-mix(in srgb, #c75b73 22%, transparent);
+  --hero-tint: rgba(231, 145, 159, 0.18);
+  --page-wash: linear-gradient(180deg, color-mix(in srgb, #ffc4d4 12%, #fffbfc) 0%, #fffbfc 42%);
   --glow: rgba(231, 145, 159, 0.45);
   --glow-soft: rgba(255, 196, 212, 0.35);
   --border: rgba(231, 145, 159, 0.28);
@@ -31,13 +34,16 @@
 [data-theme="summer"] {
   --bg: #f4fdf7;
   --bg-elevated: #ffffff;
-  --bg-muted: #e8faf0;
+  --bg-muted: #dcfceb;
   --bg-contrast: #0a1f14;
   --fg: #0a1610;
-  --fg-muted: #3d5c4a;
+  --fg-muted: #2f4d3d;
   --primary: #10b981;
   --primary-strong: #059669;
   --accent: #6ee7b7;
+  --hero-overlay: color-mix(in srgb, #059669 24%, transparent);
+  --hero-tint: rgba(16, 185, 129, 0.2);
+  --page-wash: linear-gradient(180deg, color-mix(in srgb, #6ee7b7 14%, #f4fdf7) 0%, #f4fdf7 42%);
   --glow: rgba(16, 185, 129, 0.4);
   --glow-soft: rgba(110, 231, 183, 0.3);
   --border: rgba(16, 185, 129, 0.22);
@@ -58,13 +64,16 @@
 [data-theme="autumn"] {
   --bg: #faf6f1;
   --bg-elevated: #fffcf8;
-  --bg-muted: #f0e6da;
+  --bg-muted: #efe0d0;
   --bg-contrast: #1f1610;
   --fg: #1c1610;
-  --fg-muted: #6b5a48;
+  --fg-muted: #5c4a38;
   --primary: #b8956a;
   --primary-strong: #8b6b45;
   --accent: #e0c9a8;
+  --hero-overlay: color-mix(in srgb, #8b6b45 26%, transparent);
+  --hero-tint: rgba(184, 149, 106, 0.22);
+  --page-wash: linear-gradient(180deg, color-mix(in srgb, #e0c9a8 16%, #faf6f1) 0%, #faf6f1 42%);
   --glow: rgba(184, 149, 106, 0.4);
   --glow-soft: rgba(224, 201, 168, 0.35);
   --border: rgba(139, 107, 69, 0.22);
@@ -85,13 +94,16 @@
 [data-theme="winter"] {
   --bg: #f6f9ff;
   --bg-elevated: #ffffff;
-  --bg-muted: #e8f2ff;
+  --bg-muted: #dceaff;
   --bg-contrast: #0c1222;
   --fg: #0f172a;
-  --fg-muted: #4b5c73;
+  --fg-muted: #3d4f66;
   --primary: #3b82f6;
   --primary-strong: #1d4ed8;
   --accent: #93c5fd;
+  --hero-overlay: color-mix(in srgb, #1d4ed8 22%, transparent);
+  --hero-tint: rgba(59, 130, 246, 0.18);
+  --page-wash: linear-gradient(180deg, color-mix(in srgb, #93c5fd 14%, #f6f9ff) 0%, #f6f9ff 42%);
   --glow: rgba(59, 130, 246, 0.38);
   --glow-soft: rgba(147, 197, 253, 0.35);
   --border: rgba(59, 130, 246, 0.2);
@@ -111,6 +123,9 @@
 :root {
   --section-py: clamp(5rem, 10vw, 8.5rem);
   --container: min(1240px, calc(100% - 2.5rem));
+  --hero-overlay: color-mix(in srgb, var(--primary-strong) 20%, transparent);
+  --hero-tint: rgba(0, 0, 0, 0.1);
+  --page-wash: none;
 }
 
 @theme inline {
@@ -124,6 +139,7 @@ html {
 
 body {
   background: var(--bg);
+  background-image: var(--page-wash);
   color: var(--fg);
   font-family: var(--font-sans), var(--font-jp), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -147,7 +163,7 @@ body {
   background: var(--bg);
 }
 .section-bg-muted {
-  background: var(--bg-muted);
+  background: color-mix(in srgb, var(--primary) 4%, var(--bg-muted));
   background-image: var(--gradient-mesh);
 }
 .section-bg-contrast {
@@ -215,10 +231,30 @@ body {
 }
 
 .glass-nav {
-  background: var(--glass);
+  background: color-mix(in srgb, var(--glass) 92%, var(--bg-muted));
   backdrop-filter: blur(24px) saturate(1.5);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 4px 30px -10px color-mix(in srgb, var(--primary) 15%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+  box-shadow: 0 4px 30px -10px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.hero-badge {
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, white);
+  background: color-mix(in srgb, var(--primary) 18%, rgba(255, 255, 255, 0.12));
+  color: white;
+}
+
+.hero-ghost-btn {
+  border-color: color-mix(in srgb, var(--accent) 50%, white) !important;
+  background: color-mix(in srgb, var(--primary) 12%, rgba(255, 255, 255, 0.1)) !important;
+  color: white !important;
+}
+
+.hero-showcase-card {
+  box-shadow: var(--shadow-soft), 0 0 0 1px color-mix(in srgb, var(--primary) 25%, white);
+}
+
+.hero-highlight {
+  background: color-mix(in srgb, var(--primary) 14%, rgba(255, 255, 255, 0.08));
 }
 
 .glass-card {

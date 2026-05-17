@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { FiSearch } from 'react-icons/fi';
 
 import { staggerContainer, fadeUp } from '../../lib/motion';
 import { Container } from '../ui/Container';
@@ -24,7 +25,7 @@ export function ProductsSection({
     providers: any[];
     loading: boolean;
 }) {
-    const { copy } = useApp();
+    const { copy, locale } = useApp();
     const [selectedType, setSelectedType] = useState('all');
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedProvider, setSelectedProvider] = useState('all');
@@ -49,8 +50,7 @@ export function ProductsSection({
                 const matchProvider =
                     selectedProvider === 'all' || product.provider?.slug === selectedProvider;
                 const matchBilling =
-                    selectedBilling === 'all' ||
-                    product.billing_type === selectedBilling;
+                    selectedBilling === 'all' || product.billing_type === selectedBilling;
                 const q = search.trim().toLowerCase();
                 const matchSearch =
                     !q ||
@@ -83,6 +83,21 @@ export function ProductsSection({
         { id: 'yearly', label: copy.products.yearly },
     ];
 
+    const filterLabels =
+        locale === 'ja'
+            ? {
+                  type: 'プラン種別',
+                  billing: '請求',
+                  category: 'カテゴリ',
+                  provider: 'キャリア',
+              }
+            : {
+                  type: 'Plan type',
+                  billing: 'Billing',
+                  category: 'Category',
+                  provider: 'Carrier',
+              };
+
     return (
         <SectionShell id="products" variant="default">
             <Container>
@@ -91,30 +106,80 @@ export function ProductsSection({
                     subtitle={copy.products.subtitle}
                     eyebrow="Catalog"
                 />
-                <div className="mb-8">
-                    <input
-                        type="search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder={copy.search.placeholder}
-                        className="w-full max-w-md rounded-2xl border bg-[var(--bg-elevated)] px-5 py-3 outline-none transition-colors focus:border-[var(--primary)]"
+
+                <div className="premium-card mb-12 overflow-hidden rounded-[1.75rem]">
+                    <div
+                        className="border-b px-6 py-5 md:px-8"
                         style={{ borderColor: 'var(--border)' }}
-                    />
+                    >
+                        <div className="relative mx-auto max-w-xl">
+                            <FiSearch
+                                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2"
+                                style={{ color: 'var(--fg-muted)' }}
+                                size={18}
+                            />
+                            <input
+                                type="search"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder={copy.search.placeholder}
+                                className="w-full rounded-2xl border bg-[var(--bg-elevated)] py-3.5 pl-11 pr-4 text-sm outline-none transition-colors focus:border-[var(--primary)] md:text-base"
+                                style={{ borderColor: 'var(--border)' }}
+                            />
+                        </div>
+                    </div>
+                    <div className="px-6 py-8 md:px-8">
+                        <ProductFilters
+                            typeChips={typeChips}
+                            categoryChips={categoryChips}
+                            providerChips={providerChips}
+                            billingChips={billingChips}
+                            selectedType={selectedType}
+                            selectedCategory={selectedCategory}
+                            selectedProvider={selectedProvider}
+                            selectedBilling={selectedBilling}
+                            onType={setSelectedType}
+                            onCategory={setSelectedCategory}
+                            onProvider={setSelectedProvider}
+                            onBilling={setSelectedBilling}
+                            labels={filterLabels}
+                        />
+                    </div>
+                    {!loading && (
+                        <div
+                            className="flex items-center justify-between border-t px-6 py-4 text-sm md:px-8"
+                            style={{
+                                borderColor: 'var(--border)',
+                                color: 'var(--fg-muted)',
+                            }}
+                        >
+                            <span>
+                                {filtered.length}{' '}
+                                {locale === 'ja' ? '件のプラン' : 'plans'}
+                            </span>
+                            {(selectedType !== 'all' ||
+                                selectedCategory !== 'all' ||
+                                selectedProvider !== 'all' ||
+                                selectedBilling !== 'all' ||
+                                search) && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSelectedType('all');
+                                        setSelectedCategory('all');
+                                        setSelectedProvider('all');
+                                        setSelectedBilling('all');
+                                        setSearch('');
+                                    }}
+                                    className="font-medium text-[var(--primary-strong)] hover:underline"
+                                >
+                                    {locale === 'ja' ? 'フィルターをクリア' : 'Clear filters'}
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
-                <ProductFilters
-                    typeChips={typeChips}
-                    categoryChips={categoryChips}
-                    providerChips={providerChips}
-                    billingChips={billingChips}
-                    selectedType={selectedType}
-                    selectedCategory={selectedCategory}
-                    selectedProvider={selectedProvider}
-                    selectedBilling={selectedBilling}
-                    onType={setSelectedType}
-                    onCategory={setSelectedCategory}
-                    onProvider={setSelectedProvider}
-                    onBilling={setSelectedBilling}
-                />
+
                 {loading ? (
                     <ProductGridSkeleton />
                 ) : filtered.length === 0 ? (
@@ -125,10 +190,15 @@ export function ProductsSection({
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
-                        className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"
+                        className="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
                     >
                         {filtered.map((product, i) => (
-                            <motion.div key={product.id} variants={fadeUp} custom={i}>
+                            <motion.div
+                                key={product.id}
+                                variants={fadeUp}
+                                custom={i}
+                                className="h-full"
+                            >
                                 <ProductCard
                                     product={product}
                                     index={i}

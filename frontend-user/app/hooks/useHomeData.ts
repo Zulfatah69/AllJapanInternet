@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import api, { asArray } from '../lib/api';
+import { resolveMediaUrl } from '../lib/media';
 import { getHomeData } from '../services/home.service';
 import { getSettings } from '../services/settings.service';
 import type { Category, Product, Promo, Settings, Testimonial } from '../types/api';
@@ -40,7 +41,13 @@ export function useHomeData() {
                     ? home.categories
                     : asArray<Category>(categoriesRes.data),
             );
-            setTestimonials(asArray<Testimonial>(testimonialsRes.data));
+            setTestimonials(
+                asArray<Testimonial>(testimonialsRes.data).map((t) => ({
+                    ...t,
+                    image_url:
+                        resolveMediaUrl(t.image_url) ?? resolveMediaUrl(t.image) ?? t.image_url,
+                })),
+            );
             setProviders(asArray<Provider>(providersRes.data));
             setSettings(settingsData);
         } catch (error) {

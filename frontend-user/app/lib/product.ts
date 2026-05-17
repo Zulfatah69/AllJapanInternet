@@ -1,3 +1,4 @@
+import { resolveMediaUrl } from './media';
 import type { Product } from '../types/api';
 
 export function isBestSeller(product: Product): boolean {
@@ -5,17 +6,38 @@ export function isBestSeller(product: Product): boolean {
 }
 
 export function productImage(product: Product): string | undefined {
-    return product.thumbnail_url ?? undefined;
+    return (
+        resolveMediaUrl(product.thumbnail_url) ??
+        resolveMediaUrl(product.thumbnail)
+    );
+}
+
+function computeLowestPrice(product: Product): number | null {
+    if (product.lowest_price != null && Number(product.lowest_price) > 0) {
+        return Number(product.lowest_price);
+    }
+
+    const prices: number[] = [];
+    for (const variant of product.variants ?? []) {
+        const monthly = Number(variant.monthly_price);
+        if (monthly > 0) prices.push(monthly);
+        for (const period of variant.billing_periods ?? []) {
+            const initial = Number(period.initial_price);
+            if (initial > 0) prices.push(initial);
+        }
+        for (const price of variant.prices ?? []) {
+            const harga = Number((price as { harga?: number }).harga);
+            if (harga > 0) prices.push(harga);
+        }
+    }
+
+    return prices.length ? Math.min(...prices) : null;
 }
 
 export function normalizeProduct(raw: Record<string, unknown>): Product {
-    const p = raw as Product;
-    if (!p.thumbnail_url && p.thumbnail) {
-        const thumb = String(p.thumbnail);
-        if (thumb.startsWith('http')) {
-            p.thumbnail_url = thumb;
-        }
-    }
+    const p = { ...(raw as Product) };
+    p.thumbnail_url = productImage(p);
+    p.lowest_price = computeLowestPrice(p);
     return p;
 }
 

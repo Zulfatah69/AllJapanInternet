@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 
 import { getProduct } from '../../services/product.service';
 import { getSettings } from '../../services/settings.service';
+import { productImage } from '../../lib/product';
 import { formatYen, cn } from '../../lib/utils';
 import { Container } from '../../components/ui/Container';
 import { Skeleton } from '../../components/ui/Skeleton';
@@ -50,7 +51,7 @@ export default function ProductDetail({
                 ]);
                 setProduct(productData);
                 setSettings(settingsData);
-                setActiveImage(productData.thumbnail_url ?? undefined);
+                setActiveImage(productImage(productData));
 
                 if (productData.variants?.length) {
                     const first = productData.variants[0];

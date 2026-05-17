@@ -49,7 +49,7 @@ export default function HomePage() {
         <>
             <AmbientBackground />
             <WhatsAppFab />
-            <HeroSection promos={promos} products={products} />
+            <HeroSection promos={promos} planCount={products.length} />
             <PromoSliderSection promos={promos} />
             <BestSellerSection products={bestSellers} loading={loading} />
             <CategoriesSection categories={categories} />

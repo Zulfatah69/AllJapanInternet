@@ -5,6 +5,7 @@ import { Autoplay, EffectCoverflow, Pagination } from 'swiper/modules';
 import { motion } from 'framer-motion';
 import { FiStar } from 'react-icons/fi';
 
+import { resolveMediaUrl } from '../../lib/media';
 import type { Testimonial } from '../../types/api';
 import { Container } from '../ui/Container';
 import { EmptyState } from '../ui/EmptyState';
@@ -72,22 +73,34 @@ export function TestimonialsSection({ testimonials }: { testimonials: Testimonia
                             loop={testimonials.length > 2}
                             className="testimonial-swiper pb-14"
                         >
-                            {testimonials.map((item) => (
-                                <SwiperSlide key={item.id}>
-                                    <motion.div
-                                        whileHover={{ y: -6 }}
-                                        transition={{ duration: 0.35 }}
-                                        className="premium-card overflow-hidden rounded-[2rem] p-2 md:p-3"
-                                    >
-                                        <img
-                                            src={item.image_url}
-                                            alt="Customer testimonial"
-                                            className="w-full rounded-[1.5rem] object-cover shadow-inner"
-                                            loading="lazy"
-                                        />
-                                    </motion.div>
-                                </SwiperSlide>
-                            ))}
+                            {testimonials.map((item) => {
+                                const src =
+                                    resolveMediaUrl(item.image_url) ??
+                                    resolveMediaUrl(item.image);
+                                return (
+                                    <SwiperSlide key={item.id}>
+                                        <motion.div
+                                            whileHover={{ y: -6 }}
+                                            transition={{ duration: 0.35 }}
+                                            className="premium-card overflow-hidden rounded-[2rem] p-2 md:p-3"
+                                        >
+                                            {src ? (
+                                                <img
+                                                    src={src}
+                                                    alt="Customer testimonial"
+                                                    className="w-full rounded-[1.5rem] object-cover shadow-inner"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="flex min-h-[200px] w-full items-center justify-center rounded-[1.5rem]"
+                                                    style={{ background: 'var(--gradient-mesh)' }}
+                                                />
+                                            )}
+                                        </motion.div>
+                                    </SwiperSlide>
+                                );
+                            })}
                         </Swiper>
                     </>
                 )}

@@ -11,24 +11,45 @@ import {
 } from 'react';
 
 import { Locale, t } from '../lib/i18n';
-import { applyTheme, resolveThemeKey, type ThemeKey } from '../lib/theme';
+import { getSettings } from '../services/settings.service';
+import { applyTheme, themeFromSettings, type ThemeKey } from '../lib/theme';
+import type { Settings } from '../types/api';
 
 type AppContextValue = {
     locale: Locale;
     setLocale: (locale: Locale) => void;
-    themeKey: ThemeKey;
-    setThemeKey: (theme: ThemeKey) => void;
-    settings: any;
-    setSettings: (settings: any) => void;
+    /** Current theme from backend settings (read-only) */
+    theme: ThemeKey;
+    settings: Settings | null;
+    setSettings: (settings: Settings | null) => void;
     copy: ReturnType<typeof t>;
+    settingsLoading: boolean;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
 
-export function AppProvider({ children }: { children: ReactNode }) {
+function syncThemeFromSettings(settings: Settings | null) {
+    const theme = themeFromSettings(settings);
+    applyTheme(theme);
+    return theme;
+}
+
+export function AppProvider({
+    children,
+    initialSettings = null,
+}: {
+    children: ReactNode;
+    initialSettings?: Settings | null;
+}) {
     const [locale, setLocaleState] = useState<Locale>('en');
-    const [themeKey, setThemeKeyState] = useState<ThemeKey>('spring');
-    const [settings, setSettings] = useState<any>(null);
+    const [settings, setSettingsState] = useState<Settings | null>(initialSettings);
+    const [theme, setTheme] = useState<ThemeKey>(() => themeFromSettings(initialSettings));
+    const [settingsLoading, setSettingsLoading] = useState(!initialSettings);
+
+    const setSettings = useCallback((next: Settings | null) => {
+        setSettingsState(next);
+        setTheme(syncThemeFromSettings(next));
+    }, []);
 
     const setLocale = useCallback((next: Locale) => {
         setLocaleState(next);
@@ -38,36 +59,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    const setThemeKey = useCallback((next: ThemeKey) => {
-        setThemeKeyState(next);
-        applyTheme(next);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('aji-theme-override', next);
-        }
-    }, []);
-
     useEffect(() => {
+        localStorage.removeItem('aji-theme-override');
+
         const savedLocale = localStorage.getItem('aji-locale') as Locale | null;
         if (savedLocale === 'en' || savedLocale === 'ja') {
             setLocaleState(savedLocale);
             document.documentElement.lang = savedLocale;
         }
-        const savedTheme = localStorage.getItem('aji-theme-override') as ThemeKey | null;
-        if (savedTheme) {
-            setThemeKeyState(savedTheme);
-            applyTheme(savedTheme);
+
+        if (initialSettings) {
+            syncThemeFromSettings(initialSettings);
         }
-    }, []);
+    }, [initialSettings]);
 
     useEffect(() => {
-        if (settings?.theme) {
-            const fromApi = resolveThemeKey(settings.theme);
-            const override = localStorage.getItem('aji-theme-override') as ThemeKey | null;
-            const active = override ?? fromApi;
-            setThemeKeyState(active);
-            applyTheme(active);
+        let cancelled = false;
+
+        async function load() {
+            setSettingsLoading(true);
+            try {
+                const data = await getSettings();
+                if (!cancelled && data) {
+                    setSettings(data);
+                }
+            } catch (e) {
+                console.error('Failed to load settings', e);
+            } finally {
+                if (!cancelled) setSettingsLoading(false);
+            }
         }
-    }, [settings?.theme]);
+
+        load();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [setSettings]);
 
     const copy = useMemo(() => t(locale), [locale]);
 
@@ -75,13 +103,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         () => ({
             locale,
             setLocale,
-            themeKey,
-            setThemeKey,
+            theme,
             settings,
             setSettings,
             copy,
+            settingsLoading,
         }),
-        [locale, setLocale, themeKey, setThemeKey, settings, copy],
+        [locale, setLocale, theme, settings, setSettings, copy, settingsLoading],
     );
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

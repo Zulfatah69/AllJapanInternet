@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FiArrowUpRight } from 'react-icons/fi';
 
-import { isBestSeller } from '../../lib/product';
+import { isBestSeller, productImage } from '../../lib/product';
 import { formatYen } from '../../lib/utils';
 import { easeLuxury } from '../../lib/motion';
 
@@ -17,6 +17,8 @@ export function ProductCard({
     labels: { bestSeller: string; viewDetails: string };
     index?: number;
 }) {
+    const imageSrc = productImage(product);
+
     return (
         <motion.article
             initial={{ opacity: 0, y: 32 }}
@@ -24,7 +26,7 @@ export function ProductCard({
             viewport={{ once: true, margin: '-40px' }}
             transition={{ delay: index * 0.07, duration: 0.6, ease: easeLuxury }}
             whileHover={{ y: -10 }}
-            className="group relative"
+            className="group relative h-full"
         >
             <div
                 className="pointer-events-none absolute -inset-px rounded-[1.75rem] opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"
@@ -32,13 +34,13 @@ export function ProductCard({
             />
             <Link
                 href={`/products/${product.slug}`}
-                className="premium-card relative block overflow-hidden rounded-[1.65rem]"
+                className="premium-card relative flex h-full flex-col overflow-hidden rounded-[1.65rem]"
             >
                 <div className="relative aspect-[4/3] overflow-hidden">
-                    {product.thumbnail_url ? (
+                    {imageSrc ? (
                         <>
                             <img
-                                src={product.thumbnail_url}
+                                src={imageSrc}
                                 alt={product.nama}
                                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
@@ -67,17 +69,19 @@ export function ProductCard({
                     )}
                 </div>
 
-                <div className="relative p-6 md:p-7">
+                <div className="relative flex flex-1 flex-col p-6 md:p-7">
                     <p className="eyebrow mb-2 !text-[var(--fg-muted)]">{product.category?.nama}</p>
                     <h3 className="mb-2 text-xl font-semibold tracking-tight transition-colors group-hover:text-[var(--primary-strong)] md:text-2xl">
                         {product.nama}
                     </h3>
 
-                    <div className="flex items-end justify-between gap-4 border-t border-[var(--border)] pt-5">
+                    <div className="mt-auto flex items-end justify-between gap-4 border-t border-[var(--border)] pt-5">
                         <div>
                             <p className="text-xs uppercase tracking-wider text-[var(--fg-muted)]">from</p>
                             <p className="text-2xl font-bold tracking-tight md:text-3xl">
-                                {formatYen(product.lowest_price)}
+                                {product.lowest_price && Number(product.lowest_price) > 0
+                                    ? formatYen(product.lowest_price)
+                                    : '—'}
                             </p>
                         </div>
                         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] transition-all duration-300 group-hover:border-transparent group-hover:bg-[var(--gradient-accent)] group-hover:text-white">
