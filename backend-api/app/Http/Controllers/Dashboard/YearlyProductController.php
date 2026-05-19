@@ -7,13 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Provider;
-use App\Models\YearlyActivePeriod;
+use App\Models\ProductVariant;
+use App\Models\BillingPeriod;
 use App\Models\ProductPaymentMethod;
-use App\Models\YearlyProductVariant;
+
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Str;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,7 +26,7 @@ class YearlyProductController extends Controller
 
             'provider',
 
-            'yearlyVariants.activePeriods',
+            'variants.billingPeriods',
 
         ])
         ->where(
@@ -125,7 +124,7 @@ class YearlyProductController extends Controller
                 ) {
 
                     $variant =
-                        YearlyProductVariant::create([
+                        ProductVariant::create([
 
                         'product_id'
                             => $product->id,
@@ -133,46 +132,41 @@ class YearlyProductController extends Controller
                         'nama'
                             => $variantData['nama'],
 
+                        'gb'
+                            => $variantData['nama'],
+
+                        'monthly_price'
+                            => 0,
+
                         'is_active'
                             => true,
 
                     ]);
 
-                    $periods = [
-
-                        '13 BULAN',
-                        '12 BULAN',
-                        '9 BULAN',
-                        '6 BULAN',
-                        '3 BULAN',
-
-                    ];
-
-                    foreach (
-                        $periods
-                        as $period
+                    if (
+                        isset(
+                            $variantData['periods']
+                        )
                     ) {
 
-                        if (
-                            isset(
-                                $variantData[
-                                    'periods'
-                                ][$period]
-                            )
+                        foreach (
+                            $variantData['periods']
+                            as $periodName => $price
                         ) {
 
-                            YearlyActivePeriod::create([
+                            BillingPeriod::create([
 
-                                'yearly_product_variant_id'
+                                'product_variant_id'
                                     => $variant->id,
 
                                 'nama'
-                                    => $period,
+                                    => $periodName,
 
-                                'harga'
-                                    => $variantData[
-                                        'periods'
-                                    ][$period],
+                                'initial_price'
+                                    => $price,
+
+                                'is_active'
+                                    => true,
 
                             ]);
                         }
@@ -228,7 +222,7 @@ class YearlyProductController extends Controller
     {
         $product = $yearly_product->load([
 
-            'yearlyVariants.activePeriods',
+            'variants.billingPeriods',
 
             'paymentMethods',
 
@@ -325,7 +319,7 @@ class YearlyProductController extends Controller
                     ) {
 
                         $variant =
-                            YearlyProductVariant::find(
+                            ProductVariant::find(
                                 $variantData['id']
                             );
 
@@ -338,12 +332,15 @@ class YearlyProductController extends Controller
                             'nama'
                                 => $variantData['nama'],
 
+                            'gb'
+                                => $variantData['nama'],
+
                         ]);
 
                     } else {
 
                         $variant =
-                            YearlyProductVariant::create([
+                            ProductVariant::create([
 
                             'product_id'
                                 => $yearly_product->id,
@@ -351,65 +348,68 @@ class YearlyProductController extends Controller
                             'nama'
                                 => $variantData['nama'],
 
+                            'gb'
+                                => $variantData['nama'],
+
+                            'monthly_price'
+                                => 0,
+
                             'is_active'
                                 => true,
 
                         ]);
+                    }
 
-                        $periods = [
-
-                            '13 BULAN',
-                            '12 BULAN',
-                            '9 BULAN',
-                            '6 BULAN',
-                            '3 BULAN',
-
-                        ];
+                    if (
+                        isset(
+                            $variantData['periods']
+                        )
+                    ) {
 
                         foreach (
-                            $periods
-                            as $period
+                            $variantData['periods']
+                            as $periodName => $price
                         ) {
 
-                            if (
-                                isset(
-                                    $variantData[
-                                        'periods'
-                                    ][$period]
+                            $billing =
+                                BillingPeriod::where(
+                                    'product_variant_id',
+                                    $variant->id
                                 )
-                            ) {
+                                ->where(
+                                    'nama',
+                                    $periodName
+                                )
+                                ->first();
 
-                                YearlyActivePeriod::create([
+                            if ($billing) {
 
-                                    'yearly_product_variant_id'
+                                $billing->update([
+
+                                    'initial_price'
+                                        => $price,
+
+                                ]);
+
+                            } else {
+
+                                BillingPeriod::create([
+
+                                    'product_variant_id'
                                         => $variant->id,
 
                                     'nama'
-                                        => $period,
+                                        => $periodName,
 
-                                    'harga'
-                                        => $variantData[
-                                            'periods'
-                                        ][$period],
+                                    'initial_price'
+                                        => $price,
+
+                                    'is_active'
+                                        => true,
 
                                 ]);
                             }
                         }
-                    }
-
-                    foreach (
-                        $variant->activePeriods
-                        as $period
-                    ) {
-
-                        $period->update([
-
-                            'harga'
-                                => $variantData[
-                                    'periods'
-                                ][$period->nama] ?? 0,
-
-                        ]);
                     }
                 }
             }
@@ -460,13 +460,14 @@ class YearlyProductController extends Controller
             dd($e->getMessage());
         }
     }
+
     public function deleteImage($id)
     {
-        $product = \App\Models\Product::findOrFail($id);
+        $product = Product::findOrFail($id);
 
         if ($product->thumbnail) {
 
-            \Illuminate\Support\Facades\Storage::disk('public')
+            Storage::disk('public')
                 ->delete(
                     $product->thumbnail
                 );
@@ -481,6 +482,7 @@ class YearlyProductController extends Controller
             'Image deleted successfully.'
         );
     }
+
     public function destroy(
         Product $yearly_product
     ) {

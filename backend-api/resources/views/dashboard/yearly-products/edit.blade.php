@@ -316,7 +316,7 @@
                     >
 
                         @foreach(
-                            $product->yearlyVariants
+                            $product->variants
                             as $index => $variant
                         )
 
@@ -372,7 +372,7 @@
                                 >
 
                                     @foreach(
-                                        $variant->activePeriods
+                                        $variant->billingPeriods ?? []
                                         as $period
                                     )
 
@@ -392,7 +392,7 @@
                                             <input
                                                 type="number"
                                                 name="variants[{{ $index }}][periods][{{ $period->nama }}]"
-                                                value="{{ $period->harga }}"
+                                                value="{{ $period->initial_price }}"
                                                 class="
                                                     w-full
                                                     border
@@ -507,7 +507,7 @@
 <script>
 
     let variantIndex =
-        {{ count($product->yearlyVariants) }};
+        {{ count($product->variants) }};
 
     function addVariant() {
 

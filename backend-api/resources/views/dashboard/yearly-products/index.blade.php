@@ -147,7 +147,7 @@
                         <div class="space-y-3">
 
                             @foreach(
-                                $product->yearlyVariants
+                                $product->variants
                                 as $variant
                             )
 
