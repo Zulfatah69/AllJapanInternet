@@ -670,7 +670,7 @@
                     <div>
 
                         <label class="block mb-2 text-sm font-semibold">
-                            1-10
+                           Tanggal 1-10
                         </label>
 
                         <input
@@ -690,7 +690,7 @@
                     <div>
 
                         <label class="block mb-2 text-sm font-semibold">
-                            11-19
+                            Tanggal 11-19
                         </label>
 
                         <input
@@ -710,7 +710,7 @@
                     <div>
 
                         <label class="block mb-2 text-sm font-semibold">
-                            20-31
+                           Tanggal 20-31
                         </label>
 
                         <input

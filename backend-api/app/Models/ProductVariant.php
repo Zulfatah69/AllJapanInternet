@@ -10,6 +10,8 @@ class ProductVariant extends Model
 
         'product_id',
 
+        'nama',
+
         'gb',
 
         'cycle_type',

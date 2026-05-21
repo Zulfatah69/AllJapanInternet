@@ -123,30 +123,56 @@ class YearlyProductController extends Controller
                     as $variantData
                 ) {
 
-                    $variant =
-                        ProductVariant::create([
-
-                        'product_id'
-                            => $product->id,
-
-                        'nama'
-                            => $variantData['nama'],
-
-                        'gb'
-                            => $variantData['nama'],
-
-                        'monthly_price'
-                            => 0,
-
-                        'is_active'
-                            => true,
-
-                    ]);
+                    $variant = null;
 
                     if (
-                        isset(
-                            $variantData['periods']
-                        )
+                        isset($variantData['id'])
+                    ) {
+
+                        $variant =
+                            ProductVariant::find(
+                                $variantData['id']
+                            );
+
+                        if ($variant) {
+
+                            $variant->update([
+
+                                'nama'
+                                    => $variantData['nama'] ?? 'Variant',
+
+                                'gb'
+                                    => $variantData['nama'] ?? 'Variant',
+
+                            ]);
+                        }
+
+                    } else {
+
+                        $variant =
+                            ProductVariant::create([
+
+                            'product_id'
+                                => $product->id,
+
+                            'nama'
+                                => $variantData['nama'] ?? 'Variant',
+
+                            'gb'
+                                => $variantData['nama'] ?? 'Variant',
+
+                            'monthly_price'
+                                => 0,
+
+                            'is_active'
+                                => true,
+
+                        ]);
+                    }
+
+                    if (
+                        $variant &&
+                        isset($variantData['periods'])
                     ) {
 
                         foreach (
@@ -154,21 +180,44 @@ class YearlyProductController extends Controller
                             as $periodName => $price
                         ) {
 
-                            BillingPeriod::create([
+                            $billing =
+                                BillingPeriod::where(
+                                    'product_variant_id',
+                                    $variant->id
+                                )
+                                ->where(
+                                    'nama',
+                                    $periodName
+                                )
+                                ->first();
 
-                                'product_variant_id'
-                                    => $variant->id,
+                            if ($billing) {
 
-                                'nama'
-                                    => $periodName,
+                                $billing->update([
 
-                                'initial_price'
-                                    => $price,
+                                    'initial_price'
+                                        => $price ?? 0,
 
-                                'is_active'
-                                    => true,
+                                ]);
 
-                            ]);
+                            } else {
+
+                                BillingPeriod::create([
+
+                                    'product_variant_id'
+                                        => $variant->id,
+
+                                    'nama'
+                                        => $periodName,
+
+                                    'initial_price'
+                                        => $price ?? 0,
+
+                                    'is_active'
+                                        => true,
+
+                                ]);
+                            }
                         }
                     }
                 }
@@ -315,6 +364,15 @@ class YearlyProductController extends Controller
                 ) {
 
                     if (
+                        !isset($variantData['nama']) ||
+                        $variantData['nama'] === ''
+                    ) {
+                        continue;
+                    }
+
+                    $variant = null;
+
+                    if (
                         isset($variantData['id'])
                     ) {
 
@@ -323,19 +381,18 @@ class YearlyProductController extends Controller
                                 $variantData['id']
                             );
 
-                        if (!$variant) {
-                            continue;
+                        if ($variant) {
+
+                            $variant->update([
+
+                                'nama'
+                                    => $variantData['nama'] ?? 'Variant',
+
+                                'gb'
+                                    => $variantData['nama'] ?? 'Variant',
+
+                            ]);
                         }
-
-                        $variant->update([
-
-                            'nama'
-                                => $variantData['nama'],
-
-                            'gb'
-                                => $variantData['nama'],
-
-                        ]);
 
                     } else {
 
@@ -346,10 +403,10 @@ class YearlyProductController extends Controller
                                 => $yearly_product->id,
 
                             'nama'
-                                => $variantData['nama'],
+                                => $variantData['nama'] ?? 'Variant',
 
                             'gb'
-                                => $variantData['nama'],
+                                => $variantData['nama'] ?? 'Variant',
 
                             'monthly_price'
                                 => 0,
@@ -361,15 +418,21 @@ class YearlyProductController extends Controller
                     }
 
                     if (
-                        isset(
-                            $variantData['periods']
-                        )
+                        $variant &&
+                        isset($variantData['periods'])
                     ) {
 
                         foreach (
                             $variantData['periods']
                             as $periodName => $price
                         ) {
+
+                            if (
+                                $price === null ||
+                                $price === ''
+                            ) {
+                                continue;
+                            }
 
                             $billing =
                                 BillingPeriod::where(
@@ -387,7 +450,7 @@ class YearlyProductController extends Controller
                                 $billing->update([
 
                                     'initial_price'
-                                        => $price,
+                                        => (int) $price,
 
                                 ]);
 
@@ -402,7 +465,7 @@ class YearlyProductController extends Controller
                                         => $periodName,
 
                                     'initial_price'
-                                        => $price,
+                                        => (int) $price,
 
                                     'is_active'
                                         => true,
@@ -440,6 +503,26 @@ class YearlyProductController extends Controller
                                 => $paymentData[
                                     'additional_price'
                                 ] ?? 0,
+
+                        ]);
+
+                    } else {
+
+                        ProductPaymentMethod::create([
+
+                            'product_id'
+                                => $yearly_product->id,
+
+                            'nama'
+                                => $paymentData['nama'],
+
+                            'additional_price'
+                                => $paymentData[
+                                    'additional_price'
+                                ] ?? 0,
+
+                            'is_active'
+                                => true,
 
                         ]);
                     }

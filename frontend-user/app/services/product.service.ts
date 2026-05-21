@@ -7,7 +7,8 @@ export async function getProducts() {
             '/products'
         );
 
-    return response.data;
+    const data = response.data;
+    return Array.isArray(data) ? data : data?.data ?? [];
 }
 
 export async function getProduct(

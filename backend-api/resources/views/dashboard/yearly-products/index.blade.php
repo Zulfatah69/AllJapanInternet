@@ -146,10 +146,7 @@
 
                         <div class="space-y-3">
 
-                            @foreach(
-                                $product->variants
-                                as $variant
-                            )
+                            @foreach($product->variants ?? [] as $variant)
 
                                 <div
                                     class="
@@ -176,10 +173,7 @@
                                         "
                                     >
 
-                                        @foreach(
-                                            $variant->activePeriods
-                                            as $period
-                                        )
+                                        @foreach($variant->billingPeriods ?? [] as $period)
 
                                             <span
                                                 class="

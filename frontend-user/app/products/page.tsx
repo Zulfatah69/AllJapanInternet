@@ -10,8 +10,12 @@ import {
 import {
   getProducts
 } from "../services/api";
+import { formatLowestPrice } from "../lib/productPrice";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function ProductsPage() {
+
+  const { language } = useLanguage();
 
   const [products,
     setProducts] =
@@ -404,7 +408,7 @@ export default function ProductsPage() {
                           text-red-500
                         "
                       >
-                        ¥ {product.lowest_price}
+                        {formatLowestPrice(product, language)}
                       </p>
 
                     </div>

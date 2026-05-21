@@ -1,800 +1,430 @@
 'use client';
 
-import {
-    useEffect,
-    useState,
-} from 'react';
-
+import { useEffect, useState } from 'react';
 import api from './lib/api';
-
-import { getProducts }
-from './services/product.service';
-
-import { themes }
-from './lib/theme';
+import { getProducts } from './services/product.service';
+import { useLanguage } from './context/LanguageContext';
+import { formatLowestPrice } from './lib/productPrice';
+import BenefitsSection from './components/BenefitsSection';
+import HowToSection from './components/HowToSection';
+import SectionHeader from './components/SectionHeader';
+import {
+    FaWhatsapp,
+    FaTruck,
+    FaBook,
+    FaShippingFast,
+    FaBoxOpen,
+} from 'react-icons/fa';
 
 export default function HomePage() {
+    const { language, t } = useLanguage();
 
-    const [products, setProducts] =
-        useState<any[]>([]);
+    const [products, setProducts] = useState<any[]>([]);
+    const [promos, setPromos] = useState<any[]>([]);
+    const [currentPromo, setCurrentPromo] = useState(0);
+    const [testimonials, setTestimonials] = useState<any[]>([]);
 
-    const [setting, setSetting] =
-        useState<any>(null);
-
-    const [promos, setPromos] =
-        useState<any[]>([]);
-
-    const [
-        currentPromo,
-        setCurrentPromo
-    ] = useState(0);
-
-    const [
-        testimonials,
-        setTestimonials
-    ] = useState<any[]>([]);
-
-    const [categories, setCategories] =
-        useState<any[]>([]);
-
-    const [
-        selectedCategory,
-        setSelectedCategory
-    ] = useState('all');
-
-    const [
-        selectedType,
-        setSelectedType
-    ] = useState('all');
-    const [providers, setProviders] =
-        useState<any[]>([]);
-
-    const [
-        selectedProvider,
-        setSelectedProvider
-    ] = useState('all');
     useEffect(() => {
-
         loadProducts();
-
         loadPromos();
-
         loadTestimonials();
-
-        loadSettings();
-
-        loadCategories();
-
-        loadProviders();
-
     }, []);
 
     useEffect(() => {
-
-        if (promos.length === 0) {
-            return;
-        }
-
+        if (promos.length === 0) return;
         const interval = setInterval(() => {
-
             setCurrentPromo((prev) =>
-
-                prev === promos.length - 1
-                    ? 0
-                    : prev + 1
+                prev === promos.length - 1 ? 0 : prev + 1
             );
-
         }, 5000);
-
         return () => clearInterval(interval);
-
     }, [promos]);
 
     async function loadProducts() {
-
         try {
-
-            const data =
-                await getProducts();
-
+            const data = await getProducts();
             setProducts(data);
-
-        } catch (error) {
-
-            console.log(error);
-
+        } catch {
+            setProducts([]);
         }
     }
 
     async function loadPromos() {
-
         try {
-
-            const response =
-                await api.get(
-                    '/promos'
-                );
-
+            const response = await api.get('/promos');
             setPromos(
-                response.data
+                Array.isArray(response.data)
+                    ? response.data
+                    : response.data?.data || []
             );
-
-        } catch (error) {
-
-            console.log(error);
-
+        } catch {
+            setPromos([]);
         }
     }
 
     async function loadTestimonials() {
-
         try {
-
-            const response =
-                await api.get(
-                    '/testimonials'
-                );
-
+            const response = await api.get('/testimonials');
             setTestimonials(
-                response.data
+                Array.isArray(response.data)
+                    ? response.data
+                    : response.data?.data || []
             );
-
-        } catch (error) {
-
-            console.log(error);
-
+        } catch {
+            setTestimonials([]);
         }
     }
-
-    async function loadSettings() {
-
-        try {
-
-            const response =
-                await api.get(
-                    '/settings'
-                );
-
-            setSetting(
-                response.data
-            );
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-    }
-
-    async function loadCategories() {
-
-        try {
-
-            const response =
-                await api.get(
-                    '/categories'
-                );
-
-            setCategories(
-                response.data
-            );
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-    }
-    async function loadProviders() {
-
-        try {
-
-            const response =
-                await api.get(
-                    '/providers'
-                );
-
-            setProviders(
-                response.data
-            );
-
-        } catch (error) {
-
-            console.log(error);
-
-        }
-    }
-    const activeTheme =
-
-        themes[
-            setting?.theme || 'spring'
-        ];
-
-    const filteredProducts =
-
-        products.filter((product) => {
-
-            const matchCategory =
-
-                selectedCategory === 'all'
-
-                ||
-
-                product.category?.slug ===
-                selectedCategory;
-
-            const matchType =
-
-                selectedType === 'all'
-
-                ||
-
-                product.type ===
-                selectedType;
-
-            const matchProvider =
-
-                selectedProvider === 'all'
-
-                ||
-
-                product.provider?.slug ===
-                selectedProvider;
-
-            return (
-                matchCategory &&
-                matchType &&
-                matchProvider
-            );
-        });
 
     return (
-
-        <main
-            className={
-                activeTheme.background
-            }
-        >
-
-            {/* HERO PROMO */}
-
+        <div className="overflow-x-hidden">
+            {/* HERO */}
             {promos.length > 0 && (
-
-                <section
-                    className="
-                        relative
-                        h-screen
-                        overflow-hidden
-                    "
-                >
-
+                <section className="relative -mt-20 md:-mt-28 min-h-screen overflow-hidden">
                     <img
-                        src={
-                            promos[currentPromo]
-                                .gambar_url
-                        }
-                        className="
-                            absolute
-                            inset-0
-                            w-full
-                            h-full
-                            object-cover
-                        "
+                        src={promos[currentPromo]?.gambar_url}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
-
-                    <div
-                        className="
-                            absolute
-                            inset-0
-                            bg-black/50
-                        "
-                    />
-
-                    {/* LEFT BUTTON */}
-
-                    <button
-                        onClick={() =>
-
-                            setCurrentPromo(
-
-                                currentPromo === 0
-                                    ? promos.length - 1
-                                    : currentPromo - 1
-                            )
-
-                        }
-                        className="
-                            absolute
-                            left-5
-                            top-1/2
-                            -translate-y-1/2
-                            z-20
-                            bg-white/20
-                            backdrop-blur
-                            text-white
-                            w-14
-                            h-14
-                            rounded-full
-                            text-3xl
-                        "
-                    >
-                        ←
-                    </button>
-
-                    {/* RIGHT BUTTON */}
-
-                    <button
-                        onClick={() =>
-
-                            setCurrentPromo(
-
-                                currentPromo === promos.length - 1
-                                    ? 0
-                                    : currentPromo + 1
-                            )
-
-                        }
-                        className="
-                            absolute
-                            right-5
-                            top-1/2
-                            -translate-y-1/2
-                            z-20
-                            bg-white/20
-                            backdrop-blur
-                            text-white
-                            w-14
-                            h-14
-                            rounded-full
-                            text-3xl
-                        "
-                    >
-                        →
-                    </button>
-
-                    <div
-                        className="
-                            relative
-                            z-10
-                            h-full
-                            flex
-                            flex-col
-                            items-center
-                            justify-center
-                            text-center
-                            text-white
-                            px-10
-                        "
-                    >
-
-                        <h1
-                            className="
-                                text-4xl
-                                md:text-6xl
-                                lg:text-7xl
-                                font-black
-                                mb-6
-                            "
-                        >
-                            {
-                                promos[currentPromo]
-                                    .judul
-                            }
-                        </h1>
-
-                        <p
-                            className="
-                                text-lg
-                                md:text-xl
-                                lg:text-2xl
-                                max-w-3xl
-                                mb-10
-                            "
-                        >
-                            {
-                                promos[currentPromo]
-                                    .deskripsi
-                            }
+                    <div className="absolute inset-0 bg-black/55" />
+                    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center text-white px-6 premium-fade-up">
+                        <p className="premium-eyebrow text-white/90 mb-4">
+                            {t('heroEyebrow')}
                         </p>
-
-                        <a
-                            href={
-                                promos[currentPromo]
-                                    .link
-                            }
-                            className="
-                                bg-white
-                                text-black
-                                px-6
-                                py-4
-                                md:px-10
-                                md:py-5
-                                rounded-3xl
-                                text-xl
-                                font-black
-                            "
-                        >
-                            View Promo
+                        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl mb-6 max-w-4xl">
+                            {t('heroTitle')}
+                        </h1>
+                        <p className="text-lg md:text-xl text-white/90 mb-3 max-w-2xl">
+                            {t('heroDesc')}
+                        </p>
+                        <p className="text-base text-white/75 mb-10">
+                            {t('tagline')}
+                        </p>
+                        <a href="#products" className="premium-btn">
+                            {t('heroCta')}
                         </a>
-
                     </div>
-
                 </section>
-
             )}
 
+            <BenefitsSection />
+
             {/* PRODUCTS */}
+            <section
+                id="products"
+                className="py-20 md:py-28 px-6"
+                style={{ background: 'var(--background)' }}
+            >
+                <div className="max-w-7xl mx-auto">
+                    <SectionHeader
+                        eyebrow={t('productsEyebrow')}
+                        title={t('productsTitle')}
+                        subtitle={t('productsSubtitle')}
+                    />
 
-            <section className="p-5 md:p-10">
-
-                <div className="mb-12">
-
-                    <h2
-                        className={`
-                            text-3xl
-                            md:text-5xl
-                            font-black
-                            mb-4
-
-                            ${activeTheme.text}
-                        `}
-                    >
-                        Products
-                    </h2>
-
-                    <p
-                        className="
-                            text-xl
-                            text-gray-500
-                        "
-                    >
-                        Internet SIM & eSIM for Japan
-                    </p>
-
-                </div>
-
-                {/* TYPE FILTER */}
-
-                <div
-                    className="
-                        flex
-                        flex-wrap
-                        gap-4
-                        mb-6
-                    "
-                >
-
-                    <button
-                        onClick={() =>
-                            setSelectedType('all')
-                        }
-                        className="
-                            px-5
-                            py-3
-                            rounded-2xl
-                            bg-black
-                            text-white
-                        "
-                    >
-                        All
-                    </button>
-
-                    <button
-                        onClick={() =>
-                            setSelectedType('monthly')
-                        }
-                        className="
-                            px-5
-                            py-3
-                            rounded-2xl
-                            border
-                            bg-white
-                        "
-                    >
-                        Monthly
-                    </button>
-
-                    <button
-                        onClick={() =>
-                            setSelectedType('yearly')
-                        }
-                        className="
-                            px-5
-                            py-3
-                            rounded-2xl
-                            border
-                            bg-white
-                        "
-                    >
-                        Yearly
-                    </button>
-
-                </div>
-
-                {/* CATEGORY FILTER */}
-
-                <div
-                    className="
-                        flex
-                        flex-wrap
-                        gap-4
-                        mb-10
-                    "
-                >
-
-                    <button
-                        onClick={() =>
-                            setSelectedCategory('all')
-                        }
-                        className="
-                            px-5
-                            py-3
-                            rounded-2xl
-                            bg-black
-                            text-white
-                        "
-                    >
-                        All Categories
-                    </button>
-
-                    {categories.map((category) => (
-
-                        <button
-                            key={category.id}
-                            onClick={() =>
-
-                                setSelectedCategory(
-                                    category.slug
-                                )
-
-                            }
-                            className="
-                                px-5
-                                py-3
-                                rounded-2xl
-                                border
-                                bg-white
-                            "
-                        >
-
-                            {category.nama}
-
-                        </button>
-
-                    ))}
-
-                </div>
-                <div
-                    className="
-                        flex
-                        flex-wrap
-                        gap-4
-                        mb-10
-                    "
-                >
-
-                    <button
-                        onClick={() =>
-                            setSelectedProvider('all')
-                        }
-                        className="
-                            px-5
-                            py-3
-                            rounded-2xl
-                            bg-black
-                            text-white
-                        "
-                    >
-                        All Providers
-                    </button>
-
-                    {providers.map((provider) => (
-
-                        <button
-                            key={provider.id}
-                            onClick={() =>
-
-                                setSelectedProvider(
-                                    provider.slug
-                                )
-
-                            }
-                            className="
-                                px-5
-                                py-3
-                                rounded-2xl
-                                border
-                                bg-white
-                            "
-                        >
-
-                            {provider.nama}
-
-                        </button>
-
-                    ))}
-
-                </div>
-                {/* PRODUCT GRID */}
-
-                <div
-                    className="
-                        grid
-                        grid-cols-1
-                        sm:grid-cols-2
-                        lg:grid-cols-4
-                        gap-8
-                    "
-                >
-
-                    {filteredProducts.map((product) => (
-
-                        <a
-                            key={product.id}
-                            href={`/products/${product.slug}`}
-                            className="
-                                bg-white
-                                rounded-3xl
-                                shadow
-                                overflow-hidden
-                                hover:scale-[1.02]
-                                transition
-                            "
-                        >
-
-                            <div className="relative">
-
-                                <img
-                                    src={
-                                        product.thumbnail_url
-                                    }
-                                    className="
-                                        w-full
-                                        h-60
-                                        md:h-72
-                                        object-cover
-                                    "
-                                />
-
-                                {product.is_best_seller && (
-
-                                    <div
-                                        className={`
-                                            absolute
-                                            top-4
-                                            left-4
-                                            text-white
-                                            px-4
-                                            py-2
-                                            rounded-full
-                                            text-sm
-                                            font-bold
-
-                                            ${activeTheme.accent}
-                                        `}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                        {products.map((product) => (
+                            <a
+                                key={product.id}
+                                href={`/products/${product.slug}`}
+                                className="premium-product-card group block"
+                            >
+                                <div className="overflow-hidden aspect-[4/3]">
+                                    <img
+                                        src={product.thumbnail_url}
+                                        alt={product.nama}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div className="p-5 md:p-6">
+                                    <p
+                                        className="text-xs font-semibold uppercase tracking-wider mb-2"
+                                        style={{ color: 'var(--theme-primary)' }}
                                     >
-                                        BEST SELLER
-                                    </div>
-
-                                )}
-
-                            </div>
-
-                            <div className="p-6">
-
-                                <p
-                                    className="
-                                        text-sm
-                                        text-gray-500
-                                        mb-2
-                                    "
-                                >
-                                    {
-                                        product
-                                            .category
-                                            ?.nama
-                                    }
-                                </p>
-
-                                <h2
-                                    className="
-                                        text-lg
-                                        md:text-xl
-                                        lg:text-2xl
-                                        font-black
-                                        mb-3
-                                    "
-                                >
-                                    {product.nama}
-                                </h2>
-
-                                <p
-                                    className="
-                                        text-gray-500
-                                        mb-6
-                                    "
-                                >
-                                    {
-                                        product
-                                            .provider
-                                            ?.nama
-                                    }
-                                </p>
-
-                                <p
-                                    className="
-                                        text-2xl
-                                        md:text-3xl
-                                        font-black
-                                    "
-                                >
-                                    ¥
-                                    {
-                                        product
-                                            .lowest_price
-                                    }
-                                </p>
-
-                            </div>
-
-                        </a>
-
-                    ))}
-
+                                        {product.category?.nama}
+                                    </p>
+                                    <h3
+                                        className="font-display text-lg md:text-xl mb-2"
+                                        style={{ color: 'var(--foreground)' }}
+                                    >
+                                        {product.nama}
+                                    </h3>
+                                    <p
+                                        className="text-sm mb-4"
+                                        style={{ color: 'var(--theme-muted)' }}
+                                    >
+                                        {product.provider?.nama}
+                                    </p>
+                                    <p
+                                        className="font-display text-xl"
+                                        style={{ color: 'var(--theme-primary)' }}
+                                    >
+                                        {formatLowestPrice(product, language)}
+                                    </p>
+                                </div>
+                            </a>
+                        ))}
+                    </div>
                 </div>
+            </section>
 
+            <HowToSection />
+
+            {/* GUIDE */}
+            <section
+                id="guide"
+                className="py-20 md:py-28 px-6 premium-mesh text-center"
+            >
+                <div className="max-w-3xl mx-auto premium-fade-up">
+                    <FaBook
+                        className="text-5xl mx-auto mb-6"
+                        style={{ color: 'var(--theme-primary)' }}
+                    />
+                    <SectionHeader
+                        eyebrow={t('guideEyebrow')}
+                        title={t('guideTitle')}
+                        subtitle={t('guideDesc')}
+                    />
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        <a
+                            href="/Buku Panduan Bulanan.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="premium-btn"
+                        >
+                            {t('guideMonthly')}
+                        </a>
+                        <a
+                            href="/Buku Panduan Tahunan.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="premium-btn-outline"
+                        >
+                            {t('guideYearly')}
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            {/* SHIPPING */}
+            <section
+                id="shipping"
+                className="py-20 md:py-28 px-6"
+                style={{ background: 'var(--theme-section)' }}
+            >
+                <div className="max-w-7xl mx-auto">
+                    <SectionHeader
+                        eyebrow={t('shippingEyebrow')}
+                        title={t('shippingTitle')}
+                        subtitle={t('shippingSubtitle')}
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <div className="premium-card p-8 md:p-10">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div
+                                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl text-white"
+                                    style={{ background: 'var(--theme-primary)' }}
+                                >
+                                    <FaShippingFast />
+                                </div>
+                                <div>
+                                    <h3
+                                        className="font-display text-xl md:text-2xl"
+                                        style={{ color: 'var(--foreground)' }}
+                                    >
+                                        COD 1 Hari
+                                    </h3>
+                                    <p
+                                        className="text-sm"
+                                        style={{ color: 'var(--theme-muted)' }}
+                                    >
+                                        Transfer 1-2 Hari
+                                    </p>
+                                </div>
+                            </div>
+                            <p
+                                className="leading-relaxed text-sm md:text-base"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                Tokyo, Kanagawa, Chiba, Saitama, Tochigi, Gunma,
+                                Ibaraki, Fukushima, Miyagi, Yamagata, Akita,
+                                Aomori, Iwate, Nagano, Shizuoka, Gifu, Aichi,
+                                Yamanashi, Fukui, Ishikawa, Toyama, dan Niigata.
+                            </p>
+                        </div>
+
+                        <div className="premium-card p-8 md:p-10">
+                            <div className="flex items-center gap-4 mb-6">
+                                <div
+                                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl text-white"
+                                    style={{ background: 'var(--theme-primary)' }}
+                                >
+                                    <FaBoxOpen />
+                                </div>
+                                <div>
+                                    <h3
+                                        className="font-display text-xl md:text-2xl"
+                                        style={{ color: 'var(--foreground)' }}
+                                    >
+                                        COD 2 Hari
+                                    </h3>
+                                    <p
+                                        className="text-sm"
+                                        style={{ color: 'var(--theme-muted)' }}
+                                    >
+                                        Transfer 2-3 Hari
+                                    </p>
+                                </div>
+                            </div>
+                            <p
+                                className="leading-relaxed text-sm md:text-base"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                Hokkaido, Kyoto, Osaka, Nara, Hyogo, Shiga, Mie,
+                                Hiroshima, Okayama, Shimane, Tottori, Yamaguchi,
+                                Tokushima, Kagawa, Ehime, Kochi, Fukuoka,
+                                Nagasaki, Kumamoto, Oita, Miyazaki, Kagoshima,
+                                Okinawa.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div
+                        className="premium-card mt-8 p-8 text-center"
+                        style={{
+                            borderColor: 'var(--theme-primary)',
+                            boxShadow: `0 8px 32px var(--theme-glow)`,
+                        }}
+                    >
+                        <h3
+                            className="font-display text-xl mb-3"
+                            style={{ color: 'var(--foreground)' }}
+                        >
+                            {t('shippingNoteTitle')}
+                        </h3>
+                        <p style={{ color: 'var(--theme-muted)' }}>
+                            {t('shippingNote')}
+                        </p>
+                    </div>
+                </div>
             </section>
 
             {/* TESTIMONIALS */}
-
             <section
-                className="
-                    p-5
-                    md:p-10
-                    bg-black
-                    text-white
-                "
+                className="py-20 md:py-28 px-6 premium-mesh"
             >
-
-                <h2
-                    className="
-                        text-3xl
-                        md:text-5xl
-                        font-black
-                        mb-10
-                    "
-                >
-                    Testimonials
-                </h2>
-
-                <div
-                    className="
-                        grid
-                        grid-cols-1
-                        sm:grid-cols-2
-                        lg:grid-cols-4
-                        gap-6
-                    "
-                >
-
-                    {testimonials.map((item) => (
-
-                        <img
-                            key={item.id}
-                            src={item.image_url}
-                            className="
-                                rounded-3xl
-                                shadow
-                                w-full
-                            "
-                        />
-
-                    ))}
-
+                <div className="max-w-7xl mx-auto">
+                    <SectionHeader
+                        eyebrow={t('testimonialEyebrow')}
+                        title={t('testimonialTitle')}
+                        subtitle={t('testimonialSubtitle')}
+                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {testimonials.map((item) => (
+                            <div
+                                key={item.id}
+                                className="premium-card overflow-hidden p-0"
+                            >
+                                <img
+                                    src={item.image_url}
+                                    alt="Testimonial"
+                                    className="w-full h-auto object-cover"
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
-
             </section>
 
-        </main>
+            {/* CONTACT */}
+            <section
+                id="contact"
+                className="py-20 md:py-28 px-6"
+                style={{ background: 'var(--background)' }}
+            >
+                <div className="max-w-5xl mx-auto">
+                    <SectionHeader
+                        eyebrow={t('contactEyebrow')}
+                        title={t('contactTitle')}
+                        subtitle={t('contactSubtitle')}
+                    />
+
+                    <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+                        <div className="premium-card p-8 space-y-5">
+                            <p>
+                                <span
+                                    className="font-semibold block mb-1"
+                                    style={{ color: 'var(--foreground)' }}
+                                >
+                                    {t('contactWhatsapp')}
+                                </span>
+                                <span style={{ color: 'var(--theme-muted)' }}>
+                                    +81 80-7555-8719
+                                </span>
+                            </p>
+                            <p>
+                                <span
+                                    className="font-semibold block mb-1"
+                                    style={{ color: 'var(--foreground)' }}
+                                >
+                                    {t('contactEmail')}
+                                </span>
+                                <span style={{ color: 'var(--theme-muted)' }}>
+                                    Alljapaninternet@gmail.com
+                                </span>
+                            </p>
+                            <p>
+                                <span
+                                    className="font-semibold block mb-1"
+                                    style={{ color: 'var(--foreground)' }}
+                                >
+                                    {t('contactInstagram')}
+                                </span>
+                                <span style={{ color: 'var(--theme-muted)' }}>
+                                    @all_japan_internet
+                                </span>
+                            </p>
+                        </div>
+
+                        <div className="premium-card p-8 space-y-5">
+                            <p>
+                                <span
+                                    className="font-semibold block mb-1"
+                                    style={{ color: 'var(--foreground)' }}
+                                >
+                                    {t('contactLocation')}
+                                </span>
+                                <span style={{ color: 'var(--theme-muted)' }}>
+                                    Shinjuku, Tokyo
+                                </span>
+                            </p>
+                            <p>
+                                <span
+                                    className="font-semibold block mb-1"
+                                    style={{ color: 'var(--foreground)' }}
+                                >
+                                    {t('contactHours')}
+                                </span>
+                                <span style={{ color: 'var(--theme-muted)' }}>
+                                    {language === 'id'
+                                        ? 'Setiap hari 09.00 - 23.00'
+                                        : 'Daily 09:00 - 23:00'}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <a
+                href="https://wa.me/818075558719"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fixed bottom-6 right-6 bg-[#25D366] hover:bg-[#20bd5a] text-white p-4 rounded-full shadow-2xl z-50 text-3xl transition-transform hover:scale-105"
+                aria-label="WhatsApp"
+            >
+                <FaWhatsapp />
+            </a>
+        </div>
     );
 }

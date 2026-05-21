@@ -180,20 +180,9 @@
                             "
                         >
 
-                        <a
-                            href="{{ route('yearly-products.delete-image', $product->id) }}"
-                            onclick="
-                                event.preventDefault();
-
-                                if(confirm('Delete image?')) {
-
-                                    document
-                                        .getElementById(
-                                            'delete-image-form'
-                                        )
-                                        .submit();
-                                }
-                            "
+                        <button
+                            type="button"
+                            onclick="deleteImage()"
                             class="
                                 inline-block
                                 bg-red-500
@@ -205,19 +194,7 @@
                             "
                         >
                             Delete Image
-                        </a>
-
-                        <form
-                            id="delete-image-form"
-                            action="{{ route('yearly-products.delete-image', $product->id) }}"
-                            method="POST"
-                            class="hidden"
-                        >
-
-                            @csrf
-                            @method('DELETE')
-
-                        </form>
+                        </button>
 
                     </div>
 
@@ -316,7 +293,7 @@
                     >
 
                         @foreach(
-                            $product->variants
+                            $product->variants ?? []
                             as $index => $variant
                         )
 
@@ -329,6 +306,20 @@
                                     relative
                                 "
                             >
+
+                                <button
+                                    type="button"
+                                    onclick="this.parentElement.remove()"
+                                    class="
+                                        absolute
+                                        top-4
+                                        right-4
+                                        text-red-500
+                                        font-bold
+                                    "
+                                >
+                                    ✕
+                                </button>
 
                                 <input
                                     type="hidden"
@@ -371,10 +362,31 @@
                                     "
                                 >
 
-                                    @foreach(
-                                        $variant->billingPeriods ?? []
-                                        as $period
-                                    )
+                                    @php
+
+                                        $periods = [
+                                            '13 BULAN',
+                                            '12 BULAN',
+                                            '9 BULAN',
+                                            '6 BULAN',
+                                            '3 BULAN',
+                                        ];
+
+                                    @endphp
+
+                                    @foreach($periods as $periodName)
+
+                                        @php
+
+                                            $found =
+                                                $variant
+                                                    ->billingPeriods
+                                                    ?->firstWhere(
+                                                        'nama',
+                                                        $periodName
+                                                    );
+
+                                        @endphp
 
                                         <div>
 
@@ -386,13 +398,13 @@
                                                     font-semibold
                                                 "
                                             >
-                                                {{ $period->nama }}
+                                                {{ $periodName }}
                                             </label>
 
                                             <input
                                                 type="number"
-                                                name="variants[{{ $index }}][periods][{{ $period->nama }}]"
-                                                value="{{ $period->initial_price }}"
+                                                name="variants[{{ $index }}][periods][{{ $periodName }}]"
+                                                value="{{ $found->initial_price ?? '' }}"
                                                 class="
                                                     w-full
                                                     border
@@ -509,22 +521,22 @@
     let variantIndex =
         {{ count($product->variants) }};
 
-    function addVariant() {
+    document
+        .getElementById('addVariant')
+        .addEventListener('click', function () {
 
-        const currentIndex =
-            variantIndex;
+            const container =
+                document.getElementById(
+                    'variantContainer'
+                );
 
-        const html = `
+            const div =
+                document.createElement('div');
 
-            <div
-                class="
-                    border
-                    rounded-3xl
-                    p-6
-                    space-y-5
-                    relative
-                "
-            >
+            div.className =
+                'border rounded-3xl p-6 space-y-5 relative';
+
+            div.innerHTML = `
 
                 <button
                     type="button"
@@ -542,13 +554,19 @@
 
                 <div>
 
-                    <label class="block mb-2 font-semibold">
+                    <label
+                        class="
+                            block
+                            mb-2
+                            font-semibold
+                        "
+                    >
                         Variant Name
                     </label>
 
                     <input
                         type="text"
-                        name="variants[${currentIndex}][nama]"
+                        name="variants[${variantIndex}][nama]"
                         class="
                             w-full
                             border
@@ -568,68 +586,174 @@
                     "
                 >
 
-                    ${[
-                        '13 BULAN',
-                        '12 BULAN',
-                        '9 BULAN',
-                        '6 BULAN',
-                        '3 BULAN',
-                    ].map(period => `
+                    <div>
 
-                        <div>
+                        <label
+                            class="
+                                block
+                                mb-2
+                                text-sm
+                                font-semibold
+                            "
+                        >
+                            13 BULAN
+                        </label>
 
-                            <label
-                                class="
-                                    block
-                                    mb-2
-                                    text-sm
-                                    font-semibold
-                                "
-                            >
-                                ${period}
-                            </label>
+                        <input
+                            type="number"
+                            name="variants[${variantIndex}][periods][13 BULAN]"
+                            class="
+                                w-full
+                                border
+                                rounded-2xl
+                                px-4
+                                py-3
+                            "
+                        >
 
-                            <input
-                                type="number"
-                                name="variants[${currentIndex}][periods][${period}]"
-                                class="
-                                    w-full
-                                    border
-                                    rounded-2xl
-                                    px-4
-                                    py-3
-                                "
-                            >
+                    </div>
 
-                        </div>
+                    <div>
 
-                    `).join('')}
+                        <label
+                            class="
+                                block
+                                mb-2
+                                text-sm
+                                font-semibold
+                            "
+                        >
+                            12 BULAN
+                        </label>
+
+                        <input
+                            type="number"
+                            name="variants[${variantIndex}][periods][12 BULAN]"
+                            class="
+                                w-full
+                                border
+                                rounded-2xl
+                                px-4
+                                py-3
+                            "
+                        >
+
+                    </div>
+
+                    <div>
+
+                        <label
+                            class="
+                                block
+                                mb-2
+                                text-sm
+                                font-semibold
+                            "
+                        >
+                            9 BULAN
+                        </label>
+
+                        <input
+                            type="number"
+                            name="variants[${variantIndex}][periods][9 BULAN]"
+                            class="
+                                w-full
+                                border
+                                rounded-2xl
+                                px-4
+                                py-3
+                            "
+                        >
+
+                    </div>
+
+                    <div>
+
+                        <label
+                            class="
+                                block
+                                mb-2
+                                text-sm
+                                font-semibold
+                            "
+                        >
+                            6 BULAN
+                        </label>
+
+                        <input
+                            type="number"
+                            name="variants[${variantIndex}][periods][6 BULAN]"
+                            class="
+                                w-full
+                                border
+                                rounded-2xl
+                                px-4
+                                py-3
+                            "
+                        >
+
+                    </div>
+
+                    <div>
+
+                        <label
+                            class="
+                                block
+                                mb-2
+                                text-sm
+                                font-semibold
+                            "
+                        >
+                            3 BULAN
+                        </label>
+
+                        <input
+                            type="number"
+                            name="variants[${variantIndex}][periods][3 BULAN]"
+                            class="
+                                w-full
+                                border
+                                rounded-2xl
+                                px-4
+                                py-3
+                            "
+                        >
+
+                    </div>
 
                 </div>
 
-            </div>
+            `;
 
-        `;
+            container.appendChild(div);
 
-        document
-            .getElementById(
-                'variantContainer'
-            )
-            .insertAdjacentHTML(
-                'beforeend',
-                html
-            );
+            variantIndex++;
+        });
+function deleteImage() {
 
-        variantIndex++;
+    if(confirm('Delete image?')) {
+
+        fetch(
+            "{{ route('yearly-products.delete-image', $product->id) }}",
+            {
+                method: 'DELETE',
+
+                headers: {
+
+                    'X-CSRF-TOKEN':
+                        '{{ csrf_token() }}',
+
+                    'Accept':
+                        'application/json',
+                }
+            }
+        ).then(() => {
+
+            location.reload();
+
+        });
     }
-
-    document
-        .getElementById('addVariant')
-        .addEventListener(
-            'click',
-            addVariant
-        );
-
+}
 </script>
 
 @endsection

@@ -48,6 +48,8 @@ class MonthlyProductController extends Controller
                 'E-SIM INTERNET BULANAN',
                 'POCKET WIFI',
                 'KARTU TELPON + DATA INTERNET',
+                'KARTU INTERNET BULANAN & E-SIM',
+                'KARTU INTERNET BULANAN UNTUK POCKET',
             ]
         )->get();
 

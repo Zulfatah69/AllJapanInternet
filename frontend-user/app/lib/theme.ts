@@ -1,67 +1,21 @@
-export const themes: any = {
+export type ThemeType = 'winter' | 'spring' | 'summer' | 'autumn';
 
-    spring: {
+export function normalizeTheme(raw: string | undefined | null): ThemeType {
+    const value = (raw ?? 'winter').toLowerCase();
+    if (value === 'fall') return 'autumn';
+    if (['winter', 'spring', 'summer', 'autumn'].includes(value)) {
+        return value as ThemeType;
+    }
+    return 'winter';
+}
 
-        background:
-            'bg-pink-50',
-
-        card:
-            'bg-white',
-
-        accent:
-            'bg-pink-500',
-
-        text:
-            'text-pink-500',
-
-    },
-
-    summer: {
-
-        background:
-            'bg-yellow-50',
-
-        card:
-            'bg-white',
-
-        accent:
-            'bg-yellow-500',
-
-        text:
-            'text-yellow-500',
-
-    },
-
-    autumn: {
-
-        background:
-            'bg-orange-50',
-
-        card:
-            'bg-white',
-
-        accent:
-            'bg-orange-500',
-
-        text:
-            'text-orange-500',
-
-    },
-
-    winter: {
-
-        background:
-            'bg-blue-50',
-
-        card:
-            'bg-white',
-
-        accent:
-            'bg-blue-500',
-
-        text:
-            'text-blue-500',
-
-    },
-
-};
+export function parseSettingsTheme(settings: unknown): ThemeType {
+    if (!settings || typeof settings !== 'object') return 'winter';
+    const obj = settings as Record<string, unknown>;
+    const nested = obj.data as Record<string, unknown> | undefined;
+    const theme =
+        (nested?.theme as string) ??
+        (obj.theme as string) ??
+        (obj.tema as string);
+    return normalizeTheme(theme);
+}
