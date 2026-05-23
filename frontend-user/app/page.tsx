@@ -15,7 +15,9 @@ import {
     FaShippingFast,
     FaBoxOpen,
 } from 'react-icons/fa';
-
+import {
+    getSimpleProducts
+} from './lib/api';
 export default function HomePage() {
     const { language, t } = useLanguage();
 
@@ -23,11 +25,15 @@ export default function HomePage() {
     const [promos, setPromos] = useState<any[]>([]);
     const [currentPromo, setCurrentPromo] = useState(0);
     const [testimonials, setTestimonials] = useState<any[]>([]);
-
+    const [
+        simpleProducts,
+        setSimpleProducts
+    ] = useState<any[]>([]);
     useEffect(() => {
         loadProducts();
         loadPromos();
         loadTestimonials();
+        loadSimpleProducts();
     }, []);
 
     useEffect(() => {
@@ -74,7 +80,26 @@ export default function HomePage() {
             setTestimonials([]);
         }
     }
+    async function loadSimpleProducts() {
 
+        try {
+
+            const data =
+                await getSimpleProducts();
+
+            setSimpleProducts(
+
+                Array.isArray(data)
+                    ? data
+                    : []
+
+            );
+
+        } catch {
+
+            setSimpleProducts([]);
+        }
+    }
     return (
         <div className="overflow-x-hidden">
             {/* HERO */}
@@ -308,7 +333,121 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
+            {/* SIMPLE PRODUCTS */}
 
+            <section
+                className="
+                    py-20
+                    md:py-28
+                    px-6
+                "
+            >
+
+                <div className="max-w-7xl mx-auto">
+
+                    <SectionHeader
+                        eyebrow="WIFI"
+                        title="Wifi Products"
+                        subtitle="Additional products and services"
+                    />
+
+                    <div
+                        className="
+                            grid
+                            grid-cols-1
+                            sm:grid-cols-2
+                            lg:grid-cols-3
+                            gap-8
+                        "
+                    >
+
+                        {simpleProducts.map((item) => (
+
+                            <div
+                                key={item.id}
+                                className="
+                                    premium-card
+                                    overflow-hidden
+                                    p-0
+                                "
+                            >
+
+                                {item.gambar_url && (
+
+                                    <img
+                                        src={item.gambar_url}
+                                        alt={item.nama}
+                                        className="
+                                            w-full
+                                            h-72
+                                            object-cover
+                                        "
+                                    />
+
+                                )}
+
+                                <div className="p-6">
+
+                                    <h3
+                                        className="
+                                            text-2xl
+                                            font-black
+                                            mb-3
+                                        "
+                                    >
+                                        {item.nama}
+                                    </h3>
+
+                                    <p
+                                        className="
+                                            text-gray-500
+                                            mb-6
+                                        "
+                                    >
+                                        {item.deskripsi}
+                                    </p>
+
+                                    <button
+                                        onClick={() => {
+
+                                            const message =
+
+                                                `Hello Admin,%0A%0A` +
+
+                                                `I want to ask about:%0A` +
+
+                                                `${item.nama}`;
+
+                                            window.open(
+
+                                                `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP}?text=${message}`,
+
+                                                '_blank'
+                                            );
+                                        }}
+                                        className="
+                                            bg-green-500
+                                            text-white
+                                            px-6
+                                            py-3
+                                            rounded-2xl
+                                            font-bold
+                                        "
+                                    >
+                                        WhatsApp
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                </div>
+
+            </section>
             {/* TESTIMONIALS */}
             <section
                 className="py-20 md:py-28 px-6 premium-mesh"

@@ -126,7 +126,18 @@
             >
                 Yearly Products
             </a>
-
+            <a
+                href="{{ route('simple-products.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Wifi
+            </a>
             <a
                 href="{{ route('testimonials.index') }}"
                 class="

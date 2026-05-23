@@ -11,6 +11,7 @@ use App\Http\Controllers\Dashboard\YearlyProductController;
 use App\Http\Controllers\Dashboard\PromoController;
 use App\Http\Controllers\Dashboard\TestimonialController;
 use App\Http\Controllers\Dashboard\SettingController;
+use App\Http\Controllers\Dashboard\SimpleProductController;
 
 Route::get('/', function () {
 
@@ -106,6 +107,10 @@ Route::middleware([
         'settings',
         [SettingController::class, 'update']
     )->name('settings.update');
+    Route::resource(
+        'simple-products',
+        SimpleProductController::class
+    );
 
 });
 

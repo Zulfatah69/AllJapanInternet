@@ -8,6 +8,7 @@ use App\Models\Testimonial;
 use App\Models\Provider;
 use App\Models\Category;
 use App\Models\Setting;
+use App\Models\SimpleProduct;
 
 Route::get('/products', function () {
 
@@ -121,5 +122,14 @@ Route::get('/testimonials', function () {
 Route::get('/settings', function () {
 
     return Setting::first();
+
+});
+
+Route::get('/simple-products', function () {
+
+    return SimpleProduct::where(
+        'is_active',
+        true
+    )->get();
 
 });

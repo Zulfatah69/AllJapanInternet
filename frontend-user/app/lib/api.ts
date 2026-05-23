@@ -9,3 +9,12 @@ const api = axios.create({
 });
 
 export default api;
+export async function getSimpleProducts() {
+
+    const response =
+        await api.get(
+            '/simple-products'
+        );
+
+    return response.data;
+}
