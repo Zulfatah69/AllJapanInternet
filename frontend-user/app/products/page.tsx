@@ -121,7 +121,8 @@ export default function ProductsPage() {
         max-w-7xl
         mx-auto
         px-6
-        py-16
+        pt-28
+        pb-16
       "
     >
 

@@ -27,7 +27,7 @@ export default function RootLayout({
             >
                 <LanguageProvider>
                     <Navbar />
-                    <main className="pt-20 md:pt-28">{children}</main>
+                    <main className="pt-0">{children}</main>
                     <Footer />
                 </LanguageProvider>
             </body>

@@ -149,21 +149,24 @@ function computeLowestFromVariants(product: Product): number | null {
         }
     }
 
-    if (amounts.length === 0) {
+    // Filter out anomalous prices (e.g. less than 1000 Yen)
+    const validAmounts = amounts.filter(amount => amount >= 1000);
+
+    if (validAmounts.length === 0) {
         return null;
     }
 
-    return Math.min(...amounts);
+    return Math.min(...validAmounts);
 }
 
 export function getLowestProductPrice(product: Product): number | null {
     const fromVariants = computeLowestFromVariants(product);
-    if (fromVariants !== null && fromVariants > 0) {
+    if (fromVariants !== null && fromVariants >= 1000) {
         return fromVariants;
     }
 
     const apiLowest = num(product.lowest_price);
-    if (apiLowest > 0) {
+    if (apiLowest >= 1000) {
         return apiLowest;
     }
 

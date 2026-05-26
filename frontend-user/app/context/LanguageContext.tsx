@@ -31,10 +31,191 @@ const translations: Record<string, { id: string; en: string }> = {
     bukuPanduan: { id: 'Buku Panduan', en: 'Guide' },
     waktuPengiriman: { id: 'Waktu Pengiriman', en: 'Delivery' },
     kontak: { id: 'Kontak', en: 'Contact' },
+    tentangKami: { id: 'Tentang Kami', en: 'About Us' },
+    caraPembayaran: { id: 'Cara Pembayaran', en: 'Payment' },
+    qna: { id: 'QnA', en: 'FAQ' },
     tagline: {
         id: 'Termudah, Tercepat, dan Terpercaya',
         en: 'Easy, Fast, and Trusted',
     },
+    aboutEyebrow: { id: 'Tentang Kami', en: 'About Us' },
+    aboutTitle: {
+        id: 'All Japan Internet',
+        en: 'All Japan Internet',
+    },
+    aboutTagline: {
+        id: 'TERMUDAH · TERCEPAT · TERPERCAYA',
+        en: 'EASIEST · FASTEST · MOST TRUSTED',
+    },
+    aboutIntro: {
+        id: 'Kartu internet fisik, E-Sim, Pocket WiFi tanpa kontrak, dan pemasangan home WiFi untuk seluruh WNI di Jepang.',
+        en: 'Physical internet cards, e-SIM, contract-free Pocket WiFi, and home WiFi installation for Indonesians across Japan.',
+    },
+    aboutBody: {
+        id: 'All Japan Internet menyediakan kartu internet fisik dan E-Sim tanpa kontrak, dengan sistem bulanan atau tahunan, untuk pemagang, pekerja tokutei ginou, pelajar, dan semua masyarakat Indonesia yang ada di Jepang.',
+        en: 'All Japan Internet provides physical and e-SIM cards without contracts, with monthly or yearly plans, for interns, specified skilled workers, students, and all Indonesian communities in Japan.',
+    },
+    aboutClosing: {
+        id: 'Memiliki sistem pemesanan secara online, pengiriman ke seluruh wilayah Jepang, serta dukungan customer service yang ramah dalam bahasa Indonesia.',
+        en: 'We offer online ordering, delivery throughout Japan, and friendly customer service in Indonesian.',
+    },
+    paymentEyebrow: { id: 'Pembayaran', en: 'Payment' },
+    paymentTitle: { id: 'Cara Pembayaran', en: 'How to Pay' },
+    paymentSubtitle: {
+        id: 'Pilihan pembayaran uang awal yang fleksibel',
+        en: 'Flexible options for your initial payment',
+    },
+    paymentInitialLabel: {
+        id: 'Pembayaran uang awal melalui',
+        en: 'Initial payment via',
+    },
+    paymentNote: {
+        id: 'Untuk tagihan bulanan berikutnya, metode pembayaran dapat disesuaikan saat order.',
+        en: 'For subsequent monthly bills, payment methods can be chosen when you order.',
+    },
+    payCodTitle: { id: 'COD', en: 'COD' },
+    payCodDesc: {
+        id: 'Bayar ke kurir saat barang diantar ke alamat Anda.\nMendukung Japan Post dan Kuroneko Yamato.',
+        en: 'Pay the courier when your order is delivered.\nSupports Japan Post and Kuroneko Yamato.',
+    },
+    payTransferTitle: { id: 'Transfer Bank', en: 'Bank Transfer' },
+    payTransferDesc: {
+        id: 'Transfer melalui Yucho (Japan Post Bank) atau transfer Rupiah.',
+        en: 'Pay via Yucho (Japan Post Bank) or Rupiah transfer.',
+    },
+    payKonbiniTitle: { id: 'Smartpit', en: 'Smartpit' },
+    payKonbiniDesc: {
+        id: 'Pembayaran di Family Mart, Lawson, dan Ministop melalui kasir (Konbini) atau menggunakan mesin pembayaran (Famiport/Loppi).\nTips: ubah pengaturan bahasa mesin ke English agar lebih mudah.',
+        en: 'Pay at Family Mart, Lawson, and Ministop via cashier (Convenience Store) or using payment machines (Famiport/Loppi).\nTip: switch the machine language to English for easier use.',
+    },
+    paySmartpitTitle: { id: 'Mesin Smartpit', en: 'Smartpit Machine' },
+    paySmartpitDesc: {
+        id: 'Mesin Famiport di Family Mart, mesin Loppi di Lawson & Ministop, atau mesin fotokopy.\nTips: ubah pengaturan bahasa mesin ke English agar lebih mudah.',
+        en: 'Famiport at Family Mart, Loppi at Lawson & Ministop, or copy machines.\nTip: switch the machine language to English for easier use.',
+    },
+    payCodJpTitle: { id: 'COD - Japan Post', en: 'COD - Japan Post' },
+    payCodJpDesc: {
+        id: 'Bayar tunai ke kurir Japan Post saat paket tiba di alamat Anda.',
+        en: 'Pay cash to the Japan Post courier when the package arrives at your address.',
+    },
+    payCodKuronekoTitle: { id: 'COD - Kuroneko Yamato', en: 'COD - Kuroneko Yamato' },
+    payCodKuronekoDesc: {
+        id: 'Bayar tunai ke kurir Kuroneko Yamato saat paket tiba di alamat Anda.',
+        en: 'Pay cash to the Kuroneko Yamato courier when the package arrives at your address.',
+    },
+    payTransferJpTitle: { id: 'Transfer Yucho (Jepang)', en: 'Yucho Bank Transfer (Japan)' },
+    payTransferJpDesc: {
+        id: 'Transfer langsung melalui ATM Yucho (Japan Post Bank) atau ATM lokal Jepang lainnya.',
+        en: 'Transfer directly via Yucho ATM (Japan Post Bank) or other local Japanese ATMs.',
+    },
+    payTransferIdTitle: { id: 'Transfer Rupiah (Indonesia)', en: 'Rupiah Bank Transfer (Indonesia)' },
+    payTransferIdDesc: {
+        id: 'Transfer online menggunakan mata uang Rupiah ke rekening Bank Mandiri / BCA / BNI Indonesia.',
+        en: 'Online transfer using Rupiah currency to Indonesian Bank Mandiri / BCA / BNI accounts.',
+    },
+    payKonbiniFamiportTitle: { id: 'Famiport (Family Mart)', en: 'Famiport (Family Mart)' },
+    payKonbiniFamiportDesc: {
+        id: 'Cetak struk pembayaran melalui mesin Famiport di Family Mart lalu bayar di kasir.',
+        en: 'Print the payment slip via Famiport machine in Family Mart then pay at the cashier.',
+    },
+    payKonbiniLoppiTitle: { id: 'Loppi (Lawson & Ministop)', en: 'Loppi (Lawson & Ministop)' },
+    payKonbiniLoppiDesc: {
+        id: 'Cetak struk pembayaran melalui mesin Loppi di Lawson atau Ministop lalu bayar di kasir.',
+        en: 'Print the payment slip via Loppi machine in Lawson or Ministop then pay at the cashier.',
+    },
+    payKonbiniSmartpitTitle: { id: 'Mesin Fotokopi', en: 'Copy Machine' },
+    payKonbiniSmartpitDesc: {
+        id: 'Gunakan barcode Smartpit di mesin fotokopi serbaguna Lawson/Family Mart untuk mencetak slip pembayaran.',
+        en: 'Use Smartpit barcode on Lawson/Family Mart multifunction copy machines to print your payment slip.',
+    },
+    faqEyebrow: { id: 'Bantuan', en: 'Help' },
+    faqTitle: { id: 'Pertanyaan yang Sering Diajukan', en: 'Frequently Asked Questions' },
+    faqSubtitle: {
+        id: 'Jawaban untuk pertanyaan pelanggan yang paling sering kami terima',
+        en: 'Answers to the questions we hear most often',
+    },
+    faq1Q: {
+        id: 'Apakah ada kontrak atau deposit?',
+        en: 'Is there a contract or deposit?',
+    },
+    faq1A: {
+        id: 'Tidak ada kontrak jangka panjang dan tidak ada deposit. Anda bebas berlangganan sesuai kebutuhan.',
+        en: 'No long-term contract and no deposit. Subscribe as long as you need.',
+    },
+    faq2Q: {
+        id: 'Berapa lama pengiriman ke alamat saya?',
+        en: 'How long is delivery to my address?',
+    },
+    faq2A: {
+        id: 'COD 1 hari untuk area tertentu (Kanto dll.), COD 2 hari untuk wilayah lain. Transfer biasanya 1–3 hari kerja sebelum pengiriman.',
+        en: 'COD 1 day in select areas (Kanto etc.), COD 2 days elsewhere. Bank transfer usually 1–3 business days before shipping.',
+    },
+    faq3Q: {
+        id: 'Bisa bayar pakai Rupiah?',
+        en: 'Can I pay in Rupiah?',
+    },
+    faq3A: {
+        id: 'Ya, kami menerima pembayaran dalam Yen maupun Rupiah sesuai ketentuan yang berlaku.',
+        en: 'Yes, we accept payment in Yen and Rupiah subject to applicable terms.',
+    },
+    faq4Q: {
+        id: 'Apakah SIM bisa terima SMS verifikasi?',
+        en: 'Can the SIM receive verification SMS?',
+    },
+    faq4A: {
+        id: 'Produk data tertentu (mis. Softbank) menyediakan nomor HP dan dapat menerima SMS verifikasi, tetapi tidak untuk telepon biasa. Detail ada di halaman produk.',
+        en: 'Some data plans (e.g. Softbank) include a phone number for verification SMS, not regular calls. See each product page for details.',
+    },
+    faq5Q: {
+        id: 'Bagaimana cara order?',
+        en: 'How do I order?',
+    },
+    faq5A: {
+        id: 'Pilih produk di website, isi form order, pilih metode pembayaran, lalu konfirmasi via WhatsApp. Tim kami memproses dan mengirim ke alamat Anda.',
+        en: 'Choose a product, fill the order form, select payment, then confirm via WhatsApp. Our team processes and ships to your address.',
+    },
+    faq6Q: {
+        id: 'Apakah pengiriman ke seluruh Jepang?',
+        en: 'Do you ship nationwide in Japan?',
+    },
+    faq6A: {
+        id: 'Ya, kami mengirim setiap hari ke seluruh wilayah Jepang.',
+        en: 'Yes, we ship daily throughout Japan.',
+    },
+    faq7Q: {
+        id: 'Customer service bahasa Indonesia?',
+        en: 'Is customer service in Indonesian?',
+    },
+    faq7A: {
+        id: 'Ya, CS kami siap membantu dalam bahasa Indonesia setiap hari pukul 09.00–23.00.',
+        en: 'Yes, our CS team assists in Indonesian daily from 09:00 to 23:00.',
+    },
+    faq8Q: {
+        id: 'Bisa bayar setelah gajian?',
+        en: 'Can I pay after payday?',
+    },
+    faq8A: {
+        id: 'Fleksibel bayar setelah gajian untuk pelanggan tertentu. Syarat & ketentuan berlaku — hubungi CS untuk info.',
+        en: 'Pay-after-payday options exist for eligible customers. Terms apply — contact CS for details.',
+    },
+    productsSimTitle: {
+        id: 'SIM & eSIM',
+        en: 'SIM & eSIM',
+    },
+    productsSimSubtitle: {
+        id: 'Kartu internet bulanan & tahunan',
+        en: 'Monthly & yearly internet cards',
+    },
+    productsWifiTitle: {
+        id: 'Pocket WiFi & Home WiFi',
+        en: 'Pocket WiFi & Home WiFi',
+    },
+    productsWifiSubtitle: {
+        id: 'WiFi tanpa kontrak & layanan terkait',
+        en: 'Contract-free WiFi and related services',
+    },
+    contactFacebook: { id: 'Facebook', en: 'Facebook' },
+    wifiAskWhatsapp: { id: 'Tanya via WhatsApp', en: 'Ask on WhatsApp' },
     variant: { id: 'Variant', en: 'Variant' },
     billingPeriod: { id: 'Periode Pembelian', en: 'Billing Period' },
     paymentMethod: { id: 'Metode Pembayaran', en: 'Payment Method' },

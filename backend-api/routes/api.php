@@ -121,8 +121,16 @@ Route::get('/testimonials', function () {
 
 Route::get('/settings', function () {
 
-    return Setting::first();
+    $setting = Setting::first();
 
+    if (!$setting) {
+        return response()->json([
+            'site_name' => 'All Japan Internet',
+            'theme_color' => '#000000',
+        ]);
+    }
+
+    return $setting;
 });
 
 Route::get('/simple-products', function () {

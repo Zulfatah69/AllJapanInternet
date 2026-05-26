@@ -160,36 +160,36 @@ export default function ProductDetail({
     const billingPeriods = getBillingPeriods(selectedVariant);
 
     return (
-        <div className="max-w-7xl mx-auto px-5 md:px-10 pb-16 pt-8 md:pt-12">
+        <div className="max-w-7xl mx-auto px-5 md:px-10 pb-16 pt-28 md:pt-32">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
                 <img
                     src={product.thumbnail_url}
                     alt={product.nama}
-                    className="w-full rounded-2xl object-cover shadow-lg"
+                    className="w-full rounded-2xl object-cover shadow-lg hover:shadow-2xl transition-shadow duration-500 border border-slate-100"
                 />
 
                 <div>
                     <div className="flex gap-2 mb-6 flex-wrap">
                         <span
-                            className="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                            className="px-3 py-1 rounded-full text-xs font-semibold text-white shadow-sm capitalize"
                             style={{ background: 'var(--theme-primary)' }}
                         >
                             {product.type}
                         </span>
                         <span
-                            className="px-3 py-1 rounded-full text-xs font-semibold border"
+                            className="px-3 py-1 rounded-full text-xs font-semibold border bg-white shadow-2xs"
                             style={{
                                 color: 'var(--foreground)',
-                                borderColor: 'rgba(15,23,42,0.15)',
+                                borderColor: 'rgba(15,23,42,0.12)',
                             }}
                         >
                             {product.provider?.nama}
                         </span>
                         <span
-                            className="px-3 py-1 rounded-full text-xs font-semibold border"
+                            className="px-3 py-1 rounded-full text-xs font-semibold border bg-white shadow-2xs"
                             style={{
                                 color: 'var(--foreground)',
-                                borderColor: 'rgba(15,23,42,0.15)',
+                                borderColor: 'rgba(15,23,42,0.12)',
                             }}
                         >
                             {product.category?.nama}
@@ -197,14 +197,14 @@ export default function ProductDetail({
                     </div>
 
                     <h1
-                        className="font-display text-3xl md:text-4xl lg:text-5xl mb-5"
+                        className="font-display text-3xl md:text-4xl lg:text-5xl mb-5 font-extrabold tracking-tight"
                         style={{ color: 'var(--foreground)' }}
                     >
                         {product.nama}
                     </h1>
 
                     <p
-                        className="mb-10 whitespace-pre-line leading-relaxed"
+                        className="mb-10 whitespace-pre-line leading-relaxed text-base font-medium"
                         style={{ color: 'var(--theme-muted)' }}
                     >
                         {product.deskripsi}
@@ -227,12 +227,32 @@ export default function ProductDetail({
                                         key={variant.id}
                                         type="button"
                                         onClick={() => selectVariant(variant)}
-                                        className="w-full border-2 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-md font-medium"
-                                        style={selectBtn(selected)}
+                                        className="w-full border-2 rounded-xl p-4 text-left transition-all duration-300 hover:scale-[1.005] hover:shadow-md font-medium"
+                                        style={
+                                            selected
+                                                ? {
+                                                      background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                                      color: '#fff',
+                                                      borderColor: 'transparent',
+                                                      boxShadow: '0 8px 24px var(--theme-glow)',
+                                                  }
+                                                : {
+                                                      background: '#fff',
+                                                      color: 'var(--foreground)',
+                                                      borderColor: 'rgba(15, 23, 42, 0.08)',
+                                                  }
+                                        }
                                     >
                                         <div className="flex justify-between items-center gap-4">
-                                            <span>{variant.gb}</span>
-                                            <span className="font-display text-lg">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                                                    selected ? 'border-white bg-white/20' : 'border-slate-300 bg-transparent'
+                                                }`}>
+                                                    {selected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                                                </div>
+                                                <span className="font-bold">{variant.gb}</span>
+                                            </div>
+                                            <span className="font-display text-lg font-black">
                                                 ¥
                                                 {Number(
                                                     variant.monthly_price || 0
@@ -265,12 +285,32 @@ export default function ProductDetail({
                                             onClick={() =>
                                                 setSelectedBilling(period)
                                             }
-                                            className="w-full border-2 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-md font-medium"
-                                            style={selectBtn(selected)}
+                                            className="w-full border-2 rounded-xl p-4 text-left transition-all duration-300 hover:scale-[1.005] hover:shadow-md font-medium"
+                                            style={
+                                                selected
+                                                    ? {
+                                                          background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                                          color: '#fff',
+                                                          borderColor: 'transparent',
+                                                          boxShadow: '0 8px 24px var(--theme-glow)',
+                                                      }
+                                                    : {
+                                                          background: '#fff',
+                                                          color: 'var(--foreground)',
+                                                          borderColor: 'rgba(15, 23, 42, 0.08)',
+                                                      }
+                                            }
                                         >
                                             <div className="flex justify-between items-center gap-4">
-                                                <span>{period.nama}</span>
-                                                <span className="font-display text-lg">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                                                        selected ? 'border-white bg-white/20' : 'border-slate-300 bg-transparent'
+                                                    }`}>
+                                                        {selected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                                                    </div>
+                                                    <span className="font-bold">{period.nama}</span>
+                                                </div>
+                                                <span className="font-display text-lg font-black">
                                                     ¥
                                                     {Number(
                                                         period.initial_price ||
@@ -305,12 +345,32 @@ export default function ProductDetail({
                                             onClick={() =>
                                                 setSelectedPayment(payment)
                                             }
-                                            className="w-full border-2 rounded-xl p-4 text-left transition-all duration-200 hover:shadow-md font-medium"
-                                            style={selectBtn(selected)}
+                                            className="w-full border-2 rounded-xl p-4 text-left transition-all duration-300 hover:scale-[1.005] hover:shadow-md font-medium"
+                                            style={
+                                                selected
+                                                    ? {
+                                                          background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                                          color: '#fff',
+                                                          borderColor: 'transparent',
+                                                          boxShadow: '0 8px 24px var(--theme-glow)',
+                                                      }
+                                                    : {
+                                                          background: '#fff',
+                                                          color: 'var(--foreground)',
+                                                          borderColor: 'rgba(15, 23, 42, 0.08)',
+                                                      }
+                                            }
                                         >
                                             <div className="flex justify-between items-center gap-4">
-                                                <span>{payment.nama}</span>
-                                                <span className="font-display text-lg">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                                                        selected ? 'border-white bg-white/20' : 'border-slate-300 bg-transparent'
+                                                    }`}>
+                                                        {selected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                                                    </div>
+                                                    <span className="font-bold">{payment.nama}</span>
+                                                </div>
+                                                <span className="font-display text-lg font-black">
                                                     +¥
                                                     {Number(
                                                         payment.additional_price
@@ -326,30 +386,46 @@ export default function ProductDetail({
 
                     {/* TOTAL */}
                     <div
-                        className="rounded-2xl p-8 mb-8 text-white"
+                        className="rounded-2xl p-8 mb-8 text-white relative overflow-hidden"
                         style={{
-                            background: 'var(--theme-primary)',
-                            boxShadow: `0 12px 40px var(--theme-glow)`,
+                            background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                            boxShadow: `0 16px 40px var(--theme-glow)`,
                         }}
                     >
-                        <h2 className="font-display text-xl mb-2 opacity-90">
-                            {t('total')}
-                        </h2>
-                        <p className="font-display text-4xl">
-                            ¥
-                            {(
-                                Number(selectedBilling?.initial_price || 0) +
-                                Number(
-                                    selectedPayment?.additional_price || 0
-                                )
-                            ).toLocaleString('ja-JP')}
-                        </p>
+                        <div className="absolute inset-0 opacity-10 pointer-events-none select-none">
+                            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M0,50 Q25,70 50,50 T100,50 L100,100 L0,100 Z" fill="white" />
+                            </svg>
+                        </div>
+                        <div className="relative z-10 flex justify-between items-center">
+                            <div>
+                                <h2 className="font-display text-xs md:text-sm mb-1 opacity-90 uppercase tracking-widest font-extrabold">
+                                    {t('total')}
+                                </h2>
+                                <p className="font-display text-4xl md:text-5xl font-black tracking-tight">
+                                    ¥
+                                    {(
+                                        Number(selectedBilling?.initial_price || 0) +
+                                        Number(
+                                            selectedPayment?.additional_price || 0
+                                        )
+                                    ).toLocaleString('ja-JP')}
+                                </p>
+                            </div>
+                            <div className="text-right hidden sm:block">
+                                <p className="text-xs opacity-75 font-semibold uppercase">{product.nama}</p>
+                                <p className="text-sm font-black">{selectedVariant?.gb}</p>
+                            </div>
+                        </div>
                     </div>
 
                     <button
                         type="button"
                         onClick={orderWhatsApp}
-                        className="premium-btn w-full"
+                        className="premium-btn w-full text-base py-4 font-bold shadow-xl transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl active:scale-95"
+                        style={{
+                            background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                        }}
                     >
                         {t('orderWhatsapp')}
                     </button>

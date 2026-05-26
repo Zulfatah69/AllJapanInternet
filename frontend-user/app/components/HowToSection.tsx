@@ -25,14 +25,14 @@ export default function HowToSection() {
             className="py-20 md:py-28 px-6"
             style={{ background: 'var(--theme-section)' }}
         >
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto premium-fade-up">
                 <SectionHeader
                     eyebrow={t('howtoEyebrow')}
                     title={t('howtoTitle')}
                     subtitle={t('howtoSubtitle')}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {steps.map((step, index) => {
                         const Icon = step.icon;
                         const num = String(index + 1).padStart(2, '0');
@@ -40,25 +40,25 @@ export default function HowToSection() {
                         return (
                             <div
                                 key={step.titleKey}
-                                className="premium-card p-6 md:p-8 flex flex-col items-center text-center gap-4"
+                                className="premium-card p-6 md:p-7 flex flex-col justify-between min-h-[10.5rem] group"
+                                style={{ animationDelay: `${index * 0.08}s` }}
                             >
-                                <div
-                                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
-                                    style={{
-                                        background: 'var(--theme-primary)',
-                                        color: '#fff',
-                                    }}
-                                >
-                                    <Icon />
+                                <div className="flex items-start justify-between gap-3 mb-4">
+                                    <div
+                                        className="shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-white text-lg transition-transform duration-300 group-hover:scale-105"
+                                        style={{
+                                            background: 'var(--theme-primary)',
+                                            boxShadow: `0 8px 20px var(--theme-glow)`,
+                                        }}
+                                    >
+                                        <Icon />
+                                    </div>
+                                    <span className="benefit-number leading-none">
+                                        {num}
+                                    </span>
                                 </div>
-                                <span
-                                    className="text-xs font-bold tracking-widest"
-                                    style={{ color: 'var(--theme-primary)' }}
-                                >
-                                    {num}
-                                </span>
                                 <h3
-                                    className="font-display text-lg md:text-xl"
+                                    className="font-display text-base md:text-lg font-semibold mt-auto"
                                     style={{ color: 'var(--foreground)' }}
                                 >
                                     {t(step.titleKey)}

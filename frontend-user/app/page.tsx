@@ -1,25 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import api from './lib/api';
 import { getProducts } from './services/product.service';
 import { useLanguage } from './context/LanguageContext';
-import { formatLowestPrice } from './lib/productPrice';
+import { splitCatalogProducts } from './lib/productGroups';
 import BenefitsSection from './components/BenefitsSection';
 import HowToSection from './components/HowToSection';
+import AboutSection from './components/AboutSection';
+import PaymentMethodsSection from './components/PaymentMethodsSection';
+import FaqSection from './components/FaqSection';
+import ProductCatalogCard from './components/ProductCatalogCard';
+import SimpleWifiCard from './components/SimpleWifiCard';
 import SectionHeader from './components/SectionHeader';
 import {
     FaWhatsapp,
-    FaTruck,
     FaBook,
     FaShippingFast,
     FaBoxOpen,
 } from 'react-icons/fa';
-import {
-    getSimpleProducts
-} from './lib/api';
+import { getSimpleProducts } from './lib/api';
+
+const FACEBOOK_URL_1 = 'https://www.facebook.com/all.japan.internet';
+const FACEBOOK_URL_2 = 'https://www.facebook.com/groups/all.japan.internet';
+
 export default function HomePage() {
-    const { language, t } = useLanguage();
+    const { language, t, theme } = useLanguage();
 
     const [products, setProducts] = useState<any[]>([]);
     const [promos, setPromos] = useState<any[]>([]);
@@ -29,11 +35,13 @@ export default function HomePage() {
         simpleProducts,
         setSimpleProducts
     ] = useState<any[]>([]);
+    const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
         loadProducts();
         loadPromos();
         loadTestimonials();
         loadSimpleProducts();
+        setIsMounted(true);
     }, []);
 
     useEffect(() => {
@@ -81,59 +89,189 @@ export default function HomePage() {
         }
     }
     async function loadSimpleProducts() {
-
         try {
-
-            const data =
-                await getSimpleProducts();
-
-            setSimpleProducts(
-
-                Array.isArray(data)
-                    ? data
-                    : []
-
-            );
-
+            const data = await getSimpleProducts();
+            setSimpleProducts(Array.isArray(data) ? data : data?.data ?? []);
         } catch {
-
             setSimpleProducts([]);
         }
     }
+
+    const { simEsim: simEsimProducts, wifi: wifiProducts } = useMemo(
+        () => splitCatalogProducts(products),
+        [products]
+    );
+
+    const hasWifiCatalog =
+        wifiProducts.length > 0 || simpleProducts.length > 0;
+
     return (
         <div className="overflow-x-hidden">
             {/* HERO */}
             {promos.length > 0 && (
-                <section className="relative -mt-20 md:-mt-28 min-h-screen overflow-hidden">
-                    <img
-                        src={promos[currentPromo]?.gambar_url}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/55" />
-                    <div className="relative z-10 min-h-screen flex flex-col items-center justify-center text-center text-white px-6 premium-fade-up">
-                        <p className="premium-eyebrow text-white/90 mb-4">
+                <section className="relative mt-0 min-h-screen overflow-hidden pt-24 flex items-center justify-center">
+                    {/* Smooth image crossfade slider */}
+                    <div className="absolute inset-0 z-0">
+                        {promos.map((promo, idx) => (
+                            <div
+                                key={promo.id || idx}
+                                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                                    idx === currentPromo ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                                }`}
+                            >
+                                <img
+                                    src={promo.gambar_url}
+                                    alt=""
+                                    className="w-full h-full object-cover transition-transform duration-[5000ms] ease-out"
+                                    style={{ transform: idx === currentPromo ? 'scale(1.02)' : 'scale(1.08)' }}
+                                />
+                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2.5px]" />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Floating Ambient seasonal particles over image background */}
+                    <div className="absolute inset-0 pointer-events-none select-none z-10 overflow-hidden">
+                        {isMounted && theme === 'spring' && (
+                            <>
+                                {[...Array(15)].map((_, i) => (
+                                    <svg
+                                        key={`hero-petal-${i}`}
+                                        className="absolute opacity-75"
+                                        style={{
+                                            left: `${Math.random() * 100}%`,
+                                            top: `-40px`,
+                                            width: `${10 + Math.random() * 12}px`,
+                                            height: `${10 + Math.random() * 12}px`,
+                                            fill: '#FF69B4',
+                                            animation: `float-sakura ${10 + Math.random() * 8}s linear infinite`,
+                                            animationDelay: `${Math.random() * 8}s`,
+                                        }}
+                                        viewBox="0 0 30 30"
+                                    >
+                                        <path d="M15 0 C25 10, 25 20, 15 30 C5 20, 5 10, 15 0" />
+                                    </svg>
+                                ))}
+                            </>
+                        )}
+                        {isMounted && theme === 'winter' && (
+                            <>
+                                {[...Array(20)].map((_, i) => (
+                                    <div
+                                        key={`hero-snow-${i}`}
+                                        className="absolute rounded-full bg-white opacity-60"
+                                        style={{
+                                            left: `${Math.random() * 100}%`,
+                                            top: `-20px`,
+                                            width: `${3 + Math.random() * 5}px`,
+                                            height: `${3 + Math.random() * 5}px`,
+                                            boxShadow: `0 0 6px #fff`,
+                                            animation: `float-snow ${8 + Math.random() * 6}s linear infinite`,
+                                            animationDelay: `${Math.random() * 6}s`,
+                                        }}
+                                    />
+                                ))}
+                            </>
+                        )}
+                        {isMounted && theme === 'autumn' && (
+                            <>
+                                {[...Array(12)].map((_, i) => (
+                                    <svg
+                                        key={`hero-leaf-${i}`}
+                                        className="absolute opacity-75"
+                                        style={{
+                                            left: `${Math.random() * 100}%`,
+                                            top: `-40px`,
+                                            width: `${14 + Math.random() * 10}px`,
+                                            height: `${14 + Math.random() * 10}px`,
+                                            fill: '#EA580C',
+                                            animation: `float-leaf ${11 + Math.random() * 8}s linear infinite`,
+                                            animationDelay: `${Math.random() * 8}s`,
+                                            transform: `rotate(${Math.random() * 360}deg)`,
+                                        }}
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path d="M12 2C11.5 4 8.5 7 7 9C5.5 11 3 12 3 13.5C3 15.5 5 17 7 17C9 17 11 15 12 13.5C13 15 15 17 17 17C19 17 21 15.5 21 13.5C21 12 18.5 11 17 9C15.5 7 12.5 4 12 2Z" />
+                                    </svg>
+                                ))}
+                            </>
+                        )}
+                        {isMounted && theme === 'summer' && (
+                            <div className="absolute inset-0 opacity-15 overflow-hidden">
+                                <div
+                                    className="absolute -top-[15%] -right-[15%] w-[80%] aspect-square rounded-full mix-blend-screen"
+                                    style={{
+                                        background: 'radial-gradient(circle, #FEF08A 0%, transparent 60%)',
+                                        animation: 'sunbeam-pulse 10s ease-in-out infinite',
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Premium Frosted Glass Text Overlay Card */}
+                    <div
+                        className="relative z-20 max-w-4xl mx-auto px-6 py-12 md:py-16 rounded-3xl border border-white/10 backdrop-blur-md text-center text-white premium-fade-up shadow-2xl bg-black/35"
+                        style={{
+                            boxShadow: `0 30px 70px -15px rgba(0,0,0,0.55), 0 0 30px ${
+                                theme === 'spring' ? 'rgba(255, 105, 180, 0.35)' :
+                                theme === 'summer' ? 'rgba(234, 179, 8, 0.25)' :
+                                theme === 'autumn' ? 'rgba(234, 88, 12, 0.3)' :
+                                'rgba(56, 189, 248, 0.35)'
+                            }`,
+                        }}
+                    >
+                        <p className="premium-eyebrow text-white/90 mb-4 tracking-widest font-bold text-xs md:text-sm">
                             {t('heroEyebrow')}
                         </p>
-                        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl mb-6 max-w-4xl">
+                        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl mb-6 max-w-4xl font-extrabold leading-tight tracking-tight drop-shadow-md text-white">
                             {t('heroTitle')}
                         </h1>
-                        <p className="text-lg md:text-xl text-white/90 mb-3 max-w-2xl">
+                        <p className="text-lg md:text-xl text-white/90 mb-3 max-w-2xl mx-auto font-medium">
                             {t('heroDesc')}
                         </p>
-                        <p className="text-base text-white/75 mb-10">
+                        <p className="text-sm md:text-base text-white/70 mb-10 mx-auto tracking-wide font-light">
                             {t('tagline')}
                         </p>
-                        <a href="#products" className="premium-btn">
+                        <a href="#products" className="premium-btn text-sm md:text-base px-8 py-4 font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform duration-200">
                             {t('heroCta')}
                         </a>
+                    </div>
+
+                    {/* Slider dot navigation + horizontal loading bar */}
+                    <div className="absolute bottom-10 left-0 right-0 z-20 flex flex-col items-center gap-4">
+                        {/* Dot Navigation */}
+                        <div className="flex gap-2">
+                            {promos.map((_, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setCurrentPromo(idx)}
+                                    className={`h-2 rounded-full transition-all duration-300 ${
+                                        idx === currentPromo ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'
+                                    }`}
+                                    aria-label={`Go to slide ${idx + 1}`}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Active Progress bar */}
+                        <div className="w-32 h-0.5 bg-white/20 rounded-full overflow-hidden">
+                            <div
+                                key={currentPromo} /* Re-triggers animation on slide change */
+                                className="h-full bg-white transition-all rounded-full"
+                                style={{
+                                    animation: 'hero-progress 5s linear forwards',
+                                }}
+                            />
+                        </div>
                     </div>
                 </section>
             )}
 
+            <AboutSection />
+
             <BenefitsSection />
 
-            {/* PRODUCTS */}
             <section
                 id="products"
                 className="py-20 md:py-28 px-6"
@@ -146,53 +284,70 @@ export default function HomePage() {
                         subtitle={t('productsSubtitle')}
                     />
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                        {products.map((product) => (
-                            <a
-                                key={product.id}
-                                href={`/products/${product.slug}`}
-                                className="premium-product-card group block"
+                    {simEsimProducts.length > 0 && (
+                        <div className="mb-16 md:mb-20">
+                            <h3
+                                className="font-display text-2xl md:text-3xl mb-2"
+                                style={{ color: 'var(--foreground)' }}
                             >
-                                <div className="overflow-hidden aspect-[4/3]">
-                                    <img
-                                        src={product.thumbnail_url}
-                                        alt={product.nama}
-                                        className="w-full h-full object-cover"
+                                {t('productsSimTitle')}
+                            </h3>
+                            <p
+                                className="text-sm mb-8"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {t('productsSimSubtitle')}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                                {simEsimProducts.map((product) => (
+                                    <ProductCatalogCard
+                                        key={product.id}
+                                        product={product}
+                                        language={language}
                                     />
-                                </div>
-                                <div className="p-5 md:p-6">
-                                    <p
-                                        className="text-xs font-semibold uppercase tracking-wider mb-2"
-                                        style={{ color: 'var(--theme-primary)' }}
-                                    >
-                                        {product.category?.nama}
-                                    </p>
-                                    <h3
-                                        className="font-display text-lg md:text-xl mb-2"
-                                        style={{ color: 'var(--foreground)' }}
-                                    >
-                                        {product.nama}
-                                    </h3>
-                                    <p
-                                        className="text-sm mb-4"
-                                        style={{ color: 'var(--theme-muted)' }}
-                                    >
-                                        {product.provider?.nama}
-                                    </p>
-                                    <p
-                                        className="font-display text-xl"
-                                        style={{ color: 'var(--theme-primary)' }}
-                                    >
-                                        {formatLowestPrice(product, language)}
-                                    </p>
-                                </div>
-                            </a>
-                        ))}
-                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {hasWifiCatalog && (
+                        <div>
+                            <h3
+                                className="font-display text-2xl md:text-3xl mb-2"
+                                style={{ color: 'var(--foreground)' }}
+                            >
+                                {t('productsWifiTitle')}
+                            </h3>
+                            <p
+                                className="text-sm mb-8"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {t('productsWifiSubtitle')}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                                {wifiProducts.map((product) => (
+                                    <ProductCatalogCard
+                                        key={product.id}
+                                        product={product}
+                                        language={language}
+                                    />
+                                ))}
+                                {simpleProducts.map((item) => (
+                                    <SimpleWifiCard
+                                        key={`simple-${item.id}`}
+                                        item={item}
+                                        whatsappLabel={t('wifiAskWhatsapp')}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </section>
 
             <HowToSection />
+
+            <PaymentMethodsSection />
 
             {/* GUIDE */}
             <section
@@ -333,121 +488,9 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
-            {/* SIMPLE PRODUCTS */}
 
-            <section
-                className="
-                    py-20
-                    md:py-28
-                    px-6
-                "
-            >
+            <FaqSection />
 
-                <div className="max-w-7xl mx-auto">
-
-                    <SectionHeader
-                        eyebrow="WIFI"
-                        title="Wifi Products"
-                        subtitle="Additional products and services"
-                    />
-
-                    <div
-                        className="
-                            grid
-                            grid-cols-1
-                            sm:grid-cols-2
-                            lg:grid-cols-3
-                            gap-8
-                        "
-                    >
-
-                        {simpleProducts.map((item) => (
-
-                            <div
-                                key={item.id}
-                                className="
-                                    premium-card
-                                    overflow-hidden
-                                    p-0
-                                "
-                            >
-
-                                {item.gambar_url && (
-
-                                    <img
-                                        src={item.gambar_url}
-                                        alt={item.nama}
-                                        className="
-                                            w-full
-                                            h-72
-                                            object-cover
-                                        "
-                                    />
-
-                                )}
-
-                                <div className="p-6">
-
-                                    <h3
-                                        className="
-                                            text-2xl
-                                            font-black
-                                            mb-3
-                                        "
-                                    >
-                                        {item.nama}
-                                    </h3>
-
-                                    <p
-                                        className="
-                                            text-gray-500
-                                            mb-6
-                                        "
-                                    >
-                                        {item.deskripsi}
-                                    </p>
-
-                                    <button
-                                        onClick={() => {
-
-                                            const message =
-
-                                                `Hello Admin,%0A%0A` +
-
-                                                `I want to ask about:%0A` +
-
-                                                `${item.nama}`;
-
-                                            window.open(
-
-                                                `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP}?text=${message}`,
-
-                                                '_blank'
-                                            );
-                                        }}
-                                        className="
-                                            bg-green-500
-                                            text-white
-                                            px-6
-                                            py-3
-                                            rounded-2xl
-                                            font-bold
-                                        "
-                                    >
-                                        WhatsApp
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        ))}
-
-                    </div>
-
-                </div>
-
-            </section>
             {/* TESTIMONIALS */}
             <section
                 className="py-20 md:py-28 px-6 premium-mesh"
@@ -519,8 +562,42 @@ export default function HomePage() {
                                 >
                                     {t('contactInstagram')}
                                 </span>
-                                <span style={{ color: 'var(--theme-muted)' }}>
+                                <a
+                                    href="https://www.instagram.com/all_japan_internet"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:underline"
+                                    style={{ color: 'var(--theme-muted)' }}
+                                >
                                     @all_japan_internet
+                                </a>
+                            </p>
+                            <p>
+                                <span
+                                    className="font-semibold block mb-1"
+                                    style={{ color: 'var(--foreground)' }}
+                                >
+                                    {t('contactFacebook')}
+                                </span>
+                                <span className="flex flex-col gap-1.5">
+                                    <a
+                                        href={FACEBOOK_URL_1}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:underline block"
+                                        style={{ color: 'var(--theme-muted)' }}
+                                    >
+                                        Warung Kartu All Japan Intanet
+                                    </a>
+                                    <a
+                                        href={FACEBOOK_URL_2}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="hover:underline block"
+                                        style={{ color: 'var(--theme-muted)' }}
+                                    >
+                                        All Japan Internet
+                                    </a>
                                 </span>
                             </p>
                         </div>
