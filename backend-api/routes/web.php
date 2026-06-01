@@ -14,9 +14,7 @@ use App\Http\Controllers\Dashboard\SettingController;
 use App\Http\Controllers\Dashboard\SimpleProductController;
 
 Route::get('/', function () {
-
-    return view('welcome');
-
+    return redirect()->route('login');
 });
 
 Route::middleware([
@@ -54,6 +52,12 @@ Route::middleware([
             'totalTestimonials'
                 => \App\Models\Testimonial::count(),
 
+            'totalPromos'
+                => \App\Models\Promo::count(),
+
+            'totalWifiProducts'
+                => \App\Models\SimpleProduct::count(),
+
         ]);
 
     })->name('dashboard');
@@ -78,6 +82,16 @@ Route::middleware([
         [MonthlyProductController::class, 'deleteImage']
     )->name('monthly-products.delete-image');
 
+    Route::post(
+        'monthly-products/{product}/toggle-active',
+        [MonthlyProductController::class, 'toggleActive']
+    )->name('monthly-products.toggle-active');
+
+    Route::post(
+        'monthly-products/variants/{variant}/toggle-active',
+        [MonthlyProductController::class, 'toggleVariantActive']
+    )->name('monthly-products.variants.toggle-active');
+
     Route::resource(
         'yearly-products',
         YearlyProductController::class
@@ -87,6 +101,16 @@ Route::middleware([
         'yearly-products/{product}/delete-image',
         [YearlyProductController::class, 'deleteImage']
     )->name('yearly-products.delete-image');
+
+    Route::post(
+        'yearly-products/{product}/toggle-active',
+        [YearlyProductController::class, 'toggleActive']
+    )->name('yearly-products.toggle-active');
+
+    Route::post(
+        'yearly-products/variants/{variant}/toggle-active',
+        [YearlyProductController::class, 'toggleVariantActive']
+    )->name('yearly-products.variants.toggle-active');
 
     Route::resource(
         'promos',
@@ -107,6 +131,7 @@ Route::middleware([
         'settings',
         [SettingController::class, 'update']
     )->name('settings.update');
+
     Route::resource(
         'simple-products',
         SimpleProductController::class

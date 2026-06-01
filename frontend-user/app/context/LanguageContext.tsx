@@ -16,7 +16,9 @@ interface LanguageContextType {
     language: 'id' | 'en';
     setLanguage: (lang: 'id' | 'en') => void;
     theme: ThemeType;
+    isThemeReady: boolean;
     t: (key: string) => string;
+    translateDynamicText: (text: string | undefined | null) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
@@ -217,7 +219,7 @@ const translations: Record<string, { id: string; en: string }> = {
     contactFacebook: { id: 'Facebook', en: 'Facebook' },
     wifiAskWhatsapp: { id: 'Tanya via WhatsApp', en: 'Ask on WhatsApp' },
     variant: { id: 'Variant', en: 'Variant' },
-    billingPeriod: { id: 'Periode Pembelian', en: 'Billing Period' },
+    billingPeriod: { id: 'Tanggal Pembelian', en: 'Purchase Date' },
     paymentMethod: { id: 'Metode Pembayaran', en: 'Payment Method' },
     total: { id: 'Total', en: 'Total' },
     orderWhatsapp: { id: 'Pesan via WhatsApp', en: 'Order via WhatsApp' },
@@ -332,12 +334,26 @@ const translations: Record<string, { id: string; en: string }> = {
 export function LanguageProvider({ children }: { children: ReactNode }) {
     const [language, setLanguage] = useState<'id' | 'en'>('id');
     const [theme, setTheme] = useState<ThemeType>('winter');
+    const [isThemeReady, setIsThemeReady] = useState(false);
 
     useEffect(() => {
+        // Synchronously check localStorage immediately on mount to prevent the theme flash
+        const cached = localStorage.getItem('cached-theme');
+        if (cached && ['winter', 'spring', 'summer', 'autumn'].includes(cached)) {
+            setTheme(cached as ThemeType);
+        }
+        const cachedLang = localStorage.getItem('cached-language');
+        if (cachedLang && (cachedLang === 'id' || cachedLang === 'en')) {
+            setLanguage(cachedLang as 'id' | 'en');
+        }
+        setIsThemeReady(true);
+
         async function fetchSettings() {
             try {
                 const settings = await getSettings();
-                setTheme(parseSettingsTheme(settings));
+                const fetchedTheme = parseSettingsTheme(settings);
+                setTheme(fetchedTheme);
+                localStorage.setItem('cached-theme', fetchedTheme);
             } catch (error) {
                 console.error('Failed to fetch theme settings:', error);
             }
@@ -349,13 +365,60 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         document.documentElement.setAttribute('data-theme', theme);
     }, [theme]);
 
+    useEffect(() => {
+        if (isThemeReady) {
+            localStorage.setItem('cached-language', language);
+        }
+    }, [language, isThemeReady]);
+
     const t = (key: string): string => {
         return translations[key]?.[language] ?? key;
     };
 
+    const translateDynamicText = (text: string | undefined | null): string => {
+        if (!text) return '';
+        if (language === 'id') return text;
+        let translated = text;
+        
+        // Categories
+        translated = translated.replace(/Bulanan/gi, 'Monthly');
+        translated = translated.replace(/Tahunan/gi, 'Yearly');
+        translated = translated.replace(/Produk/gi, 'Product');
+        translated = translated.replace(/Kartu/gi, 'Card');
+
+        // Specific Product Description Sentences
+        translated = translated.replace(/Data internet only ada nomor hp dan bisa terima sms verifikasi \(Tidak bisa dipakai telfon biasa\)/gi, 'Internet data only, includes phone number and can receive verification SMS (Cannot be used for regular calls)');
+        translated = translated.replace(/Data internet only ada nomor hp dan can terima sms verifikasi \(Tidak can dipakai telfon biasa\)/gi, 'Internet data only, includes phone number and can receive verification SMS (Cannot be used for regular calls)'); // Fallback if DB was saved with 'can'
+        
+        // Variants / Other common words
+        translated = translated.replace(/Tanpa limit harian/gi, 'No daily limit');
+        translated = translated.replace(/Tanpa limit/gi, 'No limit');
+        translated = translated.replace(/Bulan/gi, 'Month');
+        translated = translated.replace(/Hari/gi, 'Day');
+        
+        // Description additions
+        translated = translated.replace(/kecepatan/gi, 'speed');
+        translated = translated.replace(/pemasangan/gi, 'installation');
+        translated = translated.replace(/pembayaran/gi, 'payment');
+        translated = translated.replace(/gratis/gi, 'free');
+        translated = translated.replace(/kuota/gi, 'quota');
+        translated = translated.replace(/tanpa/gi, 'without');
+        translated = translated.replace(/awal/gi, 'initial');
+        translated = translated.replace(/setelah/gi, 'after');
+        translated = translated.replace(/pemakaian/gi, 'usage');
+        translated = translated.replace(/jaringan/gi, 'network');
+        translated = translated.replace(/pasang/gi, 'install');
+        translated = translated.replace(/seluruh/gi, 'all');
+        translated = translated.replace(/alamat/gi, 'addresses');
+        translated = translated.replace(/jepang/gi, 'Japan');
+        translated = translated.replace(/mulai dari/gi, 'starting from');
+        
+        return translated;
+    };
+
     return (
         <LanguageContext.Provider
-            value={{ language, setLanguage, theme, t }}
+            value={{ language, setLanguage, theme, isThemeReady, t, translateDynamicText }}
         >
             {children}
         </LanguageContext.Provider>

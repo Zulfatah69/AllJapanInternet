@@ -3,6 +3,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import api from '../../lib/api';
 import { useLanguage } from '@/app/context/LanguageContext';
+import Lightbox from '@/app/components/Lightbox';
+import { FaInfoCircle } from 'react-icons/fa';
 
 function getBillingPeriods(variant: any) {
     return variant?.billing_periods ?? variant?.billingPeriods ?? [];
@@ -19,7 +21,7 @@ export default function ProductDetail({
 }: {
     params: Promise<{ slug: string }>;
 }) {
-    const { language, t } = useLanguage();
+    const { language, t, translateDynamicText } = useLanguage();
 
     const [slug, setSlug] = useState('');
     const [product, setProduct] = useState<any>(null);
@@ -27,11 +29,60 @@ export default function ProductDetail({
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
     const [selectedBilling, setSelectedBilling] = useState<any>(null);
     const [selectedPayment, setSelectedPayment] = useState<any>(null);
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
     const visiblePayments = useMemo(
         () => getVisiblePayments(product?.payment_methods),
         [product?.payment_methods]
     );
+
+    const isSoftbank = useMemo(() => {
+        const provName = (product?.provider?.nama || '').toUpperCase();
+        const prodName = (product?.nama || '').toUpperCase();
+        return provName.includes('SOFTBANK') || provName.includes('SOFTBANK');
+    }, [product?.provider?.nama, product?.nama]);
+
+    const isJumbo = useMemo(() => {
+        const prodName = (product?.nama || '').toUpperCase();
+        return slug === 'softbank-jumbo' || prodName.includes('JUMBO') || prodName.includes('GJ');
+    }, [product?.nama, slug]);
+
+    const isYearlyOrFixed = useMemo(() => {
+        const prodName = (product?.nama || '').toUpperCase();
+        const catName = (product?.category?.nama || '').toUpperCase();
+        return (
+            prodName.includes('TAHUNAN') || 
+            prodName.includes('BERJANGKA') || 
+            prodName.includes('YEARLY') || 
+            prodName.includes('FIXED') ||
+            catName.includes('TAHUNAN') || 
+            catName.includes('BERJANGKA') || 
+            catName.includes('YEARLY')
+        );
+    }, [product?.nama, product?.category?.nama]);
+
+    const isEsim = useMemo(() => {
+        const catName = (product?.category?.nama || '').toUpperCase();
+        const prodName = (product?.nama || '').toUpperCase();
+        return catName.includes('E-SIM') || prodName.includes('E-SIM');
+    }, [product?.category?.nama, product?.nama]);
+
+    const uniquePeriodNames = useMemo(() => {
+        const names = new Set<string>();
+        product?.variants?.forEach((variant: any) => {
+            const periods = getBillingPeriods(variant);
+            periods.forEach((period: any) => {
+                if (period.nama) {
+                    names.add(period.nama);
+                }
+            });
+        });
+        return Array.from(names);
+    }, [product?.variants]);
+
+    const hasPeriods = useMemo(() => {
+        return product?.variants?.some((v: any) => getBillingPeriods(v).length > 0);
+    }, [product?.variants]);
 
     useEffect(() => {
         async function resolveParams() {
@@ -65,6 +116,7 @@ export default function ProductDetail({
         try {
             const response = await api.get(`/products/${slug}`);
             const data = response.data?.data ?? response.data;
+
             setProduct(data);
 
             if (data?.variants?.length > 0) {
@@ -102,6 +154,18 @@ export default function ProductDetail({
         }
     }
 
+    const translatePeriodName = (name: string | undefined) => {
+        if (!name) return '';
+        if (language === 'en') {
+            return name
+                .replace(/BULAN/gi, 'MONTHS')
+                .replace(/HARI/gi, 'DAYS')
+                .replace(/TAHUN/gi, 'YEARS')
+                .replace(/MINGGU/gi, 'WEEKS');
+        }
+        return name;
+    };
+
     function orderWhatsApp() {
         if (!product || !selectedVariant) return;
 
@@ -109,12 +173,19 @@ export default function ProductDetail({
             Number(selectedBilling?.initial_price || 0) +
             Number(selectedPayment?.additional_price || 0);
 
+        const variantLabel = 
+            isSoftbank && !isYearlyOrFixed && !isJumbo && selectedVariant.gb.includes('100')
+                ? (selectedVariant.gb.includes('Day') || selectedVariant.gb.includes('3.3')
+                    ? (language === 'id' ? '100GB (Batas Harian 3,3GB / Hari)' : '100GB (3.3GB / Day Daily Limit)')
+                    : (language === 'id' ? '100GB (Tanpa Limit Harian)' : '100GB (No Daily Limit)'))
+                : selectedVariant.gb;
+
         const message =
             `Hello Admin,%0A%0A` +
             `I want to order:%0A%0A` +
             `Product: ${product.nama}%0A` +
-            `Variant: ${selectedVariant.gb}%0A` +
-            `Billing Period: ${selectedBilling?.nama}%0A` +
+            `Variant: ${variantLabel}%0A` +
+            `Billing Period: ${translatePeriodName(selectedBilling?.nama)}%0A` +
             `Payment Method: ${selectedPayment?.nama ?? '-'}%0A` +
             `Total: ¥${total}%0A%0A` +
             `Thank you`;
@@ -162,11 +233,187 @@ export default function ProductDetail({
     return (
         <div className="max-w-7xl mx-auto px-5 md:px-10 pb-16 pt-28 md:pt-32">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
-                <img
-                    src={product.thumbnail_url}
-                    alt={product.nama}
-                    className="w-full rounded-2xl object-cover shadow-lg hover:shadow-2xl transition-shadow duration-500 border border-slate-100"
-                />
+                <div className="flex flex-col gap-8 h-fit">
+                    <div 
+                        className="relative w-full rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border cursor-zoom-in group h-fit"
+                        style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 15%, transparent)' }}
+                        onClick={() => setIsLightboxOpen(true)}
+                    >
+                        <img
+                            src={product.thumbnail_url}
+                            alt={product.nama}
+                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                        {/* Zoom hover overlay */}
+                        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-3 shadow-lg scale-90 group-hover:scale-100 transition-transform duration-300">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Initial Payment Info Card (Dynamically Generated from Backend) */}
+                    {hasPeriods && (
+                        <div 
+                            className="premium-card p-6 md:p-8 rounded-2xl border transition-all duration-300 animate-fade-in"
+                            style={{ 
+                                background: 'rgba(255, 255, 255, 0.45)',
+                                backdropFilter: 'blur(16px)',
+                                WebkitBackdropFilter: 'blur(16px)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 15%, transparent)'
+                            }}
+                        >
+                            <div className="flex items-center gap-3 mb-6">
+                                <div 
+                                    className="p-2.5 rounded-xl flex items-center justify-center text-white"
+                                    style={{ 
+                                        background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                        boxShadow: '0 4px 12px var(--theme-glow)'
+                                    }}
+                                >
+                                    <FaInfoCircle className="text-lg" />
+                                </div>
+                                <div>
+                                    <h3 
+                                        className="text-base font-black uppercase tracking-wider"
+                                        style={{ color: 'var(--foreground)' }}
+                                    >
+                                        {isYearlyOrFixed 
+                                            ? (language === 'id' ? 'Detail Harga' : 'Price Details')
+                                            : (language === 'id' ? 'Detail Pembayaran Awal' : 'Initial Payment Details')
+                                        }
+                                    </h3>
+                                    <p 
+                                        className="text-xs font-semibold"
+                                        style={{ color: 'var(--theme-muted)' }}
+                                    >
+                                        {language === 'id' ? 'Biaya berdasarkan tanggal pembelian' : 'Price based on purchase date'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <p className="text-xs font-semibold mb-4 leading-relaxed" style={{ color: 'var(--theme-muted)' }}>
+                                {isYearlyOrFixed ? (
+                                    language === 'id' 
+                                        ? 'Berikut rincian biaya berdasarkan Periode Masa Aktif:'
+                                        : 'Here is the cost breakdown based on the Active Period:'
+                                ) : (
+                                    language === 'id' 
+                                        ? 'Pembayaran awal menyesuaikan tanggal pembelian kartu/layanan dan pilihan paket. Berikut rincian biaya awal berdasarkan periode pembelian:'
+                                        : 'Initial payment adjusts according to the purchase date and selected package. Here is the initial cost breakdown based on the purchase period:'
+                                )}
+                            </p>
+
+                            {/* Responsive Table */}
+                            <div className="overflow-x-auto rounded-xl border mb-6" style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 15%, transparent)' }}>
+                                <table className="w-full text-sm border-collapse text-left">
+                                    <thead>
+                                        <tr 
+                                            className="border-b font-extrabold uppercase tracking-wider text-[11px]"
+                                            style={{ 
+                                                background: 'color-mix(in srgb, var(--theme-primary) 6%, transparent)', 
+                                                borderColor: 'color-mix(in srgb, var(--theme-primary) 15%, transparent)',
+                                                color: 'var(--theme-muted)'
+                                            }}
+                                        >
+                                            <th className="py-3 px-4 font-black">Variant</th>
+                                            {uniquePeriodNames.map((name) => (
+                                                <th key={name} className="py-3 px-4 font-black whitespace-nowrap text-center">
+                                                    {translatePeriodName(name)}
+                                                </th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y font-medium" style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)' }}>
+                                        {product?.variants?.map((variant: any) => {
+                                            const periods = getBillingPeriods(variant);
+                                            return (
+                                                <tr key={variant.id} className="hover:bg-slate-50/40 transition-colors duration-150 border-b" style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)' }}>
+                                                    <td className="py-3.5 px-4 font-bold" style={{ color: 'var(--foreground)' }}>
+                                                        {variant.gb ? (variant.gb.toString().toUpperCase().includes('GB') ? variant.gb : `${variant.gb} GB`) : variant.nama}
+                                                        {Number(variant.monthly_price || 0) > 0 && (
+                                                            <span className="text-xs font-semibold opacity-70 ml-1.5">
+                                                                (¥{Number(variant.monthly_price).toLocaleString()}/{language === 'id' ? 'bln' : 'mo'})
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    {uniquePeriodNames.map((name) => {
+                                                        const p = periods.find((x: any) => x.nama === name);
+                                                        return (
+                                                            <td key={name} className="py-3.5 px-4 font-black text-center" style={{ color: 'var(--theme-primary)' }}>
+                                                                {p ? `¥${Number(p.initial_price || 0).toLocaleString()}` : '-'}
+                                                            </td>
+                                                        );
+                                                    })}
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Terms and Details Section */}
+                            <div className="space-y-4">
+                                <div className="h-[1px]" style={{ background: 'color-mix(in srgb, var(--theme-primary) 12%, transparent)' }} />
+                                <div className="text-xs space-y-4 font-semibold">
+                                    {/* Detail Pembayaran */}
+                                    {!isYearlyOrFixed && (
+                                        <div className="space-y-2">
+                                            <p className="font-bold text-[13px]" style={{ color: 'var(--foreground)' }}>
+                                                {language === 'id' ? 'Detail Pembayaran:' : 'Payment Details:'}
+                                            </p>
+                                            <ul className="list-disc pl-4 space-y-1 text-[11px] leading-relaxed" style={{ color: 'var(--theme-muted)' }}>
+                                                {product.type === 'monthly' && product.cycle_type && (
+                                                    <li className="font-bold text-[#cc0000]">
+                                                        {language === 'id' ? 'Siklus Pembayaran Per-Bulan: ' : 'Billing Cycle: '}
+                                                        {product.cycle_type.toUpperCase() === 'VT' ? 'Tanggal 20-28' : 
+                                                         product.cycle_type.toUpperCase() === 'GJ' ? 'Tanggal 18-24' : product.cycle_type.toUpperCase()}
+                                                    </li>
+                                                )}
+                                                <li>{language === 'id' ? 'Pembelian tanggal 1-10 : dapat kuota 1 bulan(bulan saat pembelian di lakukan)' : 'Purchase on 1st-10th : get 1 month quota (the month of purchase)'}</li>
+                                                <li>{language === 'id' ? 'Pembelian tanggal 11-19 : dapat kuota 2 bulan(bulan saat pembelian di lakukan dan bulan selanjutnya)' : 'Purchase on 11th-19th : get 2 months quota (month of purchase and the next month)'}</li>
+                                                <li>{language === 'id' ? 'Pembelian tanggal 20-31 : dapat kuota 2 bulan(bulan saat pembelian di lakukan dan bulan selanjutnya)' : 'Purchase on 20th-31st : get 2 months quota (month of purchase and the next month)'}</li>
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* Informasi Produk Tahunan */}
+                                    {isYearlyOrFixed && (
+                                        <div className="space-y-2">
+                                            <p className="font-bold text-[13px]" style={{ color: 'var(--foreground)' }}>
+                                                {language === 'id' ? 'Informasi Produk:' : 'Product Information:'}
+                                            </p>
+                                            <ul className="list-disc pl-4 space-y-1 text-[11px] leading-relaxed" style={{ color: 'var(--theme-muted)' }}>
+                                                <li>{language === 'id' ? 'Akan dapat Kuota Setiap Bulan' : 'Will receive quota every month'}</li>
+                                                <li>{language === 'id' ? 'Masa aktif terhitung sejak bulan pembelian' : 'The active period is calculated from the month of purchase'}</li>
+                                                <li>{language === 'id' ? 'Setiap bulan akan dapat kuota sesuai dengan varian yang dipilih' : 'You will receive the selected quota amount every month'}</li>
+                                                <li>{language === 'id' ? 'Data reset di tanggal 1 setiap bulannya' : 'Data resets on the 1st of every month'}</li>
+                                                <li>{language === 'id' ? 'Bisa diperpanjang minimal konfirmasi 2 bulan sebelum masa aktif habis' : 'Can be extended with confirmation at least 2 months before the active period expires'}</li>
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {/* 3. DOCOMO Rollover */}
+                                    {(product.provider?.nama || '').toUpperCase().includes('DOCOMO') && (
+                                        <div className="space-y-1">
+                                            <p className="font-bold text-[13px]" style={{ color: 'var(--foreground)' }}>
+                                                DATA ROLLOVER:
+                                            </p>
+                                            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--theme-muted)' }}>
+                                                {language === 'id' 
+                                                    ? 'Mulai tanggal 1 November, semua pesanan baru kuota kartu DOCOMO akan riset pada tanggal 16 setiap bulannya, jika kuota masih tersisa di bulan sebelumnya, bisa di gunakan di bulan seblumnya dengan maksimal sesuai kuota yang di pilih.' 
+                                                    : 'Starting November 1st, all new DOCOMO data card orders will reset on the 16th of each month. Any remaining quota from the previous month can be rolled over up to the maximum of your chosen plan.'}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 <div>
                     <div className="flex gap-2 mb-6 flex-wrap">
@@ -192,7 +439,7 @@ export default function ProductDetail({
                                 borderColor: 'rgba(15,23,42,0.12)',
                             }}
                         >
-                            {product.category?.nama}
+                            {translateDynamicText(product.category?.nama)}
                         </span>
                     </div>
 
@@ -207,7 +454,7 @@ export default function ProductDetail({
                         className="mb-10 whitespace-pre-line leading-relaxed text-base font-medium"
                         style={{ color: 'var(--theme-muted)' }}
                     >
-                        {product.deskripsi}
+                        {translateDynamicText(product.deskripsi)}
                     </p>
 
                     {/* VARIANT */}
@@ -250,14 +497,30 @@ export default function ProductDetail({
                                                 }`}>
                                                     {selected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
                                                 </div>
-                                                <span className="font-bold">{variant.gb}</span>
+                                                <span className="font-bold">
+                                                    {isSoftbank && !isYearlyOrFixed && !isJumbo && variant.gb.includes('100')
+                                                        ? (variant.gb.includes('Day') || variant.gb.includes('3.3')
+                                                            ? (language === 'id' ? '100GB (Batas Harian 3,3GB / Hari)' : '100GB (3.3GB / Day Daily Limit)')
+                                                            : (language === 'id' ? '100GB (Tanpa Limit Harian)' : '100GB (No Daily Limit)'))
+                                                        : variant.gb
+                                                    }
+                                                </span>
                                             </div>
-                                            <span className="font-display text-lg font-black">
-                                                ¥
-                                                {Number(
-                                                    variant.monthly_price || 0
-                                                ).toLocaleString('ja-JP')}
-                                            </span>
+                                            {!isYearlyOrFixed && (
+                                                <div className="text-right">
+                                                    <span className="font-display text-lg font-black block">
+                                                        ¥
+                                                        {Number(
+                                                            variant.monthly_price || 0
+                                                        ).toLocaleString('ja-JP')}
+                                                    </span>
+                                                    {Number(variant.monthly_price || 0) > 0 && (
+                                                        <span className="text-[10px] opacity-70 font-semibold block -mt-1">
+                                                            {language === 'id' ? '*Harga kuota bulanan' : '*Monthly quota price'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     </button>
                                 );
@@ -266,16 +529,18 @@ export default function ProductDetail({
                     </div>
 
                     {/* BILLING */}
-                    {billingPeriods.length > 0 && (
+                    {billingPeriods.filter((p: any) => !isYearlyOrFixed || Number(p.initial_price || 0) > 0).length > 0 && (
                         <div className="mb-10">
                             <h2
                                 className={sectionHeading}
                                 style={{ color: 'var(--theme-primary)' }}
                             >
-                                {t('billingPeriod')}
+                                {isYearlyOrFixed ? (language === 'id' ? 'Periode Masa Aktif' : 'Active Period') : t('billingPeriod')}
                             </h2>
                             <div className="space-y-3">
-                                {billingPeriods.map((period: any) => {
+                                {billingPeriods
+                                    .filter((p: any) => !isYearlyOrFixed || Number(p.initial_price || 0) > 0)
+                                    .map((period: any) => {
                                     const selected =
                                         selectedBilling?.id === period.id;
                                     return (
@@ -308,7 +573,10 @@ export default function ProductDetail({
                                                     }`}>
                                                         {selected && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
                                                     </div>
-                                                    <span className="font-bold">{period.nama}</span>
+                                                    <span className="font-bold">
+                                                        {language === 'id' ? (isYearlyOrFixed ? '' : 'Tanggal ') : (isYearlyOrFixed ? '' : 'Date ')}
+                                                        {translatePeriodName(period.nama)}
+                                                    </span>
                                                 </div>
                                                 <span className="font-display text-lg font-black">
                                                     ¥
@@ -431,6 +699,14 @@ export default function ProductDetail({
                     </button>
                 </div>
             </div>
+            {isLightboxOpen && product.thumbnail_url && (
+                <Lightbox
+                    images={[product.thumbnail_url]}
+                    initialIndex={0}
+                    isOpen={isLightboxOpen}
+                    onClose={() => setIsLightboxOpen(false)}
+                />
+            )}
         </div>
     );
 }

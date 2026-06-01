@@ -43,7 +43,7 @@
                 mb-3
             "
         >
-            Total Products
+            Total Produk
         </p>
 
         <h2
@@ -72,7 +72,7 @@
                 mb-3
             "
         >
-            Monthly Products
+            Produk Bulanan
         </p>
 
         <h2
@@ -102,7 +102,7 @@
                 mb-3
             "
         >
-            Yearly Products
+            Produk Tahunan
         </p>
 
         <h2
@@ -132,7 +132,7 @@
                 mb-3
             "
         >
-            Categories
+            Kategori
         </p>
 
         <h2
@@ -152,7 +152,7 @@
 <div
     class="
         grid
-        grid-cols-2
+        grid-cols-4
         gap-6
         mt-6
     "
@@ -173,7 +173,7 @@
                 mb-3
             "
         >
-            Providers
+            Provider
         </p>
 
         <h2
@@ -203,7 +203,7 @@
                 mb-3
             "
         >
-            Testimonials
+            Testimoni
         </p>
 
         <h2
@@ -214,6 +214,66 @@
             "
         >
             {{ $totalTestimonials }}
+        </h2>
+
+    </div>
+
+    <div
+        class="
+            bg-white
+            rounded-3xl
+            shadow
+            p-8
+        "
+    >
+
+        <p
+            class="
+                text-gray-500
+                mb-3
+            "
+        >
+            Promo
+        </p>
+
+        <h2
+            class="
+                text-5xl
+                font-black
+                text-red-500
+            "
+        >
+            {{ $totalPromos }}
+        </h2>
+
+    </div>
+
+    <div
+        class="
+            bg-white
+            rounded-3xl
+            shadow
+            p-8
+        "
+    >
+
+        <p
+            class="
+                text-gray-500
+                mb-3
+            "
+        >
+            Produk Wifi
+        </p>
+
+        <h2
+            class="
+                text-5xl
+                font-black
+                text-indigo-500
+            "
+        >
+            {{ $totalWifiProducts }}
         </h2>
 
     </div>

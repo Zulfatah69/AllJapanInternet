@@ -20,22 +20,40 @@ use Illuminate\Support\Facades\Storage;
 
 class MonthlyProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with([
+        $query = Product::with([
             'category',
             'provider',
         ])
-        ->where(
-            'type',
-            'monthly'
-        )
-        ->latest()
-        ->get();
+        ->where('type', 'monthly');
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('provider_id')) {
+            $query->where('provider_id', $request->provider_id);
+        }
+
+        if ($request->filled('cycle_type')) {
+            $query->where('cycle_type', $request->cycle_type);
+        }
+
+        $products = $query->latest()->get();
+        $categories = Category::whereIn('nama', [
+            'KARTU INTERNET BULANAN',
+            'E-SIM INTERNET BULANAN',
+            'POCKET WIFI',
+            'KARTU TELPON + DATA INTERNET',
+            'KARTU INTERNET BULANAN & E-SIM',
+            'KARTU INTERNET BULANAN UNTUK POCKET',
+        ])->get();
+        $providers = Provider::all();
 
         return view(
             'dashboard.monthly-products.index',
-            compact('products')
+            compact('products', 'categories', 'providers')
         );
     }
 
@@ -526,5 +544,31 @@ class MonthlyProductController extends Controller
         $monthly_product->delete();
 
         return back();
+    }
+
+    public function toggleActive(Product $product)
+    {
+        $product->update([
+            'is_active' => !$product->is_active
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $product->is_active,
+            'message' => 'Status produk berhasil diubah.'
+        ]);
+    }
+
+    public function toggleVariantActive(ProductVariant $variant)
+    {
+        $variant->update([
+            'is_active' => !$variant->is_active
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $variant->is_active,
+            'message' => 'Status varian berhasil diubah.'
+        ]);
     }
 }

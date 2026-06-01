@@ -82,7 +82,7 @@ export default function AboutSection() {
     return (
         <section
             id="about"
-            className="py-20 md:py-28 px-6 relative overflow-hidden"
+            className="py-12 md:py-16 px-6 relative overflow-hidden scroll-mt-20"
             style={{ background: currentTheme.bgGradient }}
         >
             {/* FLOATING SEASONAL PARTICLES - High-end dynamic ambient effect */}
@@ -229,61 +229,21 @@ export default function AboutSection() {
 
                     {/* Right Column: Dynamic Concept Stats Dashboard */}
                     <div className="lg:col-span-6 flex flex-col items-center justify-center space-y-8">
-                        {/* Concept Zen Emblem based on active theme */}
-                        <div className="relative w-40 h-40 flex items-center justify-center">
+                        {/* Custom Premium Logo Showcase */}
+                        <div className="relative w-40 h-40 flex items-center justify-center rounded-full bg-white/40 backdrop-blur-md shadow-lg border border-white/60 overflow-hidden group hover:scale-[1.03] transition-all duration-300">
                             {/* Rotating delicate halo background */}
                             <div
-                                className="absolute inset-0 rounded-full border border-dashed opacity-30 animate-spin"
+                                className="absolute -inset-1.5 rounded-full border border-dashed opacity-35 animate-spin"
                                 style={{
                                     borderColor: currentTheme.accentMid,
-                                    animationDuration: '30s',
+                                    animationDuration: '35s',
                                 }}
                             />
-
-                            {/* Theme emblem SVG */}
-                            {theme === 'spring' && (
-                                <svg className="w-28 h-28 drop-shadow-lg" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke={currentTheme.accentLight} strokeWidth="2.5" />
-                                    <circle cx="50" cy="50" r="35" fill="none" stroke={currentTheme.accentMid} strokeWidth="1" strokeDasharray="3 3" />
-                                    <path d="M50,15 C55,30 65,40 80,45 C65,50 55,60 50,75 C45,60 35,50 20,45 C35,40 45,30 50,15" fill={currentTheme.accentMid} opacity="0.8" />
-                                    <circle cx="28" cy="30" r="4" fill={currentTheme.accentDark} />
-                                    <circle cx="72" cy="65" r="3" fill={currentTheme.accentLight} />
-                                </svg>
-                            )}
-
-                            {theme === 'summer' && (
-                                <svg className="w-28 h-28 drop-shadow-lg" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke={currentTheme.accentLight} strokeWidth="2.5" />
-                                    {/* Abstract bamboo stalk & leaves */}
-                                    <path d="M45,85 L45,15" stroke={currentTheme.accentMid} strokeWidth="4" strokeLinecap="round" />
-                                    <path d="M45,50 C55,45 65,42 75,45" fill="none" stroke={currentTheme.accentMid} strokeWidth="3" strokeLinecap="round" />
-                                    <path d="M45,30 C30,28 20,32 15,40" fill="none" stroke={currentTheme.accentMid} strokeWidth="3" strokeLinecap="round" />
-                                    <circle cx="45" cy="50" r="2" fill="white" />
-                                    <circle cx="45" cy="30" r="2" fill="white" />
-                                </svg>
-                            )}
-
-                            {theme === 'autumn' && (
-                                <svg className="w-28 h-28 drop-shadow-lg" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke={currentTheme.accentLight} strokeWidth="2.5" />
-                                    {/* Traditional Seigaiha waves + maple shape */}
-                                    <path d="M25,65 C35,55 45,75 55,65 C65,55 75,75 85,65" fill="none" stroke={currentTheme.accentLight} strokeWidth="2" />
-                                    <path d="M15,75 C28,63 40,85 52,73 C65,61 78,83 90,71" fill="none" stroke={currentTheme.accentLight} strokeWidth="2" />
-                                    <path d="M50,22 L58,40 L78,40 L62,50 L68,68 L50,56 L32,68 L38,50 L22,40 L42,40 Z" fill={currentTheme.accentMid} opacity="0.85" />
-                                </svg>
-                            )}
-
-                            {theme === 'winter' && (
-                                <svg className="w-28 h-28 drop-shadow-lg" viewBox="0 0 100 100">
-                                    {/* Fuji silhouette inside circle */}
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke={currentTheme.accentLight} strokeWidth="2.5" />
-                                    <path d="M20,75 L42,42 L50,50 L58,42 L80,75 Z" fill={currentTheme.accentLight} opacity="0.5" />
-                                    <path d="M30,75 L50,30 L70,75 Z" fill={currentTheme.accentMid} opacity="0.7" />
-                                    <path d="M45,41 L50,30 L55,41 L50,45 Z" fill="white" /> {/* Snowcap */}
-                                    <circle cx="70" cy="28" r="4" fill={currentTheme.accentDark} />
-                                    <circle cx="28" cy="35" r="2.5" fill={currentTheme.accentLight} />
-                                </svg>
-                            )}
+                            <img
+                                src="/images/logoaji.png"
+                                alt="All Japan Internet Logo"
+                                className="w-full h-full object-cover rounded-full filter drop-shadow-sm transition-transform duration-700 group-hover:rotate-[360deg]"
+                            />
                         </div>
 
                         {/* Stat Badges Grid */}

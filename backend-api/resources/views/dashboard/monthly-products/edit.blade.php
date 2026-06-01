@@ -13,11 +13,11 @@
                 mb-2
             "
         >
-            Edit Monthly Product
+            Edit Produk Bulanan
         </h1>
 
         <p class="text-gray-500">
-            Update monthly internet product
+            Perbarui produk internet bulanan
         </p>
 
     </div>
@@ -49,7 +49,7 @@
                         mb-8
                     "
                 >
-                    Product Information
+                    Informasi Produk
                 </h2>
 
                 <div class="mb-6">
@@ -61,7 +61,7 @@
                             font-semibold
                         "
                     >
-                        Category
+                        Kategori
                     </label>
 
                     <select
@@ -147,7 +147,7 @@
                             font-semibold
                         "
                     >
-                        Product Name
+                        Nama Produk
                     </label>
 
                     <input
@@ -174,7 +174,7 @@
                             font-semibold
                         "
                     >
-                        Cycle Type
+                        Tipe Siklus
                     </label>
 
                     <select
@@ -215,7 +215,7 @@
                             font-semibold
                         "
                     >
-                        Description
+                        Deskripsi
                     </label>
 
                     <textarea
@@ -269,7 +269,7 @@
                                 font-semibold
                             "
                         >
-                            Delete Image
+                            Hapus Gambar
                         </a>
 
                     </div>
@@ -316,7 +316,7 @@
                     >
 
                     <label class="font-semibold">
-                        Best Seller
+                        Produk Terlaris
                     </label>
 
                 </div>
@@ -347,7 +347,7 @@
                                 font-black
                             "
                         >
-                            Variants
+                            Varian
                         </h2>
 
                         <button
@@ -362,7 +362,7 @@
                                 font-semibold
                             "
                         >
-                            + Add Variant
+                            + Tambah Varian
                         </button>
 
                     </div>
@@ -383,11 +383,18 @@
                                 "
                             >
 
-                                <input
-                                    type="hidden"
-                                    name="variants[{{ $index }}][id]"
-                                    value="{{ $variant->id }}"
-                                >
+                                <div class="flex justify-end items-center mb-4">
+                                    <input
+                                        type="hidden"
+                                        name="variants[{{ $index }}][id]"
+                                        value="{{ $variant->id }}"
+                                    >
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer toggle-variant-active" data-id="{{ $variant->id }}" {{ $variant->is_active ? 'checked' : '' }}>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-900">Aktif</span>
+                                    </label>
+                                </div>
 
                                 <div>
 
@@ -425,7 +432,7 @@
                                             font-semibold
                                         "
                                     >
-                                        Monthly Price
+                                        Harga Bulanan
                                     </label>
 
                                     <input
@@ -463,7 +470,7 @@
                                                     font-semibold
                                                 "
                                             >
-                                                {{ $period->nama }}
+                                                Tanggal {{ $period->nama }}
                                             </label>
 
                                             <input
@@ -509,7 +516,7 @@
                             mb-8
                         "
                     >
-                        Payment Methods
+                        Metode Pembayaran
                     </h2>
 
                     <div class="space-y-6">
@@ -571,7 +578,7 @@
                 text-lg
             "
         >
-            Update Product
+            Simpan Perubahan
         </button>
 
     </form>
@@ -648,7 +655,7 @@
                 <div>
 
                     <label class="block mb-2 font-semibold">
-                        Monthly Price
+                        Harga Bulanan
                     </label>
 
                     <input
@@ -751,6 +758,37 @@
             'click',
             addVariant
         );
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggles = document.querySelectorAll('.toggle-variant-active');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const variantId = this.getAttribute('data-id');
+                const isChecked = this.checked;
+                
+                fetch(`/dashboard/monthly-products/variants/${variantId}/toggle-active`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(!data.success) {
+                        this.checked = !isChecked; // revert
+                        alert('Gagal mengubah status varian');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    this.checked = !isChecked; // revert
+                    alert('Terjadi kesalahan');
+                });
+            });
+        });
+    });
 
 </script>
 

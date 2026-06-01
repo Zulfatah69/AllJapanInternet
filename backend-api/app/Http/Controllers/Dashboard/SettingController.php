@@ -29,67 +29,9 @@ class SettingController extends Controller
     {
         $setting = Setting::first();
 
-        $logo = $setting->logo;
-
-        if ($request->hasFile('logo')) {
-
-            $logo = $request
-                ->file('logo')
-                ->store(
-                    'settings',
-                    'public'
-                );
-        }
-
-        $favicon = $setting->favicon;
-
-        if ($request->hasFile('favicon')) {
-
-            $favicon = $request
-                ->file('favicon')
-                ->store(
-                    'settings',
-                    'public'
-                );
-        }
-
         $setting->update([
-
-            'website_name'
-                => $request->website_name,
-
-            'whatsapp'
-                => $request->whatsapp,
-
-            'telegram'
-                => $request->telegram,
-
-            'line'
-                => $request->line,
-
-            'email'
-                => $request->email,
-
-            'instagram'
-                => $request->instagram,
-
-            'tiktok'
-                => $request->tiktok,
-
-            'youtube'
-                => $request->youtube,
-
-            'footer_text'
-                => $request->footer_text,
-
-            'logo'
-                => $logo,
-
-            'favicon'
-                => $favicon,
-
-            'theme'
-                => $request->theme,
+            'whatsapp' => $request->whatsapp,
+            'theme' => $request->theme,
         ]);
 
         return back()->with(

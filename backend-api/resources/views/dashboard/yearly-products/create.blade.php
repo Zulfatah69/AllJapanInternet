@@ -20,7 +20,15 @@
             Create yearly internet product
         </p>
 
-    </div>
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-8 font-semibold">
+            <ul class="list-disc pl-5 space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form
         action="{{ route('yearly-products.store') }}"
@@ -406,7 +414,8 @@
                 <div
                     class="
                         grid
-                        grid-cols-5
+                        grid-cols-2
+                        lg:grid-cols-3
                         gap-4
                     "
                 >

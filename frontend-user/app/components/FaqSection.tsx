@@ -13,7 +13,6 @@ const faqKeys = [
     'faq5',
     'faq6',
     'faq7',
-    'faq8',
 ] as const;
 
 export default function FaqSection() {
@@ -23,7 +22,7 @@ export default function FaqSection() {
     return (
         <section
             id="faq"
-            className="py-20 md:py-28 px-6"
+            className="py-12 md:py-16 px-6 relative overflow-hidden scroll-mt-20"
             style={{ background: 'var(--background)' }}
         >
             <div className="max-w-3xl mx-auto">

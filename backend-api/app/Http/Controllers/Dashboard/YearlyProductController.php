@@ -18,27 +18,34 @@ use Illuminate\Support\Facades\Storage;
 
 class YearlyProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with([
-
+        $query = Product::with([
             'category',
-
             'provider',
-
             'variants.billingPeriods',
-
         ])
-        ->where(
-            'type',
-            'yearly'
-        )
-        ->latest()
-        ->get();
+        ->where('type', 'yearly');
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('provider_id')) {
+            $query->where('provider_id', $request->provider_id);
+        }
+
+        $products = $query->latest()->get();
+        $categories = Category::whereIn('nama', [
+            'KARTU INTERNET TAHUNAN',
+            'E-SIM INTERNET TAHUNAN',
+            'E-SIM TAHUNAN',
+        ])->get();
+        $providers = Provider::all();
 
         return view(
             'dashboard.yearly-products.index',
-            compact('products')
+            compact('products', 'categories', 'providers')
         );
     }
 
@@ -65,6 +72,13 @@ class YearlyProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'provider_id' => 'required|exists:providers,id',
+            'nama'        => 'required|max:255',
+            'thumbnail'   => 'nullable|image|max:2048',
+        ]);
+
         DB::beginTransaction();
 
         try {
@@ -302,6 +316,13 @@ class YearlyProductController extends Controller
         Product $yearly_product
     )
     {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'provider_id' => 'required|exists:providers,id',
+            'nama'        => 'required|max:255',
+            'thumbnail'   => 'nullable|image|max:2048',
+        ]);
+
         DB::beginTransaction();
 
         try {
@@ -581,5 +602,31 @@ class YearlyProductController extends Controller
         $yearly_product->delete();
 
         return back();
+    }
+
+    public function toggleActive(Product $product)
+    {
+        $product->update([
+            'is_active' => !$product->is_active
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $product->is_active,
+            'message' => 'Status produk berhasil diubah.'
+        ]);
+    }
+
+    public function toggleVariantActive(ProductVariant $variant)
+    {
+        $variant->update([
+            'is_active' => !$variant->is_active
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'is_active' => $variant->is_active,
+            'message' => 'Status varian berhasil diubah.'
+        ]);
     }
 }

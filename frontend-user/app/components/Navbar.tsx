@@ -69,11 +69,11 @@ export default function Navbar() {
             }
         `}>
             {/* Desktop Navbar (xl:flex, hidden on mobile/tablet) */}
-            <div className="hidden xl:flex max-w-7xl mx-auto px-6 py-4 items-center w-full justify-between">
+            <div className="hidden xl:flex w-full px-8 py-4 items-center justify-between">
                 {/* Left: Logo */}
                 <Link href="/#" className="flex items-center gap-3 shrink-0 group hover:scale-105 transition-transform duration-300">
                     <img
-                        src="/LOGO AJI.png"
+                        src="/images/logoaji.png"
                         alt="All Japan Internet"
                         className="w-11 h-11 rounded-full object-cover border border-black/10 shadow-md group-hover:shadow-lg transition-shadow"
                     />
@@ -124,7 +124,7 @@ export default function Navbar() {
                 {/* Left Side: Logo & Brand Title */}
                 <Link href="/#" className="flex items-center gap-2.5 shrink-0">
                     <img
-                        src="/LOGO AJI.png"
+                        src="/images/logoaji.png"
                         alt="All Japan Internet"
                         className="w-10 h-10 rounded-full object-cover border border-black/10"
                     />
@@ -199,14 +199,17 @@ export default function Navbar() {
                 </div>
 
                 {/* Drawer Links */}
-                <div className="flex flex-col gap-3 overflow-y-auto flex-1 pr-2 scrollbar-thin">
+                <div className="flex flex-col gap-2 flex-1 pb-10 overflow-y-auto">
                     {navLinks.map((link) => (
                         <a
                             key={link.href}
                             href={link.href}
                             onClick={() => setIsOpen(false)}
-                            className="py-2.5 px-3 rounded-lg text-sm font-semibold hover:bg-black/5 transition-all text-slate-700 dark:text-slate-300"
-                            style={{ color: 'var(--foreground)' }}
+                            className="py-3 px-4 rounded-xl text-base font-bold transition-all duration-300"
+                            style={{ 
+                                color: 'var(--foreground)',
+                                background: 'color-mix(in srgb, var(--theme-primary) 3%, transparent)'
+                            }}
                         >
                             {t(link.labelKey)}
                         </a>

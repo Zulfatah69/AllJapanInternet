@@ -13,14 +13,22 @@
                 mb-2
             "
         >
-            Edit Yearly Product
+            Edit Produk Tahunan
         </h1>
 
         <p class="text-gray-500">
-            Update yearly internet product
+            Perbarui produk internet tahunan
         </p>
 
-    </div>
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-8 font-semibold">
+            <ul class="list-disc pl-5 space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form
         action="{{ route('yearly-products.update', $product->id) }}"
@@ -49,13 +57,13 @@
                         mb-8
                     "
                 >
-                    Product Information
+                    Informasi Produk
                 </h2>
 
                 <div class="mb-6">
 
                     <label class="block mb-3 font-semibold">
-                        Category
+                        Kategori
                     </label>
 
                     <select
@@ -129,7 +137,7 @@
                 <div class="mb-6">
 
                     <label class="block mb-3 font-semibold">
-                        Product Name
+                        Nama Produk
                     </label>
 
                     <input
@@ -150,7 +158,7 @@
                 <div class="mb-6">
 
                     <label class="block mb-3 font-semibold">
-                        Description
+                        Deskripsi
                     </label>
 
                     <textarea
@@ -193,7 +201,7 @@
                                 font-semibold
                             "
                         >
-                            Delete Image
+                            Hapus Gambar
                         </button>
 
                     </div>
@@ -234,7 +242,7 @@
                     >
 
                     <label class="font-semibold">
-                        Best Seller
+                        Produk Terlaris
                     </label>
 
                 </div>
@@ -267,7 +275,7 @@
                                 font-black
                             "
                         >
-                            Variants
+                            Varian
                         </h2>
 
                         <button
@@ -282,7 +290,7 @@
                                 font-semibold
                             "
                         >
-                            + Add Variant
+                            + Tambah Varian
                         </button>
 
                     </div>
@@ -321,11 +329,18 @@
                                     ✕
                                 </button>
 
-                                <input
-                                    type="hidden"
-                                    name="variants[{{ $index }}][id]"
-                                    value="{{ $variant->id }}"
-                                >
+                                <div class="flex justify-end items-center mb-4">
+                                    <input
+                                        type="hidden"
+                                        name="variants[{{ $index }}][id]"
+                                        value="{{ $variant->id }}"
+                                    >
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer toggle-variant-active" data-id="{{ $variant->id }}" {{ $variant->is_active ? 'checked' : '' }}>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-900">Aktif</span>
+                                    </label>
+                                </div>
 
                                 <div>
 
@@ -336,7 +351,7 @@
                                             font-semibold
                                         "
                                     >
-                                        Variant Name
+                                        Nama Varian
                                     </label>
 
                                     <input
@@ -357,7 +372,8 @@
                                 <div
                                     class="
                                         grid
-                                        grid-cols-5
+                                        grid-cols-2
+                                        lg:grid-cols-3
                                         gap-4
                                     "
                                 >
@@ -444,7 +460,7 @@
                             mb-8
                         "
                     >
-                        Payment Methods
+                        Metode Pembayaran
                     </h2>
 
                     <div class="space-y-6">
@@ -509,7 +525,7 @@
                 text-lg
             "
         >
-            Update Product
+            Simpan Perubahan
         </button>
 
     </form>
@@ -561,7 +577,7 @@
                             font-semibold
                         "
                     >
-                        Variant Name
+                        Nama Varian
                     </label>
 
                     <input
@@ -581,7 +597,8 @@
                 <div
                     class="
                         grid
-                        grid-cols-5
+                        grid-cols-2
+                        lg:grid-cols-3
                         gap-4
                     "
                 >
@@ -731,7 +748,7 @@
         });
 function deleteImage() {
 
-    if(confirm('Delete image?')) {
+    if(confirm('Hapus gambar?')) {
 
         fetch(
             "{{ route('yearly-products.delete-image', $product->id) }}",
@@ -754,6 +771,38 @@ function deleteImage() {
         });
     }
 }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggles = document.querySelectorAll('.toggle-variant-active');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const variantId = this.getAttribute('data-id');
+                const isChecked = this.checked;
+                
+                fetch(`/dashboard/yearly-products/variants/${variantId}/toggle-active`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(!data.success) {
+                        this.checked = !isChecked; // revert
+                        alert('Gagal mengubah status varian');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    this.checked = !isChecked; // revert
+                    alert('Terjadi kesalahan');
+                });
+            });
+        });
+    });
+
 </script>
 
 @endsection

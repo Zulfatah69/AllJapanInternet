@@ -8,28 +8,33 @@ type ProductCatalogCardProps = {
         slug: string;
         nama: string;
         thumbnail_url?: string;
+        gambar_url?: string;
         category?: { nama?: string } | null;
         provider?: { nama?: string } | null;
         lowest_price?: number | null;
         type?: string;
+        cycle_type?: string;
         variants?: unknown[];
     };
     language: 'id' | 'en';
     href?: string;
 };
 
+import { useLanguage } from '@/app/context/LanguageContext';
+
 export default function ProductCatalogCard({
     product,
     language,
     href,
 }: ProductCatalogCardProps) {
+    const { translateDynamicText } = useLanguage();
     const link = href ?? `/products/${product.slug}`;
 
     return (
         <a href={link} className="premium-product-card group block">
-            <div className="overflow-hidden aspect-[4/3]">
+            <div className="overflow-hidden aspect-[16/9]">
                 <img
-                    src={product.thumbnail_url}
+                    src={product.thumbnail_url || product.gambar_url}
                     alt={product.nama}
                     className="w-full h-full object-cover"
                 />
@@ -39,7 +44,7 @@ export default function ProductCatalogCard({
                     className="text-xs font-semibold uppercase tracking-wider mb-2"
                     style={{ color: 'var(--theme-primary)' }}
                 >
-                    {product.category?.nama}
+                    {translateDynamicText(product.category?.nama)}
                 </p>
                 <h3
                     className="font-display text-lg md:text-xl mb-2"
@@ -47,12 +52,14 @@ export default function ProductCatalogCard({
                 >
                     {product.nama}
                 </h3>
-                {product.provider?.nama && (
+                {product.type === 'monthly' && product.cycle_type && (
                     <p
-                        className="text-sm mb-4"
+                        className="text-xs font-semibold mb-4"
                         style={{ color: 'var(--theme-muted)' }}
                     >
-                        {product.provider.nama}
+                        {language === 'id' ? 'Pembayaran Bulanan: ' : 'Monthly Payment: '}
+                        {product.cycle_type.toUpperCase() === 'VT' ? 'Tanggal 20-28' : 
+                         product.cycle_type.toUpperCase() === 'GJ' ? 'Tanggal 18-24' : product.cycle_type.toUpperCase()}
                     </p>
                 )}
                 <p

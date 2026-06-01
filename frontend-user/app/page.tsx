@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import api from './lib/api';
 import { getProducts } from './services/product.service';
 import { useLanguage } from './context/LanguageContext';
-import { splitCatalogProducts } from './lib/productGroups';
+import { splitCatalogProducts, isYearlyCategory, isPocketWifiCategory, isEsimCategory } from './lib/productGroups';
 import BenefitsSection from './components/BenefitsSection';
+import PromoCarousel from './components/PromoCarousel';
 import HowToSection from './components/HowToSection';
+import LoadingSpinner from './components/LoadingSpinner';
+import HomeWifiBanner from './components/HomeWifiBanner';
 import AboutSection from './components/AboutSection';
 import PaymentMethodsSection from './components/PaymentMethodsSection';
 import FaqSection from './components/FaqSection';
@@ -18,24 +21,118 @@ import {
     FaBook,
     FaShippingFast,
     FaBoxOpen,
+    FaEnvelope,
+    FaInstagram,
+    FaFacebook,
+    FaMapMarkerAlt,
+    FaClock,
+    FaChevronRight,
+    FaHeadset,
+    FaShareAlt,
 } from 'react-icons/fa';
 import { getSimpleProducts } from './lib/api';
+import Lightbox from './components/Lightbox';
 
 const FACEBOOK_URL_1 = 'https://www.facebook.com/all.japan.internet';
 const FACEBOOK_URL_2 = 'https://www.facebook.com/groups/all.japan.internet';
 
-export default function HomePage() {
-    const { language, t, theme } = useLanguage();
+const seasonalBackgrounds: Record<string, string> = {
+    spring: '/images/spring-background.png',
+    summer: '/images/summer-background.png',
+    autumn: '/images/autumn-background.png',
+    winter: '/images/winter-background.png',
+};
 
-    const [products, setProducts] = useState<any[]>([]);
-    const [promos, setPromos] = useState<any[]>([]);
+// Global cache to survive Next.js client-side navigations and Chrome Back button
+let cachedProducts: any[] | null = null;
+let cachedPromos: any[] | null = null;
+let cachedTestimonials: any[] | null = null;
+let cachedSimpleProducts: any[] | null = null;
+
+export default function HomePage() {
+    const { language, t, theme, isThemeReady, translateDynamicText } = useLanguage();
+
+    const getCategoryTitle = (items: any[], fallback: string) => {
+        const item = items.find(x => x.category?.nama);
+        const nama = item?.category?.nama || fallback;
+        return translateDynamicText(nama);
+    };
+
+    const getCategorySubtitle = (items: any[], fallback: string) => {
+        const item = items.find(x => x.category?.slug);
+        const slug = (item?.category?.slug || '').toLowerCase();
+        
+        if (slug.includes('bulanan') || slug.includes('monthly')) {
+            if (slug.includes('esim') || slug.includes('e-sim')) {
+                return language === 'id' 
+                    ? 'Paket eSIM dengan sistem bulanan fleksibel tanpa kontrak jangka panjang' 
+                    : 'eSIM packages with flexible monthly plans and no long-term contracts';
+            }
+            return language === 'id' 
+                ? 'Pilihan kartu SIM internet fisik bulanan praktis untuk pekerja dan pelajar' 
+                : 'Practical physical monthly internet SIM card options for workers and students';
+        }
+        
+        if (slug.includes('tahunan') || slug.includes('yearly') || slug.includes('annual')) {
+            if (slug.includes('esim') || slug.includes('e-sim')) {
+                return language === 'id' 
+                    ? 'Paket eSIM hemat jangka panjang aktif hingga 1 tahun penuh' 
+                    : 'Cost-effective long-term eSIM packages active for up to 1 full year';
+            }
+            return language === 'id' 
+                ? 'Kartu SIM internet fisik tahunan super hemat dengan kuota melimpah' 
+                : 'Super economical yearly physical internet SIM cards with abundant data quota';
+        }
+        
+        if (slug.includes('pocket') || slug.includes('portable') || slug.includes('wifi')) {
+            if (slug.includes('home')) {
+                return language === 'id' 
+                    ? 'Modem WiFi rumah tanpa kabel dengan koneksi stabil untuk keluarga' 
+                    : 'Wireless home WiFi modem with stable connection for family';
+            }
+            return language === 'id' 
+                ? 'Perangkat modem WiFi portable praktis yang bisa dibawa ke mana saja di Jepang' 
+                : 'Practical portable WiFi modem devices that you can carry anywhere in Japan';
+        }
+
+        return fallback;
+    };
+
+    const [products, setProducts] = useState<any[]>(cachedProducts || []);
+    const [isLoadingProducts, setIsLoadingProducts] = useState(!cachedProducts);
+    const [promos, setPromos] = useState<any[]>(cachedPromos || []);
     const [currentPromo, setCurrentPromo] = useState(0);
-    const [testimonials, setTestimonials] = useState<any[]>([]);
+    const [testimonials, setTestimonials] = useState<any[]>(cachedTestimonials || []);
     const [
         simpleProducts,
         setSimpleProducts
-    ] = useState<any[]>([]);
+    ] = useState<any[]>(cachedSimpleProducts || []);
     const [isMounted, setIsMounted] = useState(false);
+    const [heroParticles, setHeroParticles] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!isMounted) return;
+        
+        let count = 0;
+        if (theme === 'spring') count = 15;
+        else if (theme === 'winter') count = 20;
+        else if (theme === 'autumn') count = 12;
+        else if (theme === 'summer') count = 15;
+        
+        const generated = [...Array(count)].map((_, i) => ({
+            id: i,
+            left: `${Math.random() * 100}%`,
+            size: Math.random(),
+            delay: Math.random(),
+            duration: Math.random(),
+            rotation: `${Math.random() * 360}deg`
+        }));
+        
+        setHeroParticles(generated);
+    }, [theme, isMounted]);
+
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+    const [activeShippingTab, setActiveShippingTab] = useState<'info' | 'map'>('info');
     useEffect(() => {
         loadProducts();
         loadPromos();
@@ -55,45 +152,50 @@ export default function HomePage() {
     }, [promos]);
 
     async function loadProducts() {
+        if (!cachedProducts) setIsLoadingProducts(true);
         try {
             const data = await getProducts();
+            cachedProducts = data;
             setProducts(data);
-        } catch {
-            setProducts([]);
+        } catch (error) {
+            console.error('Failed to load products:', error);
+        } finally {
+            setIsLoadingProducts(false);
         }
     }
 
     async function loadPromos() {
+        if (cachedPromos) return;
         try {
             const response = await api.get('/promos');
-            setPromos(
-                Array.isArray(response.data)
-                    ? response.data
-                    : response.data?.data || []
-            );
-        } catch {
-            setPromos([]);
+            const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+            cachedPromos = data;
+            setPromos(data);
+        } catch (error) {
+            console.error('Failed to load promos:', error);
         }
     }
 
     async function loadTestimonials() {
+        if (cachedTestimonials) return;
         try {
             const response = await api.get('/testimonials');
-            setTestimonials(
-                Array.isArray(response.data)
-                    ? response.data
-                    : response.data?.data || []
-            );
-        } catch {
-            setTestimonials([]);
+            const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+            cachedTestimonials = data;
+            setTestimonials(data);
+        } catch (error) {
+            console.error('Failed to load testimonials:', error);
         }
     }
     async function loadSimpleProducts() {
+        if (cachedSimpleProducts) return;
         try {
             const data = await getSimpleProducts();
-            setSimpleProducts(Array.isArray(data) ? data : data?.data ?? []);
-        } catch {
-            setSimpleProducts([]);
+            const resData = Array.isArray(data) ? data : data?.data ?? [];
+            cachedSimpleProducts = resData;
+            setSimpleProducts(resData);
+        } catch (error) {
+            console.error('Failed to load simple products:', error);
         }
     }
 
@@ -102,171 +204,223 @@ export default function HomePage() {
         [products]
     );
 
-    const hasWifiCatalog =
-        wifiProducts.length > 0 || simpleProducts.length > 0;
+    const { monthlySim, monthlyEsim, yearlySim, yearlyEsim } = useMemo(() => {
+        const mSim: any[] = [];
+        const mEsim: any[] = [];
+        const ySim: any[] = [];
+        const yEsim: any[] = [];
+        
+        for (const prod of simEsimProducts) {
+            const isYearly = isYearlyCategory(prod);
+            const isEsim = isEsimCategory(prod);
+            
+            if (isYearly) {
+                if (isEsim) {
+                    yEsim.push(prod);
+                } else {
+                    ySim.push(prod);
+                }
+            } else {
+                if (isEsim) {
+                    mEsim.push(prod);
+                } else {
+                    mSim.push(prod);
+                }
+            }
+        }
+        
+        return {
+            monthlySim: mSim,
+            monthlyEsim: mEsim,
+            yearlySim: ySim,
+            yearlyEsim: yEsim
+        };
+    }, [simEsimProducts]);
+
+    const { pocketWifi, homeWifi } = useMemo(() => {
+        const pocket: any[] = [];
+        const home: any[] = [];
+        
+        for (const prod of wifiProducts) {
+            if (isPocketWifiCategory(prod)) {
+                pocket.push({ ...prod, isSimple: false });
+            } else {
+                home.push({ ...prod, isSimple: false });
+            }
+        }
+
+        for (const item of simpleProducts) {
+            if (isPocketWifiCategory(item)) {
+                pocket.push({ ...item, isSimple: true });
+            } else {
+                home.push({ ...item, isSimple: true });
+            }
+        }
+
+        return { pocketWifi: pocket, homeWifi: home };
+    }, [wifiProducts, simpleProducts]);
 
     return (
         <div className="overflow-x-hidden">
             {/* HERO */}
-            {promos.length > 0 && (
-                <section className="relative mt-0 min-h-screen overflow-hidden pt-24 flex items-center justify-center">
-                    {/* Smooth image crossfade slider */}
-                    <div className="absolute inset-0 z-0">
-                        {promos.map((promo, idx) => (
-                            <div
-                                key={promo.id || idx}
-                                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                                    idx === currentPromo ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                                }`}
-                            >
-                                <img
-                                    src={promo.gambar_url}
-                                    alt=""
-                                    className="w-full h-full object-cover transition-transform duration-[5000ms] ease-out"
-                                    style={{ transform: idx === currentPromo ? 'scale(1.02)' : 'scale(1.08)' }}
-                                />
-                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2.5px]" />
-                            </div>
-                        ))}
+            <section className="relative mt-0 min-h-screen overflow-hidden pt-24 flex items-center justify-center">
+                {/* Dynamic seasonal background image */}
+                {isMounted && isThemeReady && (
+                    <div className="absolute inset-0 z-0 animate-bg-fade-in">
+                        <img
+                            src={seasonalBackgrounds[theme] || '/images/winter-background.png'}
+                            alt="Seasonal Hero Background"
+                            className="w-full h-full object-cover animate-ken-burns"
+                        />
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2.5px]" />
                     </div>
+                )}
 
-                    {/* Floating Ambient seasonal particles over image background */}
+                {/* Floating Ambient seasonal particles over image background */}
+                {isMounted && isThemeReady && (
                     <div className="absolute inset-0 pointer-events-none select-none z-10 overflow-hidden">
-                        {isMounted && theme === 'spring' && (
+                        {theme === 'spring' && (
                             <>
-                                {[...Array(15)].map((_, i) => (
-                                    <svg
-                                        key={`hero-petal-${i}`}
-                                        className="absolute opacity-75"
-                                        style={{
-                                            left: `${Math.random() * 100}%`,
-                                            top: `-40px`,
-                                            width: `${10 + Math.random() * 12}px`,
-                                            height: `${10 + Math.random() * 12}px`,
-                                            fill: '#FF69B4',
-                                            animation: `float-sakura ${10 + Math.random() * 8}s linear infinite`,
-                                            animationDelay: `${Math.random() * 8}s`,
-                                        }}
-                                        viewBox="0 0 30 30"
-                                    >
-                                        <path d="M15 0 C25 10, 25 20, 15 30 C5 20, 5 10, 15 0" />
-                                    </svg>
-                                ))}
+                                {heroParticles.map((p) => {
+                                    const width = 10 + p.size * 12;
+                                    const duration = 10 + p.duration * 8;
+                                    const delay = p.delay * 8;
+                                    return (
+                                        <svg
+                                            key={`hero-petal-${p.id}`}
+                                            className="absolute opacity-75"
+                                            style={{
+                                                left: p.left,
+                                                top: `-40px`,
+                                                width: `${width}px`,
+                                                height: `${width}px`,
+                                                fill: '#FF69B4',
+                                                animation: `float-sakura ${duration}s linear infinite`,
+                                                animationDelay: `${delay}s`,
+                                            }}
+                                            viewBox="0 0 30 30"
+                                        >
+                                            <path d="M15 0 C25 10, 25 20, 15 30 C5 20, 5 10, 15 0" />
+                                        </svg>
+                                    );
+                                })}
                             </>
                         )}
-                        {isMounted && theme === 'winter' && (
+                        {theme === 'winter' && (
                             <>
-                                {[...Array(20)].map((_, i) => (
+                                {heroParticles.map((p) => {
+                                    const width = 3 + p.size * 5;
+                                    const duration = 8 + p.duration * 6;
+                                    const delay = p.delay * 6;
+                                    return (
+                                        <div
+                                            key={`hero-snow-${p.id}`}
+                                            className="absolute rounded-full bg-white opacity-60"
+                                            style={{
+                                                left: p.left,
+                                                top: `-20px`,
+                                                width: `${width}px`,
+                                                height: `${width}px`,
+                                                boxShadow: `0 0 6px #fff`,
+                                                animation: `float-snow ${duration}s linear infinite`,
+                                                animationDelay: `${delay}s`,
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </>
+                        )}
+                        {theme === 'autumn' && (
+                            <>
+                                {heroParticles.map((p) => {
+                                    const width = 14 + p.size * 10;
+                                    const duration = 11 + p.duration * 8;
+                                    const delay = p.delay * 8;
+                                    return (
+                                        <svg
+                                            key={`hero-leaf-${p.id}`}
+                                            className="absolute opacity-75"
+                                            style={{
+                                                left: p.left,
+                                                top: `-40px`,
+                                                width: `${width}px`,
+                                                height: `${width}px`,
+                                                fill: '#EA580C',
+                                                animation: `float-leaf ${duration}s linear infinite`,
+                                                animationDelay: `${delay}s`,
+                                                transform: `rotate(${p.rotation})`,
+                                            }}
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path d="M12 2C11.5 4 8.5 7 7 9C5.5 11 3 12 3 13.5C3 15.5 5 17 7 17C9 17 11 15 12 13.5C13 15 15 17 17 17C19 17 21 15.5 21 13.5C21 12 18.5 11 17 9C15.5 7 12.5 4 12 2Z" />
+                                        </svg>
+                                    );
+                                })}
+                            </>
+                        )}
+                        {theme === 'summer' && (
+                            <>
+                                {/* Glowing Sunlight Ray */}
+                                <div className="absolute inset-0 opacity-15 overflow-hidden">
                                     <div
-                                        key={`hero-snow-${i}`}
-                                        className="absolute rounded-full bg-white opacity-60"
+                                        className="absolute -top-[15%] -right-[15%] w-[80%] aspect-square rounded-full mix-blend-screen"
                                         style={{
-                                            left: `${Math.random() * 100}%`,
-                                            top: `-20px`,
-                                            width: `${3 + Math.random() * 5}px`,
-                                            height: `${3 + Math.random() * 5}px`,
-                                            boxShadow: `0 0 6px #fff`,
-                                            animation: `float-snow ${8 + Math.random() * 6}s linear infinite`,
-                                            animationDelay: `${Math.random() * 6}s`,
+                                            background: 'radial-gradient(circle, #FEF08A 0%, transparent 60%)',
+                                            animation: 'sunbeam-pulse 10s ease-in-out infinite',
                                         }}
                                     />
-                                ))}
+                                </div>
+                                {/* Sunlight Floating Particles */}
+                                {heroParticles.map((p) => {
+                                    const width = 6 + p.size * 14;
+                                    const duration = 12 + p.duration * 10;
+                                    const delay = p.delay * 8;
+                                    return (
+                                        <div
+                                            key={`hero-bokeh-${p.id}`}
+                                            className="absolute rounded-full mix-blend-screen"
+                                            style={{
+                                                left: p.left,
+                                                bottom: `-40px`,
+                                                width: `${width}px`,
+                                                height: `${width}px`,
+                                                background: 'radial-gradient(circle, rgba(254, 240, 138, 0.85) 0%, rgba(251, 191, 36, 0.3) 60%, transparent 100%)',
+                                                filter: 'blur(1px)',
+                                                boxShadow: '0 0 8px rgba(254, 240, 138, 0.35)',
+                                                animation: `float-bokeh ${duration}s ease-in-out infinite`,
+                                                animationDelay: `${delay}s`,
+                                            }}
+                                        />
+                                    );
+                                })}
                             </>
-                        )}
-                        {isMounted && theme === 'autumn' && (
-                            <>
-                                {[...Array(12)].map((_, i) => (
-                                    <svg
-                                        key={`hero-leaf-${i}`}
-                                        className="absolute opacity-75"
-                                        style={{
-                                            left: `${Math.random() * 100}%`,
-                                            top: `-40px`,
-                                            width: `${14 + Math.random() * 10}px`,
-                                            height: `${14 + Math.random() * 10}px`,
-                                            fill: '#EA580C',
-                                            animation: `float-leaf ${11 + Math.random() * 8}s linear infinite`,
-                                            animationDelay: `${Math.random() * 8}s`,
-                                            transform: `rotate(${Math.random() * 360}deg)`,
-                                        }}
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M12 2C11.5 4 8.5 7 7 9C5.5 11 3 12 3 13.5C3 15.5 5 17 7 17C9 17 11 15 12 13.5C13 15 15 17 17 17C19 17 21 15.5 21 13.5C21 12 18.5 11 17 9C15.5 7 12.5 4 12 2Z" />
-                                    </svg>
-                                ))}
-                            </>
-                        )}
-                        {isMounted && theme === 'summer' && (
-                            <div className="absolute inset-0 opacity-15 overflow-hidden">
-                                <div
-                                    className="absolute -top-[15%] -right-[15%] w-[80%] aspect-square rounded-full mix-blend-screen"
-                                    style={{
-                                        background: 'radial-gradient(circle, #FEF08A 0%, transparent 60%)',
-                                        animation: 'sunbeam-pulse 10s ease-in-out infinite',
-                                    }}
-                                />
-                            </div>
                         )}
                     </div>
+                )}
 
-                    {/* Premium Frosted Glass Text Overlay Card */}
-                    <div
-                        className="relative z-20 max-w-4xl mx-auto px-6 py-12 md:py-16 rounded-3xl border border-white/10 backdrop-blur-md text-center text-white premium-fade-up shadow-2xl bg-black/35"
-                        style={{
-                            boxShadow: `0 30px 70px -15px rgba(0,0,0,0.55), 0 0 30px ${
-                                theme === 'spring' ? 'rgba(255, 105, 180, 0.35)' :
-                                theme === 'summer' ? 'rgba(234, 179, 8, 0.25)' :
-                                theme === 'autumn' ? 'rgba(234, 88, 12, 0.3)' :
-                                'rgba(56, 189, 248, 0.35)'
-                            }`,
-                        }}
-                    >
-                        <p className="premium-eyebrow text-white/90 mb-4 tracking-widest font-bold text-xs md:text-sm">
-                            {t('heroEyebrow')}
-                        </p>
-                        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl mb-6 max-w-4xl font-extrabold leading-tight tracking-tight drop-shadow-md text-white">
-                            {t('heroTitle')}
-                        </h1>
+                {/* Centered Hero Content (staggered animated reveals) */}
+                <div className="relative z-20 max-w-4xl mx-auto px-6 text-center text-white">
+                    <p className="premium-eyebrow text-white/90 mb-4 tracking-widest font-bold text-xs md:text-sm animate-reveal-eyebrow">
+                        {t('heroEyebrow')}
+                    </p>
+                    <h1 className="font-display text-4xl md:text-6xl lg:text-7xl mb-6 max-w-4xl font-extrabold leading-tight tracking-tight drop-shadow-md text-white animate-reveal-title">
+                        {t('heroTitle')}
+                    </h1>
+                    <div className="animate-reveal-desc">
                         <p className="text-lg md:text-xl text-white/90 mb-3 max-w-2xl mx-auto font-medium">
                             {t('heroDesc')}
                         </p>
                         <p className="text-sm md:text-base text-white/70 mb-10 mx-auto tracking-wide font-light">
                             {t('tagline')}
                         </p>
+                    </div>
+                    <div className="animate-reveal-btn">
                         <a href="#products" className="premium-btn text-sm md:text-base px-8 py-4 font-bold shadow-lg hover:scale-105 active:scale-95 transition-transform duration-200">
                             {t('heroCta')}
                         </a>
                     </div>
-
-                    {/* Slider dot navigation + horizontal loading bar */}
-                    <div className="absolute bottom-10 left-0 right-0 z-20 flex flex-col items-center gap-4">
-                        {/* Dot Navigation */}
-                        <div className="flex gap-2">
-                            {promos.map((_, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => setCurrentPromo(idx)}
-                                    className={`h-2 rounded-full transition-all duration-300 ${
-                                        idx === currentPromo ? 'w-8 bg-white' : 'w-2 bg-white/40 hover:bg-white/60'
-                                    }`}
-                                    aria-label={`Go to slide ${idx + 1}`}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Active Progress bar */}
-                        <div className="w-32 h-0.5 bg-white/20 rounded-full overflow-hidden">
-                            <div
-                                key={currentPromo} /* Re-triggers animation on slide change */
-                                className="h-full bg-white transition-all rounded-full"
-                                style={{
-                                    animation: 'hero-progress 5s linear forwards',
-                                }}
-                            />
-                        </div>
-                    </div>
-                </section>
-            )}
+                </div>
+            </section>
 
             <AboutSection />
 
@@ -274,32 +428,47 @@ export default function HomePage() {
 
             <section
                 id="products"
-                className="py-20 md:py-28 px-6"
+                className="py-12 md:py-16 px-6 scroll-mt-20"
                 style={{ background: 'var(--background)' }}
             >
                 <div className="max-w-7xl mx-auto">
+                    {/* PROMO CAROUSEL */}
+                    {promos && promos.length > 0 && (
+                        <div className="mb-12">
+                            <PromoCarousel promos={promos} />
+                        </div>
+                    )}
+                    
                     <SectionHeader
                         eyebrow={t('productsEyebrow')}
                         title={t('productsTitle')}
                         subtitle={t('productsSubtitle')}
                     />
-
-                    {simEsimProducts.length > 0 && (
-                        <div className="mb-16 md:mb-20">
-                            <h3
-                                className="font-display text-2xl md:text-3xl mb-2"
-                                style={{ color: 'var(--foreground)' }}
-                            >
-                                {t('productsSimTitle')}
-                            </h3>
+                    {/* Products Grid Sections */}
+                    {isLoadingProducts ? (
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#38bdf8] mb-4"></div>
+                            <p className="text-slate-500 font-medium">{language === 'id' ? 'Memuat produk...' : 'Loading products...'}</p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Monthly SIM Section */}
+                            {monthlySim.length > 0 && (
+                                <div className="mb-16 md:mb-20">
+                                    <h3
+                                        className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
+                                        style={{ color: 'var(--foreground)' }}
+                                    >
+                                        {getCategoryTitle(monthlySim, 'Kartu SIM Bulanan')}
+                                    </h3>
                             <p
-                                className="text-sm mb-8"
+                                className="text-sm mb-8 text-slate-500"
                                 style={{ color: 'var(--theme-muted)' }}
                             >
-                                {t('productsSimSubtitle')}
+                                {getCategorySubtitle(monthlySim, 'Pilihan kartu SIM internet fisik bulanan praktis')}
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {simEsimProducts.map((product) => (
+                                {monthlySim.map((product) => (
                                     <ProductCatalogCard
                                         key={product.id}
                                         product={product}
@@ -310,37 +479,141 @@ export default function HomePage() {
                         </div>
                     )}
 
-                    {hasWifiCatalog && (
-                        <div>
+                    {/* Monthly eSIM Section */}
+                    {monthlyEsim.length > 0 && (
+                        <div className="mb-16 md:mb-20">
                             <h3
-                                className="font-display text-2xl md:text-3xl mb-2"
+                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
                                 style={{ color: 'var(--foreground)' }}
                             >
-                                {t('productsWifiTitle')}
+                                {getCategoryTitle(monthlyEsim, 'eSIM Internet Bulanan')}
                             </h3>
                             <p
-                                className="text-sm mb-8"
+                                className="text-sm mb-8 text-slate-500"
                                 style={{ color: 'var(--theme-muted)' }}
                             >
-                                {t('productsWifiSubtitle')}
+                                {getCategorySubtitle(monthlyEsim, 'Paket eSIM dengan sistem bulanan fleksibel tanpa kontrak')}
                             </p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {wifiProducts.map((product) => (
+                                {monthlyEsim.map((product) => (
                                     <ProductCatalogCard
                                         key={product.id}
                                         product={product}
                                         language={language}
                                     />
                                 ))}
-                                {simpleProducts.map((item) => (
-                                    <SimpleWifiCard
-                                        key={`simple-${item.id}`}
-                                        item={item}
-                                        whatsappLabel={t('wifiAskWhatsapp')}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Yearly SIM Section */}
+                    {yearlySim.length > 0 && (
+                        <div className="mb-16 md:mb-20">
+                            <h3
+                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
+                                style={{ color: 'var(--foreground)' }}
+                            >
+                                {getCategoryTitle(yearlySim, 'Kartu SIM Tahunan')}
+                            </h3>
+                            <p
+                                className="text-sm mb-8 text-slate-500"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {getCategorySubtitle(yearlySim, 'Kartu SIM internet fisik tahunan hemat')}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                                {yearlySim.map((product) => (
+                                    <ProductCatalogCard
+                                        key={product.id}
+                                        product={product}
+                                        language={language}
                                     />
                                 ))}
                             </div>
                         </div>
+                    )}
+
+                    {/* Yearly eSIM Section */}
+                    {yearlyEsim.length > 0 && (
+                        <div className="mb-16 md:mb-20">
+                            <h3
+                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
+                                style={{ color: 'var(--foreground)' }}
+                            >
+                                {getCategoryTitle(yearlyEsim, 'eSIM Internet Tahunan')}
+                            </h3>
+                            <p
+                                className="text-sm mb-8 text-slate-500"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {getCategorySubtitle(yearlyEsim, 'Paket eSIM hemat jangka panjang aktif hingga 1 tahun penuh')}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                                {yearlyEsim.map((product) => (
+                                    <ProductCatalogCard
+                                        key={product.id}
+                                        product={product}
+                                        language={language}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Pocket WiFi Section */}
+                    {pocketWifi.length > 0 && (
+                        <div className="mb-16 md:mb-20">
+                            <h3
+                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
+                                style={{ color: 'var(--foreground)' }}
+                            >
+                                {getCategoryTitle(pocketWifi, 'Pocket WiFi')}
+                            </h3>
+                            <p
+                                className="text-sm mb-8 text-slate-500"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {getCategorySubtitle(pocketWifi, 'Perangkat modem WiFi portable praktis')}
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                                {pocketWifi.map((item) => (
+                                    item.isSimple ? (
+                                        <SimpleWifiCard
+                                            key={`simple-${item.id}`}
+                                            item={item}
+                                            whatsappLabel={t('wifiAskWhatsapp')}
+                                        />
+                                    ) : (
+                                        <ProductCatalogCard
+                                            key={item.id}
+                                            product={item}
+                                            language={language}
+                                        />
+                                    )
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Home WiFi Section */}
+                    {homeWifi.length > 0 && (
+                        <div>
+                            <h3
+                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
+                                style={{ color: 'var(--foreground)' }}
+                            >
+                                {getCategoryTitle(homeWifi, 'Home WiFi')}
+                            </h3>
+                            <p
+                                className="text-sm mb-8 text-slate-500"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {getCategorySubtitle(homeWifi, 'Modem WiFi rumah tanpa kabel dengan koneksi stabil')}
+                            </p>
+                            <HomeWifiBanner products={homeWifi} />
+                        </div>
+                    )}
+                    </>
                     )}
                 </div>
             </section>
@@ -352,7 +625,7 @@ export default function HomePage() {
             {/* GUIDE */}
             <section
                 id="guide"
-                className="py-20 md:py-28 px-6 premium-mesh text-center"
+                className="py-12 md:py-16 px-6 premium-mesh text-center scroll-mt-20"
             >
                 <div className="max-w-3xl mx-auto premium-fade-up">
                     <FaBook
@@ -377,7 +650,7 @@ export default function HomePage() {
                             href="/Buku Panduan Tahunan.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="premium-btn-outline"
+                            className="premium-btn"
                         >
                             {t('guideYearly')}
                         </a>
@@ -388,7 +661,7 @@ export default function HomePage() {
             {/* SHIPPING */}
             <section
                 id="shipping"
-                className="py-20 md:py-28 px-6"
+                className="py-12 md:py-16 px-6 scroll-mt-20"
                 style={{ background: 'var(--theme-section)' }}
             >
                 <div className="max-w-7xl mx-auto">
@@ -398,94 +671,180 @@ export default function HomePage() {
                         subtitle={t('shippingSubtitle')}
                     />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                        <div className="premium-card p-8 md:p-10">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div
-                                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl text-white"
-                                    style={{ background: 'var(--theme-primary)' }}
+                    {/* Tab Switcher */}
+                    <div className="flex justify-center gap-3 mb-12 flex-wrap">
+                        {(['info', 'map'] as const).map((tab) => {
+                            const isActive = activeShippingTab === tab;
+                            const label = tab === 'info'
+                                ? (language === 'id' ? 'Info Rute Pengiriman' : 'Shipping Route Info')
+                                : (language === 'id' ? 'Peta Pengiriman' : 'Shipping Map');
+                            return (
+                                <button
+                                    key={tab}
+                                    onClick={() => setActiveShippingTab(tab)}
+                                    className={`px-6 py-3 rounded-full text-xs md:text-sm font-bold uppercase tracking-wider transition-all duration-300 border ${
+                                        isActive
+                                            ? 'border-transparent text-white'
+                                            : 'hover:opacity-90 shadow-sm'
+                                    }`}
+                                    style={
+                                        isActive
+                                            ? {
+                                                  background: 'var(--theme-primary)',
+                                                  boxShadow: '0 8px 24px var(--theme-glow)',
+                                              }
+                                            : {
+                                                  background: 'var(--theme-accent-soft)',
+                                                  borderColor: 'color-mix(in srgb, var(--theme-primary) 25%, transparent)',
+                                                  color: 'var(--theme-muted)',
+                                              }
+                                    }
                                 >
-                                    <FaShippingFast />
-                                </div>
-                                <div>
-                                    <h3
-                                        className="font-display text-xl md:text-2xl"
-                                        style={{ color: 'var(--foreground)' }}
-                                    >
-                                        COD 1 Hari
-                                    </h3>
-                                    <p
-                                        className="text-sm"
-                                        style={{ color: 'var(--theme-muted)' }}
-                                    >
-                                        Transfer 1-2 Hari
-                                    </p>
-                                </div>
-                            </div>
-                            <p
-                                className="leading-relaxed text-sm md:text-base"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                Tokyo, Kanagawa, Chiba, Saitama, Tochigi, Gunma,
-                                Ibaraki, Fukushima, Miyagi, Yamagata, Akita,
-                                Aomori, Iwate, Nagano, Shizuoka, Gifu, Aichi,
-                                Yamanashi, Fukui, Ishikawa, Toyama, dan Niigata.
-                            </p>
-                        </div>
-
-                        <div className="premium-card p-8 md:p-10">
-                            <div className="flex items-center gap-4 mb-6">
-                                <div
-                                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl text-white"
-                                    style={{ background: 'var(--theme-primary)' }}
-                                >
-                                    <FaBoxOpen />
-                                </div>
-                                <div>
-                                    <h3
-                                        className="font-display text-xl md:text-2xl"
-                                        style={{ color: 'var(--foreground)' }}
-                                    >
-                                        COD 2 Hari
-                                    </h3>
-                                    <p
-                                        className="text-sm"
-                                        style={{ color: 'var(--theme-muted)' }}
-                                    >
-                                        Transfer 2-3 Hari
-                                    </p>
-                                </div>
-                            </div>
-                            <p
-                                className="leading-relaxed text-sm md:text-base"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                Hokkaido, Kyoto, Osaka, Nara, Hyogo, Shiga, Mie,
-                                Hiroshima, Okayama, Shimane, Tottori, Yamaguchi,
-                                Tokushima, Kagawa, Ehime, Kochi, Fukuoka,
-                                Nagasaki, Kumamoto, Oita, Miyazaki, Kagoshima,
-                                Okinawa.
-                            </p>
-                        </div>
+                                    {label}
+                                </button>
+                            );
+                        })}
                     </div>
 
-                    <div
-                        className="premium-card mt-8 p-8 text-center"
-                        style={{
-                            borderColor: 'var(--theme-primary)',
-                            boxShadow: `0 8px 32px var(--theme-glow)`,
-                        }}
-                    >
-                        <h3
-                            className="font-display text-xl mb-3"
-                            style={{ color: 'var(--foreground)' }}
-                        >
-                            {t('shippingNoteTitle')}
-                        </h3>
-                        <p style={{ color: 'var(--theme-muted)' }}>
-                            {t('shippingNote')}
-                        </p>
-                    </div>
+                    {/* Dynamic Shipping Content based on tab selection */}
+                    {activeShippingTab === 'map' ? (
+                        <div className="premium-card p-6 flex flex-col items-center justify-center overflow-hidden group max-w-4xl mx-auto premium-fade-up">
+                            <h3 className="font-display text-lg md:text-xl font-bold mb-6 text-center" style={{ color: 'var(--foreground)' }}>
+                                {language === 'id' ? 'Peta Rute & Durasi Pengiriman Jepang' : 'Japan Shipping Route & Duration Map'}
+                            </h3>
+                            <div 
+                                onClick={() => setIsLightboxOpen(true)}
+                                className="relative w-full overflow-hidden rounded-2xl flex items-center justify-center bg-black/5 dark:bg-white/5 p-4 cursor-pointer border border-white/5 hover:border-sky-500/30 transition-all duration-300 shadow-inner"
+                            >
+                                <img
+                                    src="/images/japan-shipping-map.png"
+                                    alt="Japan Shipping Map"
+                                    className="w-full h-auto max-h-[550px] object-contain rounded-xl transition-transform duration-500 group-hover:scale-[1.01]"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 dark:group-hover:bg-white/5 flex items-center justify-center transition-all duration-300">
+                                    <span className="bg-sky-500/90 text-white text-xs px-3 py-1.5 rounded-full font-semibold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg">
+                                        {language === 'id' ? 'Buka Peta Penuh' : 'Open Full Map'}
+                                    </span>
+                                </div>
+                            </div>
+                            <p className="text-xs text-center mt-4" style={{ color: 'var(--theme-muted)' }}>
+                                {language === 'id' ? '* Ketuk gambar untuk memperbesar rute pengiriman.' : '* Tap image to zoom routing details.'}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="max-w-5xl mx-auto space-y-8 premium-fade-up">
+                            {/* 2-Column Grid for Shipping Cards */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                {/* Card 1: COD 1 Hari */}
+                                <div className="premium-card p-8 md:p-10 flex flex-col justify-between h-full group">
+                                    <div>
+                                        <div className="flex items-start justify-between gap-3 mb-6">
+                                            <div
+                                                className="shrink-0 rounded-xl flex items-center justify-center text-white w-14 h-14 text-2xl transition-transform duration-300 group-hover:scale-105 shadow-md"
+                                                style={{
+                                                    background: 'var(--theme-primary)',
+                                                    boxShadow: `0 8px 20px var(--theme-glow)`,
+                                                }}
+                                            >
+                                                <FaShippingFast />
+                                            </div>
+                                            <span className="benefit-number leading-none">
+                                                01
+                                            </span>
+                                        </div>
+
+                                        <h3
+                                            className="font-display mb-1 mt-6 text-xl md:text-2xl font-bold"
+                                            style={{ color: 'var(--foreground)' }}
+                                        >
+                                            COD 1 Hari
+                                        </h3>
+                                        <p
+                                            className="text-sm font-semibold mb-4"
+                                            style={{ color: 'var(--theme-muted)' }}
+                                        >
+                                            Transfer 1-2 Hari
+                                        </p>
+
+                                        <p
+                                            className="leading-relaxed text-sm md:text-base"
+                                            style={{ color: 'var(--theme-muted)' }}
+                                        >
+                                            Tokyo, Kanagawa, Chiba, Saitama, Tochigi, Gunma,
+                                            Ibaraki, Fukushima, Miyagi, Yamagata, Akita,
+                                            Aomori, Iwate, Nagano, Shizuoka, Gifu, Aichi,
+                                            Yamanashi, Fukui, Ishikawa, Toyama, dan Niigata.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Card 2: COD 2 Hari */}
+                                <div className="premium-card p-8 md:p-10 flex flex-col justify-between h-full group">
+                                    <div>
+                                        <div className="flex items-start justify-between gap-3 mb-6">
+                                            <div
+                                                className="shrink-0 rounded-xl flex items-center justify-center text-white w-14 h-14 text-2xl transition-transform duration-300 group-hover:scale-105 shadow-md"
+                                                style={{
+                                                    background: 'var(--theme-primary)',
+                                                    boxShadow: `0 8px 20px var(--theme-glow)`,
+                                                }}
+                                            >
+                                                <FaBoxOpen />
+                                            </div>
+                                            <span className="benefit-number leading-none">
+                                                02
+                                            </span>
+                                        </div>
+
+                                        <h3
+                                            className="font-display mb-1 mt-6 text-xl md:text-2xl font-bold"
+                                            style={{ color: 'var(--foreground)' }}
+                                        >
+                                            COD 2 Hari
+                                        </h3>
+                                        <p
+                                            className="text-sm font-semibold mb-4"
+                                            style={{ color: 'var(--theme-muted)' }}
+                                        >
+                                            Transfer 2-3 Hari
+                                        </p>
+
+                                        <p
+                                            className="leading-relaxed text-sm md:text-base"
+                                            style={{ color: 'var(--theme-muted)' }}
+                                        >
+                                            Hokkaido, Kyoto, Osaka, Nara, Hyogo, Shiga, Mie,
+                                            Hiroshima, Okayama, Shimane, Tottori, Yamaguchi,
+                                            Tokushima, Kagawa, Ehime, Kochi, Fukuoka,
+                                            Nagasaki, Kumamoto, Oita, Miyazaki, Kagoshima,
+                                            Okinawa.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                className="premium-card p-8 text-center flex items-center gap-4 justify-center border-l-4"
+                                style={{
+                                    borderColor: 'var(--theme-primary)',
+                                    boxShadow: `0 8px 32px var(--theme-glow)`,
+                                }}
+                            >
+                                <p className="text-sm leading-relaxed" style={{ color: 'var(--theme-muted)' }}>
+                                    <strong>{t('shippingNoteTitle')}:</strong> {t('shippingNote')}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {isLightboxOpen && (
+                        <Lightbox
+                            images={['/images/japan-shipping-map.png']}
+                            initialIndex={0}
+                            isOpen={isLightboxOpen}
+                            onClose={() => setIsLightboxOpen(false)}
+                        />
+                    )}
                 </div>
             </section>
 
@@ -521,7 +880,7 @@ export default function HomePage() {
             {/* CONTACT */}
             <section
                 id="contact"
-                className="py-20 md:py-28 px-6"
+                className="py-20 md:py-28 px-6 scroll-mt-20"
                 style={{ background: 'var(--background)' }}
             >
                 <div className="max-w-5xl mx-auto">
@@ -531,102 +890,289 @@ export default function HomePage() {
                         subtitle={t('contactSubtitle')}
                     />
 
-                    <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-                        <div className="premium-card p-8 space-y-5">
-                            <p>
-                                <span
-                                    className="font-semibold block mb-1"
-                                    style={{ color: 'var(--foreground)' }}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+                        {/* Card 1: Hubungi Kami */}
+                        <div
+                            className="premium-card p-6 md:p-8 flex flex-col h-full border group hover:-translate-y-1.5 transition-all duration-300"
+                            style={{
+                                background: 'rgba(255, 255, 255, 0.45)',
+                                backdropFilter: 'blur(16px)',
+                                WebkitBackdropFilter: 'blur(16px)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 8%, transparent)',
+                                boxShadow: '0 8px 32px rgba(15, 23, 42, 0.04)',
+                            }}
+                        >
+                            <div className="flex items-center gap-4 mb-6">
+                                <div
+                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-[360deg]"
+                                    style={{
+                                        background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                        boxShadow: '0 8px 24px var(--theme-glow)',
+                                    }}
                                 >
-                                    {t('contactWhatsapp')}
-                                </span>
-                                <span style={{ color: 'var(--theme-muted)' }}>
-                                    +81 80-7555-8719
-                                </span>
-                            </p>
-                            <p>
-                                <span
-                                    className="font-semibold block mb-1"
-                                    style={{ color: 'var(--foreground)' }}
+                                    <FaHeadset className="text-xl" />
+                                </div>
+                                <h3 className="font-display font-extrabold text-xl tracking-tight" style={{ color: 'var(--foreground)' }}>
+                                    {language === 'id' ? 'Hubungi Kami' : 'Contact Us'}
+                                </h3>
+                            </div>
+
+                            <div className="space-y-4 w-full flex-grow">
+                                {/* WhatsApp Item */}
+                                <a
+                                    href="https://wa.me/818075558719"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 hover:bg-white hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 no-underline group/item w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
                                 >
-                                    {t('contactEmail')}
-                                </span>
-                                <span style={{ color: 'var(--theme-muted)' }}>
-                                    Alljapaninternet@gmail.com
-                                </span>
-                            </p>
-                            <p>
-                                <span
-                                    className="font-semibold block mb-1"
-                                    style={{ color: 'var(--foreground)' }}
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0 transition-transform duration-300 group-hover/item:scale-110"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
+                                    >
+                                        <FaWhatsapp />
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            WhatsApp
+                                        </span>
+                                        <span className="text-sm font-extrabold transition-colors group-hover/item:text-primary" style={{ color: 'var(--theme-muted)' }}>
+                                            +81 80-7555-8719
+                                        </span>
+                                    </div>
+                                </a>
+
+                                {/* Email Item */}
+                                <a
+                                    href="mailto:Alljapaninternet@gmail.com"
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 hover:bg-white hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 no-underline group/item w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
                                 >
-                                    {t('contactInstagram')}
-                                </span>
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 transition-transform duration-300 group-hover/item:scale-110"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
+                                    >
+                                        <FaEnvelope />
+                                    </div>
+                                    <div className="text-left min-w-0">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            Email
+                                        </span>
+                                        <span className="text-[13px] font-extrabold block truncate transition-colors group-hover/item:text-primary" style={{ color: 'var(--theme-muted)' }}>
+                                            Alljapaninternet@gmail.com
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Card 2: Sosial Media */}
+                        <div
+                            className="premium-card p-6 md:p-8 flex flex-col h-full border group hover:-translate-y-1.5 transition-all duration-300"
+                            style={{
+                                background: 'rgba(255, 255, 255, 0.45)',
+                                backdropFilter: 'blur(16px)',
+                                WebkitBackdropFilter: 'blur(16px)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 8%, transparent)',
+                                boxShadow: '0 8px 32px rgba(15, 23, 42, 0.04)',
+                            }}
+                        >
+                            <div className="flex items-center gap-4 mb-6">
+                                <div
+                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-[360deg]"
+                                    style={{
+                                        background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                        boxShadow: '0 8px 24px var(--theme-glow)',
+                                    }}
+                                >
+                                    <FaShareAlt className="text-lg" />
+                                </div>
+                                <h3 className="font-display font-extrabold text-xl tracking-tight" style={{ color: 'var(--foreground)' }}>
+                                    {language === 'id' ? 'Media Sosial' : 'Social Media'}
+                                </h3>
+                            </div>
+
+                            <div className="space-y-4 w-full flex-grow">
+                                {/* Instagram Item */}
                                 <a
                                     href="https://www.instagram.com/all_japan_internet"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:underline"
-                                    style={{ color: 'var(--theme-muted)' }}
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 hover:bg-white hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 no-underline group/item w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
                                 >
-                                    @all_japan_internet
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 transition-transform duration-300 group-hover/item:scale-110"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
+                                    >
+                                        <FaInstagram />
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            Instagram
+                                        </span>
+                                        <span className="text-sm font-extrabold transition-colors group-hover/item:text-primary" style={{ color: 'var(--theme-muted)' }}>
+                                            @all_japan_internet
+                                        </span>
+                                    </div>
                                 </a>
-                            </p>
-                            <p>
-                                <span
-                                    className="font-semibold block mb-1"
-                                    style={{ color: 'var(--foreground)' }}
+
+                                {/* Facebook Page Item */}
+                                <a
+                                    href={FACEBOOK_URL_1}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 hover:bg-white hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 no-underline group/item w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
                                 >
-                                    {t('contactFacebook')}
-                                </span>
-                                <span className="flex flex-col gap-1.5">
-                                    <a
-                                        href={FACEBOOK_URL_1}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="hover:underline block"
-                                        style={{ color: 'var(--theme-muted)' }}
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 transition-transform duration-300 group-hover/item:scale-110"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
                                     >
-                                        Warung Kartu All Japan Intanet
-                                    </a>
-                                    <a
-                                        href={FACEBOOK_URL_2}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="hover:underline block"
-                                        style={{ color: 'var(--theme-muted)' }}
+                                        <FaFacebook />
+                                    </div>
+                                    <div className="text-left min-w-0">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            Facebook
+                                        </span>
+                                        <span className="text-[13px] font-extrabold block truncate transition-colors group-hover/item:text-primary" style={{ color: 'var(--theme-muted)' }}>
+                                            Warung Kartu All Japan Intanet
+                                        </span>
+                                    </div>
+                                </a>
+
+                                {/* Facebook Group Item */}
+                                <a
+                                    href={FACEBOOK_URL_2}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 hover:bg-white hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300 no-underline group/item w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
+                                >
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 transition-transform duration-300 group-hover/item:scale-110"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
                                     >
-                                        All Japan Internet
-                                    </a>
-                                </span>
-                            </p>
+                                        <FaFacebook />
+                                    </div>
+                                    <div className="text-left min-w-0">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            Facebook Group
+                                        </span>
+                                        <span className="text-[13px] font-extrabold block truncate transition-colors group-hover/item:text-primary" style={{ color: 'var(--theme-muted)' }}>
+                                            All Japan Internet
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
 
-                        <div className="premium-card p-8 space-y-5">
-                            <p>
-                                <span
-                                    className="font-semibold block mb-1"
-                                    style={{ color: 'var(--foreground)' }}
+                        {/* Card 3: Lokasi & Waktu */}
+                        <div
+                            className="premium-card p-6 md:p-8 flex flex-col h-full border group hover:-translate-y-1.5 transition-all duration-300"
+                            style={{
+                                background: 'rgba(255, 255, 255, 0.45)',
+                                backdropFilter: 'blur(16px)',
+                                WebkitBackdropFilter: 'blur(16px)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 8%, transparent)',
+                                boxShadow: '0 8px 32px rgba(15, 23, 42, 0.04)',
+                            }}
+                        >
+                            <div className="flex items-center gap-4 mb-6">
+                                <div
+                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-[360deg]"
+                                    style={{
+                                        background: 'linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-hover) 100%)',
+                                        boxShadow: '0 8px 24px var(--theme-glow)',
+                                    }}
                                 >
-                                    {t('contactLocation')}
-                                </span>
-                                <span style={{ color: 'var(--theme-muted)' }}>
-                                    Shinjuku, Tokyo
-                                </span>
-                            </p>
-                            <p>
-                                <span
-                                    className="font-semibold block mb-1"
-                                    style={{ color: 'var(--foreground)' }}
+                                    <FaMapMarkerAlt className="text-lg" />
+                                </div>
+                                <h3 className="font-display font-extrabold text-xl tracking-tight" style={{ color: 'var(--foreground)' }}>
+                                    {language === 'id' ? 'Lokasi & Waktu' : 'Location & Hours'}
+                                </h3>
+                            </div>
+
+                            <div className="space-y-4 w-full flex-grow">
+                                {/* Location Item */}
+                                <div
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 transition-all duration-300 w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
                                 >
-                                    {t('contactHours')}
-                                </span>
-                                <span style={{ color: 'var(--theme-muted)' }}>
-                                    {language === 'id'
-                                        ? 'Setiap hari 09.00 - 23.00'
-                                        : 'Daily 09:00 - 23:00'}
-                                </span>
-                            </p>
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
+                                    >
+                                        <FaMapMarkerAlt />
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            {t('contactLocation')}
+                                        </span>
+                                        <span className="text-sm font-extrabold" style={{ color: 'var(--theme-muted)' }}>
+                                            Shinjuku, Tokyo
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Hours Item */}
+                                <div
+                                    className="flex items-center gap-4 p-4 rounded-2xl border bg-white/40 transition-all duration-300 w-full"
+                                    style={{
+                                        borderColor: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                    }}
+                                >
+                                    <div
+                                        className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+                                        style={{
+                                            background: 'color-mix(in srgb, var(--theme-primary) 10%, transparent)',
+                                            color: 'var(--theme-primary)',
+                                        }}
+                                    >
+                                        <FaClock />
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider block opacity-50" style={{ color: 'var(--foreground)' }}>
+                                            {t('contactHours')}
+                                        </span>
+                                        <span className="text-xs font-extrabold" style={{ color: 'var(--theme-muted)' }}>
+                                            {language === 'id'
+                                                ? '24 Jam'
+                                                : '24 Hours'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

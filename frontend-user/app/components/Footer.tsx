@@ -15,17 +15,17 @@ export default function Footer() {
                 boxShadow: `inset 0 1px 0 var(--theme-glow)`,
             }}
         >
-            <div className="max-w-7xl mx-auto px-6 py-14 md:py-16 text-center">
-                <h2 className="font-display text-2xl md:text-3xl mb-2">
+            <div className="max-w-7xl mx-auto px-6 py-8 md:py-10 text-center">
+                <h2 className="font-display text-xl md:text-2xl mb-1">
                     All Japan Internet
                 </h2>
                 <p
-                    className="text-sm md:text-base mb-6 opacity-80"
+                    className="text-xs md:text-sm mb-4 opacity-80"
                     style={{ color: 'var(--theme-secondary)' }}
                 >
                     {t('footerTagline')}
                 </p>
-                <p className="text-xs opacity-60">
+                <p className="text-[11px] md:text-xs opacity-60">
                     © {year} All Japan Internet. {t('footerRights')}
                 </p>
             </div>

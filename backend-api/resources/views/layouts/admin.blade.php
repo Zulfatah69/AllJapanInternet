@@ -72,7 +72,7 @@
                     hover:bg-gray-900
                 "
             >
-                Dashboard
+                Dasbor
             </a>
 
             <a
@@ -85,7 +85,7 @@
                     hover:bg-gray-900
                 "
             >
-                Categories
+                Kategori
             </a>
 
             <a
@@ -111,7 +111,7 @@
                     hover:bg-gray-900
                 "
             >
-                Monthly Products
+                Produk Bulanan
             </a>
 
             <a
@@ -124,7 +124,7 @@
                     hover:bg-gray-900
                 "
             >
-                Yearly Products
+                Produk Tahunan
             </a>
             <a
                 href="{{ route('simple-products.index') }}"
@@ -136,7 +136,7 @@
                     hover:bg-gray-900
                 "
             >
-                Wifi
+                Produk Wifi
             </a>
             <a
                 href="{{ route('testimonials.index') }}"
@@ -148,7 +148,7 @@
                     hover:bg-gray-900
                 "
             >
-                Testimonials
+                Testimoni
             </a>
 
             <a
@@ -161,7 +161,7 @@
                     hover:bg-gray-900
                 "
             >
-                Promos
+                Promo
             </a>
 
             <a
@@ -174,7 +174,7 @@
                     hover:bg-gray-900
                 "
             >
-                Settings
+                Pengaturan
             </a>
 
         </nav>
@@ -199,7 +199,7 @@
                         font-bold
                     "
                 >
-                    Logout
+                    Keluar
                 </button>
 
             </form>
