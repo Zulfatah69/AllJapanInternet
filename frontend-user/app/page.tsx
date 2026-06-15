@@ -487,20 +487,9 @@ export default function HomePage() {
                                         <div className="flex-1 h-px bg-slate-200"></div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8">
-                                        <div className="xl:col-span-5">
-                                            <HomeWifiBanner />
-                                        </div>
-                                        <div className="xl:col-span-7">
-                                            <ProductCarouselWrapper>
-                                                {homeWifiItems.map((item, idx) => (
-                                                    <SimpleWifiCard
-                                                        key={`home-${item.id || idx}`}
-                                                        item={item}
-                                                        whatsappLabel={t('wifiAskWhatsapp')}
-                                                    />
-                                                ))}
-                                            </ProductCarouselWrapper>
+                                    <div className="grid grid-cols-1 gap-6 md:gap-8">
+                                        <div className="col-span-1">
+                                            <HomeWifiBanner items={homeWifiItems} />
                                         </div>
                                     </div>
                                 </div>
