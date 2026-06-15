@@ -49,27 +49,27 @@ export default function HomeWifiBanner({ items = [] }: { items?: any[] }) {
                         <div className="rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-lg border border-pink-100 flex flex-col h-full relative overflow-hidden" style={{ background: 'var(--theme-primary)' }}>
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
                             <div className="bg-white text-pink-600 font-bold text-base md:text-lg py-1.5 md:py-2 px-5 md:px-6 rounded-full inline-block mb-5 shadow-sm text-center w-max border-2 border-pink-100">
-                                Biaya Perbulan :
+                                {language === 'id' ? 'Biaya Perbulan :' : 'Monthly Cost :'}
                             </div>
                             
                             <div className="space-y-4 md:space-y-6 text-white mt-auto mb-auto relative z-10">
                                 <div>
                                     <div className="flex items-center gap-2 mb-1.5 md:mb-2">
                                         <FaBuilding className="text-lg md:text-xl opacity-90" />
-                                        <span className="font-bold text-sm md:text-lg">-Tipe Apartment / Manshion :</span>
+                                        <span className="font-bold text-sm md:text-lg">{language === 'id' ? '-Tipe Apartment / Manshion :' : '-Apartment / Mansion Type :'}</span>
                                     </div>
                                     <div className="pl-6 md:pl-7 font-black text-2xl md:text-3xl text-yellow-300 drop-shadow-sm">
-                                        Mulai Dari ¥4.000
+                                        {language === 'id' ? 'Mulai Dari ¥4.000' : 'Starts From ¥4.000'}
                                     </div>
                                 </div>
                                 
                                 <div className="pt-3 md:pt-4 border-t border-white/20">
                                     <div className="flex items-center gap-2 mb-1.5 md:mb-2">
                                         <FaHome className="text-lg md:text-xl opacity-90" />
-                                        <span className="font-bold text-sm md:text-lg">-Tipe Family House :</span>
+                                        <span className="font-bold text-sm md:text-lg">{language === 'id' ? '-Tipe Family House :' : '-Family House Type :'}</span>
                                     </div>
                                     <div className="pl-6 md:pl-7 font-black text-2xl md:text-3xl text-yellow-300 drop-shadow-sm">
-                                        Mulai dari ¥5.000
+                                        {language === 'id' ? 'Mulai dari ¥5.000' : 'Starts from ¥5.000'}
                                     </div>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@ export default function HomeWifiBanner({ items = [] }: { items?: any[] }) {
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-pink-300/20 rounded-full blur-3xl"></div>
                         
                         <h3 className="text-lg md:text-2xl font-black mb-5 md:mb-6 text-pink-600 tracking-wide uppercase drop-shadow-sm relative z-10">
-                            Ready Pemasangan Home Wi-Fi
+                            {language === 'id' ? 'Ready Pemasangan Home Wi-Fi' : 'Ready for Home Wi-Fi Installation'}
                         </h3>
                         
                         <div className="flex flex-col gap-3 md:gap-5 text-left max-w-2xl mx-auto relative z-10">
@@ -151,7 +151,7 @@ export default function HomeWifiBanner({ items = [] }: { items?: any[] }) {
                                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
                                     <FaCheckCircle className="w-4 h-4 md:w-5 md:h-5" />
                                 </div>
-                                <span className="font-bold text-slate-700 text-sm md:text-lg">Tanpa Uang Awal</span>
+                                <span className="font-bold text-slate-700 text-sm md:text-lg">{language === 'id' ? 'Tanpa Uang Awal' : 'No Initial Cost (Zero Down Payment)'}</span>
                             </div>
                             
                             <div className="flex items-center gap-3 md:gap-4 bg-white/90 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-sm border border-pink-100 hover:border-pink-300 transition-colors">
@@ -165,7 +165,7 @@ export default function HomeWifiBanner({ items = [] }: { items?: any[] }) {
                                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white shadow-md flex-shrink-0">
                                     <FaCheckCircle className="w-4 h-4 md:w-5 md:h-5" />
                                 </div>
-                                <span className="font-bold text-slate-700 text-sm md:text-lg leading-tight">Pembayaran pertama adalah 1 bulan setelah pemasangan</span>
+                                <span className="font-bold text-slate-700 text-sm md:text-lg leading-tight">{language === 'id' ? 'Pembayaran pertama adalah 1 bulan setelah pemasangan' : 'First payment is 1 month after installation'}</span>
                             </div>
                         </div>
                     </div>
