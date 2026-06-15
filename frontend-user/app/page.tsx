@@ -50,6 +50,7 @@ let cachedProducts: any[] | null = null;
 let cachedPromos: any[] | null = null;
 let cachedTestimonials: any[] | null = null;
 let cachedSimpleProducts: any[] | null = null;
+let cachedCategories: any[] | null = null;
 
 export default function HomePage() {
     const { language, t, theme, isThemeReady, translateDynamicText } = useLanguage();
@@ -100,22 +101,21 @@ export default function HomePage() {
         return fallback;
     };
 
-    const [products, setProducts] = useState<any[]>(cachedProducts || []);
-    const [isLoadingProducts, setIsLoadingProducts] = useState(!cachedProducts);
-    const [promos, setPromos] = useState<any[]>(cachedPromos || []);
+    const [products, setProducts] = useState<any[]>([]);
+    const [promos, setPromos] = useState<any[]>([]);
+    const [testimonials, setTestimonials] = useState<any[]>([]);
+    const [simpleProducts, setSimpleProducts] = useState<any[]>([]);
+    const [categoriesList, setCategoriesList] = useState<any[]>([]);
+    
+    const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [currentPromo, setCurrentPromo] = useState(0);
-    const [testimonials, setTestimonials] = useState<any[]>(cachedTestimonials || []);
-    const [
-        simpleProducts,
-        setSimpleProducts
-    ] = useState<any[]>(cachedSimpleProducts || []);
     const [isMounted, setIsMounted] = useState(false);
     const [heroParticles, setHeroParticles] = useState<any[]>([]);
 
     useEffect(() => {
         if (!isMounted) return;
         
-        let count = 0;
+        let count = 10;
         if (theme === 'spring') count = 15;
         else if (theme === 'winter') count = 20;
         else if (theme === 'autumn') count = 12;
@@ -135,11 +135,13 @@ export default function HomePage() {
 
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [activeShippingTab, setActiveShippingTab] = useState<'info' | 'map'>('info');
+    
     useEffect(() => {
         loadProducts();
         loadPromos();
         loadTestimonials();
         loadSimpleProducts();
+        loadCategories();
         setIsMounted(true);
     }, []);
 
@@ -201,13 +203,33 @@ export default function HomePage() {
         }
     }
 
+    async function loadCategories() {
+        if (cachedCategories) return;
+        try {
+            const response = await api.get('/categories');
+            const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+            cachedCategories = data;
+            setCategoriesList(data);
+        } catch (error) {
+            console.error('Failed to load categories:', error);
+        }
+    }
+
     // DYNAMIC CATEGORY GROUPING
     const groupedProducts = useMemo(() => {
         const groups: Record<string, { items: any[], sort_order: number }> = {};
         
+        const categoryOrderMap: Record<string, number> = {};
+        for (const cat of categoriesList) {
+            categoryOrderMap[cat.nama] = cat.sort_order || 0;
+        }
+
         for (const prod of products) {
             const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || 'Lainnya';
-            const sortOrder = (prod as any).category_sort_order || 0;
+            let sortOrder = categoryOrderMap[catName];
+            if (sortOrder === undefined) {
+                sortOrder = (typeof prod.category === 'object' && prod.category !== null && 'sort_order' in prod.category) ? (prod.category as any).sort_order : 0;
+            }
             if (!groups[catName]) groups[catName] = { items: [], sort_order: sortOrder };
             groups[catName].items.push({ ...prod, isSimple: false });
         }
@@ -216,14 +238,25 @@ export default function HomePage() {
             const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || '';
             if (catName.toLowerCase().includes('home wifi') || catName.toLowerCase().includes('homewifi')) continue;
 
-            const actualCat = catName || 'Pocket WiFi';
-            const sortOrder = (prod as any).category_sort_order || 0;
+            const actualCat = catName || 'KARTU INTERNET BULANAN UNTUK POCKET';
+            
+            let sortOrder = categoryOrderMap[actualCat];
+            if (sortOrder === undefined) {
+                // if they rename to "Pocket WiFi", check if we have a Pocket category
+                const pocketCat = categoriesList.find(c => c.nama.toUpperCase().includes('POCKET'));
+                if (pocketCat) {
+                    sortOrder = pocketCat.sort_order || 0;
+                } else {
+                    sortOrder = 99; // Fallback jika tidak ditemukan
+                }
+            }
+
             if (!groups[actualCat]) groups[actualCat] = { items: [], sort_order: sortOrder };
             groups[actualCat].items.push({ ...prod, isSimple: true });
         }
         
         return groups;
-    }, [products, simpleProducts]);
+    }, [products, simpleProducts, categoriesList]);
 
     const homeWifiItems = useMemo(() => {
         return simpleProducts.filter(prod => {
