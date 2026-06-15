@@ -8,6 +8,8 @@ use App\Models\ProductVariant;
 class Product extends Model
 {
     protected $fillable = [
+        'nama_en',
+        'deskripsi_en',
 
         'category_id',
 

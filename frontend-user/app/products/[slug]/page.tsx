@@ -21,7 +21,7 @@ export default function ProductDetail({
 }: {
     params: Promise<{ slug: string }>;
 }) {
-    const { language, t, translateDynamicText } = useLanguage();
+    const { language, t, translateDynamicText, getLocalizedText } = useLanguage();
 
     const [slug, setSlug] = useState('');
     const [product, setProduct] = useState<any>(null);
@@ -228,34 +228,10 @@ export default function ProductDetail({
         );
     }
 
-    const billingPeriods = getBillingPeriods(selectedVariant);
-
-    return (
-        <div className="max-w-7xl mx-auto px-5 md:px-10 pb-16 pt-28 md:pt-32">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
-                <div className="flex flex-col gap-8 h-fit">
-                    <div 
-                        className="relative w-full rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border cursor-zoom-in group h-fit"
-                        style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 15%, transparent)' }}
-                        onClick={() => setIsLightboxOpen(true)}
-                    >
-                        <img
-                            src={product.thumbnail_url}
-                            alt={product.nama}
-                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                        />
-                        {/* Zoom hover overlay */}
-                        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-3 shadow-lg scale-90 group-hover:scale-100 transition-transform duration-300">
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Initial Payment Info Card (Dynamically Generated from Backend) */}
-                    {hasPeriods && (
+    
+    const renderInitialPaymentInfoCard = () => {
+        if (!hasPeriods) return null;
+        return (
                         <div 
                             className="premium-card p-6 md:p-8 rounded-2xl border transition-all duration-300 animate-fade-in"
                             style={{ 
@@ -412,36 +388,43 @@ export default function ProductDetail({
                                 </div>
                             </div>
                         </div>
-                    )}
+                    
+        );
+    };
+
+    const billingPeriods = getBillingPeriods(selectedVariant);
+
+    return (
+        <div className="max-w-7xl mx-auto px-5 md:px-10 pb-16 pt-28 md:pt-32">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+                <div className="flex flex-col gap-8 h-fit">
+                    <div 
+                        className="relative w-full rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border cursor-zoom-in group h-fit"
+                        style={{ borderColor: 'color-mix(in srgb, var(--theme-primary) 15%, transparent)' }}
+                        onClick={() => setIsLightboxOpen(true)}
+                    >
+                        <img
+                            src={product.thumbnail_url}
+                            alt={product.nama}
+                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                        {/* Zoom hover overlay */}
+                        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-3 shadow-lg scale-90 group-hover:scale-100 transition-transform duration-300">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                                        {/* Initial Payment Info Card (Desktop) */}
+                    <div className="hidden lg:block mt-8">
+                        {renderInitialPaymentInfoCard()}
+                    </div>
                 </div>
 
                 <div>
-                    <div className="flex gap-2 mb-6 flex-wrap">
-                        <span
-                            className="px-3 py-1 rounded-full text-xs font-semibold text-white shadow-sm capitalize"
-                            style={{ background: 'var(--theme-primary)' }}
-                        >
-                            {product.type}
-                        </span>
-                        <span
-                            className="px-3 py-1 rounded-full text-xs font-semibold border bg-white shadow-2xs"
-                            style={{
-                                color: 'var(--foreground)',
-                                borderColor: 'rgba(15,23,42,0.12)',
-                            }}
-                        >
-                            {product.provider?.nama}
-                        </span>
-                        <span
-                            className="px-3 py-1 rounded-full text-xs font-semibold border bg-white shadow-2xs"
-                            style={{
-                                color: 'var(--foreground)',
-                                borderColor: 'rgba(15,23,42,0.12)',
-                            }}
-                        >
-                            {translateDynamicText(product.category?.nama)}
-                        </span>
-                    </div>
 
                     <h1
                         className="font-display text-3xl md:text-4xl lg:text-5xl mb-5 font-extrabold tracking-tight"
@@ -454,7 +437,7 @@ export default function ProductDetail({
                         className="mb-10 whitespace-pre-line leading-relaxed text-base font-medium"
                         style={{ color: 'var(--theme-muted)' }}
                     >
-                        {translateDynamicText(product.deskripsi)}
+                        {getLocalizedText(product.deskripsi, product.deskripsi_en)}
                     </p>
 
                     {/* VARIANT */}
@@ -697,6 +680,11 @@ export default function ProductDetail({
                     >
                         {t('orderWhatsapp')}
                     </button>
+
+                    {/* Initial Payment Info Card (Mobile) */}
+                    <div className="block lg:hidden mt-10">
+                        {renderInitialPaymentInfoCard()}
+                    </div>
                 </div>
             </div>
             {isLightboxOpen && product.thumbnail_url && (

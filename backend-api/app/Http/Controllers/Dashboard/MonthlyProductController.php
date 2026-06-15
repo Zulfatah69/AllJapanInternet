@@ -94,6 +94,7 @@ class MonthlyProductController extends Controller
 
             'nama'
                 => 'required|max:255',
+            'nama_en' => 'nullable|string|max:255',
 
             'thumbnail'
                 => 'nullable|image',
@@ -126,6 +127,7 @@ class MonthlyProductController extends Controller
 
                 'nama'
                     => $request->nama,
+            'nama_en' => $request->nama_en,
 
                 'slug'
                     => Str::slug(
@@ -140,6 +142,7 @@ class MonthlyProductController extends Controller
 
                 'deskripsi'
                     => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
                 'thumbnail'
                     => $thumbnail,
@@ -304,6 +307,7 @@ class MonthlyProductController extends Controller
 
             'nama'
                 => 'required|max:255',
+            'nama_en' => 'nullable|string|max:255',
 
             'cycle_type'
                 => 'required|in:VT,GJ',
@@ -345,6 +349,7 @@ class MonthlyProductController extends Controller
 
                 'nama'
                     => $request->nama,
+            'nama_en' => $request->nama_en,
 
                 'slug'
                     => Str::slug(
@@ -356,6 +361,7 @@ class MonthlyProductController extends Controller
 
                 'deskripsi'
                     => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
                 'thumbnail'
                     => $thumbnail,

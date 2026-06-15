@@ -20,7 +20,7 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::latest()
+        $categories = Category::orderBy('sort_order', 'asc')->latest()
             ->get();
 
         return view(
@@ -54,6 +54,8 @@ class CategoryController extends Controller
 
             'nama'
                 => 'required|max:255',
+            'nama_en' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|integer',
 
         ]);
 
@@ -61,6 +63,8 @@ class CategoryController extends Controller
 
             'nama'
                 => $request->nama,
+            'nama_en' => $request->nama_en,
+            'sort_order' => $request->sort_order ?? 0,
 
             'slug'
                 => Str::slug(
@@ -108,6 +112,8 @@ class CategoryController extends Controller
 
             'nama'
                 => 'required|max:255',
+            'nama_en' => 'nullable|string|max:255',
+            'sort_order' => 'nullable|integer',
 
         ]);
 
@@ -115,6 +121,8 @@ class CategoryController extends Controller
 
             'nama'
                 => $request->nama,
+            'nama_en' => $request->nama_en,
+            'sort_order' => $request->sort_order ?? 0,
 
             'slug'
                 => Str::slug(

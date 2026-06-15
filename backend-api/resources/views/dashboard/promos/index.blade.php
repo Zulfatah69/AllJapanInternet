@@ -33,10 +33,6 @@
                     Title
                 </th>
 
-                <th class="text-left p-5">
-                    Link
-                </th>
-
                 <th class="text-right p-5">
                     Action
                 </th>
@@ -66,10 +62,6 @@
 
                     <td class="p-5 font-semibold">
                         {{ $promo->judul }}
-                    </td>
-
-                    <td class="p-5">
-                        {{ $promo->link }}
                     </td>
 
                     <td class="p-5">

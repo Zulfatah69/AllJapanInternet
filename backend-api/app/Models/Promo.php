@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Promo extends Model
 {
     protected $fillable = [
+        'judul_en',
+        'deskripsi_en',
 
         'judul',
         'deskripsi',

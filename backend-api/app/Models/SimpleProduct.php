@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class SimpleProduct extends Model
 {
     protected $fillable = [
+        'nama_en',
+        'deskripsi_en',
 
         'nama',
 

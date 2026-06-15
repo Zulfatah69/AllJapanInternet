@@ -35,6 +35,9 @@ Route::get('/products', function () {
             'nama'
                 => $product->nama,
 
+            'nama_en'
+                => $product->nama_en,
+
             'slug'
                 => $product->slug,
 
@@ -43,6 +46,9 @@ Route::get('/products', function () {
 
             'deskripsi'
                 => $product->deskripsi,
+
+            'deskripsi_en'
+                => $product->deskripsi_en,
 
             'thumbnail'
                 => $product->thumbnail,

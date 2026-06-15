@@ -47,9 +47,11 @@ class SimpleProductController extends Controller
 
             'nama'
                 => $request->nama,
+            'nama_en' => $request->nama_en,
 
             'deskripsi'
                 => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
             'gambar'
                 => $gambar,
@@ -108,9 +110,11 @@ class SimpleProductController extends Controller
 
             'nama'
                 => $request->nama,
+            'nama_en' => $request->nama_en,
 
             'deskripsi'
                 => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
             'gambar'
                 => $gambar,

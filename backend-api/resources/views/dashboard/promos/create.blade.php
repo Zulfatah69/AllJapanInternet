@@ -28,70 +28,7 @@
                 name="judul"
                 class="w-full border rounded-xl px-5 py-4"
                 placeholder="Promo Mei"
-            >
-
-        </div>
-
-        {{-- DESCRIPTION --}}
-        <div class="mb-8">
-
-            <label class="block mb-3 font-semibold">
-                Description
-            </label>
-
-            <textarea
-                name="deskripsi"
-                rows="5"
-                class="w-full border rounded-xl px-5 py-4"
-            ></textarea>
-
-        </div>
-
-        {{-- PROMO DATE --}}
-        <div class="grid grid-cols-2 gap-6 mb-8">
-
-            <div>
-
-                <label class="block mb-3 font-semibold">
-                    Start Date
-                </label>
-
-                <input
-                    type="date"
-                    name="start_date"
-                    class="w-full border rounded-xl px-5 py-4"
-                >
-
-            </div>
-
-            <div>
-
-                <label class="block mb-3 font-semibold">
-                    End Date
-                </label>
-
-                <input
-                    type="date"
-                    name="end_date"
-                    class="w-full border rounded-xl px-5 py-4"
-                >
-
-            </div>
-
-        </div>
-
-        {{-- LINK --}}
-        <div class="mb-8">
-
-            <label class="block mb-3 font-semibold">
-                Link
-            </label>
-
-            <input
-                type="text"
-                name="link"
-                class="w-full border rounded-xl px-5 py-4"
-                placeholder="https://..."
+                required
             >
 
         </div>
@@ -107,6 +44,7 @@
                 type="file"
                 name="gambar"
                 class="w-full border rounded-xl px-5 py-4"
+                required
             >
 
             <p class="text-sm text-gray-500 mt-2">

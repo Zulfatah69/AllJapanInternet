@@ -65,7 +65,10 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 6.5rem;
+}
+
+[id] {
+  scroll-margin-top: 76px;
 }
 
 @keyframes slideInDown {
@@ -775,4 +778,124 @@ body {
   stroke-dasharray: 20 20;
   animation: neon-dash 2s linear infinite;
   filter: drop-shadow(0 0 6px var(--theme-primary));
+}
+
+/* Season Specific Card Animations */
+.theme-spring-hover-sakura {
+  position: relative;
+  overflow: hidden;
+}
+.theme-spring-hover-sakura::after {
+  content: "";
+  position: absolute;
+ bottom: -20px;
+ right: -20px;
+ width: 40px;
+ height: 40px;
+ background: radial-gradient(circle, rgba(244,114,182,0.8) 0%, rgba(244,114,182,0) 70%);
+ border-radius: 50%;
+ transform: scale(0);
+ transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+ pointer-events: none;
+}
+.theme-spring-hover-sakura:hover::after {
+ transform: scale(2.5) translate(-10px, -10px);
+ opacity: 0.2;
+}
+
+.theme-summer-sun-glare {
+ position: relative;
+ overflow: hidden;
+}
+.theme-summer-sun-glare::before {
+  content: "";
+  position: absolute;
+ top: 0;
+ left: -150%;
+ width: 50%;
+ height: 100%;
+ background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+ transform: skewX(-25deg);
+ transition: left 0.7s ease-in-out;
+ pointer-events: none;
+ z-index: 10;
+}
+.theme-summer-sun-glare:hover::before {
+ left: 200%;
+}
+
+.theme-autumn-wind-sweep {
+ transition: transform 0.5s ease-out;
+}
+.theme-autumn-wind-sweep:hover {
+ transform: translate(6px, -6px) rotate(1deg);
+ box-shadow: -8px 12px 24px rgba(234, 88, 12, 0.15);
+}
+
+.theme-winter-frost-melt {
+ backdrop-filter: blur(4px) saturate(1.1);
+ -webkit-backdrop-filter: blur(4px) saturate(1.1);
+ background: rgba(255, 255, 255, 0.85);
+ transition: backdrop-filter 0.6s ease, background 0.6s ease, box-shadow 0.6s ease;
+}
+.theme-winter-frost-melt:hover {
+ backdrop-filter: blur(0px) saturate(1);
+ -webkit-backdrop-filter: blur(0px) saturate(1);
+ background: rgba(255, 255, 255, 1);
+ box-shadow: 0 0 15px 5px rgba(147, 197, 253, 0.3);
+}
+
+
+/* Hide default scrollbar */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+html {
+  scrollbar-width: none;
+  scroll-padding-top: 76px;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+
+/* Native Scrollbar according to Theme */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-primary-hover);
 }

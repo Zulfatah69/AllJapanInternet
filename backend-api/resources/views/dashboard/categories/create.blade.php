@@ -81,6 +81,91 @@
 
             </div>
 
+            {{-- NAME (EN) --}}
+            <div class="mb-10">
+
+                <label
+                    class="
+                        block
+                        mb-3
+                        font-semibold
+                    "
+                >
+                    Category Name (Inggris)
+                </label>
+
+                <input
+                    type="text"
+                    name="nama_en"
+                    value="{{ old('nama_en') }}"
+                    class="
+                        w-full
+                        border
+                        rounded-2xl
+                        px-5
+                        py-4
+                    "
+                    placeholder="MONTHLY INTERNET CARD"
+                >
+
+                @error('nama_en')
+
+                    <p
+                        class="
+                            text-red-500
+                            mt-2
+                            text-sm
+                        "
+                    >
+                        {{ $message }}
+                    </p>
+
+                @enderror
+
+            </div>
+
+            {{-- SORT ORDER --}}
+            <div class="mb-10">
+
+                <label
+                    class="
+                        block
+                        mb-3
+                        font-semibold
+                    "
+                >
+                    Urutan / Sort Order
+                </label>
+
+                <input
+                    type="number"
+                    name="sort_order"
+                    value="{{ old('sort_order', 0) }}"
+                    class="
+                        w-full
+                        border
+                        rounded-2xl
+                        px-5
+                        py-4
+                    "
+                >
+
+                @error('sort_order')
+
+                    <p
+                        class="
+                            text-red-500
+                            mt-2
+                            text-sm
+                        "
+                    >
+                        {{ $message }}
+                    </p>
+
+                @enderror
+
+            </div>
+
             {{-- BUTTON --}}
             <div class="flex items-center gap-4">
 

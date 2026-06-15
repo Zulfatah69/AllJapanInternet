@@ -76,6 +76,7 @@ class YearlyProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'provider_id' => 'required|exists:providers,id',
             'nama'        => 'required|max:255',
+            'nama_en' => 'nullable|string|max:255',
             'thumbnail'   => 'nullable|image|max:2048',
         ]);
 
@@ -105,6 +106,7 @@ class YearlyProductController extends Controller
 
                 'nama'
                     => $request->nama,
+            'nama_en' => $request->nama_en,
 
                 'slug'
                     => Str::slug(
@@ -116,6 +118,7 @@ class YearlyProductController extends Controller
 
                 'deskripsi'
                     => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
                 'thumbnail'
                     => $thumbnail,
@@ -320,6 +323,7 @@ class YearlyProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'provider_id' => 'required|exists:providers,id',
             'nama'        => 'required|max:255',
+            'nama_en' => 'nullable|string|max:255',
             'thumbnail'   => 'nullable|image|max:2048',
         ]);
 
@@ -358,6 +362,7 @@ class YearlyProductController extends Controller
 
                 'nama'
                     => $request->nama,
+            'nama_en' => $request->nama_en,
 
                 'slug'
                     => Str::slug(
@@ -366,6 +371,7 @@ class YearlyProductController extends Controller
 
                 'deskripsi'
                     => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
                 'thumbnail'
                     => $thumbnail,

@@ -73,6 +73,10 @@
                     Slug
                 </th>
 
+                <th class="p-6">
+                    Urutan
+                </th>
+
                 <th class="p-6 text-right">
                     Action
                 </th>
@@ -97,6 +101,10 @@
 
                         {{ $category->slug }}
 
+                    </td>
+
+                    <td class="p-6">
+                        {{ $category->sort_order }}
                     </td>
 
                     <td class="p-6">

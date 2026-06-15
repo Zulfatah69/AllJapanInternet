@@ -36,6 +36,8 @@ class ProductController extends Controller
 
             'nama'
                 => $product->nama,
+            'nama_en'
+                => $product->nama_en,
 
             'slug'
                 => $product->slug,
@@ -54,6 +56,8 @@ class ProductController extends Controller
 
             'deskripsi'
                 => $product->deskripsi,
+            'deskripsi_en'
+                => $product->deskripsi_en,
 
             'thumbnail'
                 => $product->thumbnail
@@ -73,7 +77,9 @@ class ProductController extends Controller
 
                 'nama'
                     => $product->category->nama,
-
+                'nama_en'
+                    => $product->category->nama_en,
+                'sort_order' => $product->category->sort_order ?? 0,
             ],
 
             'variants'
@@ -87,6 +93,8 @@ class ProductController extends Controller
 
                     'nama'
                         => $variant->nama,
+                    'nama_en'
+                        => $variant->nama_en,
 
                     'gb'
                         => $variant->gb,
@@ -102,6 +110,8 @@ class ProductController extends Controller
 
                             'period'
                                 => $price->period->nama,
+                            'period_en'
+                                => $price->period->nama_en,
 
                             'harga'
                                 => $price->harga,
@@ -207,6 +217,9 @@ class ProductController extends Controller
                     'nama'
                         => $product->nama,
 
+                    'nama_en'
+                        => $product->nama_en,
+
                     'slug'
                         => $product->slug,
 
@@ -235,6 +248,10 @@ class ProductController extends Controller
 
                     'category'
                         => $product->category->nama,
+                    'category_en'
+                        => $product->category->nama_en,
+                    'category_sort_order'
+                        => $product->category->sort_order ?? 0,
 
                     'lowest_price'
                         => count($allPrices)

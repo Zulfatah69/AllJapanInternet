@@ -158,6 +158,27 @@
                 <div class="mb-6">
 
                     <label class="block mb-3 font-semibold">
+                        Nama Produk (Inggris)
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nama_en"
+                        value="{{ $product->nama_en }}"
+                        class="
+                            w-full
+                            border
+                            rounded-2xl
+                            px-5
+                            py-4
+                        "
+                    >
+
+                </div>
+
+                <div class="mb-6">
+
+                    <label class="block mb-3 font-semibold">
                         Deskripsi
                     </label>
 
@@ -172,6 +193,26 @@
                             py-4
                         "
                     >{{ $product->deskripsi }}</textarea>
+
+                </div>
+
+                <div class="mb-6">
+
+                    <label class="block mb-3 font-semibold">
+                        Deskripsi (Inggris)
+                    </label>
+
+                    <textarea
+                        name="deskripsi_en"
+                        rows="6"
+                        class="
+                            w-full
+                            border
+                            rounded-2xl
+                            px-5
+                            py-4
+                        "
+                    >{{ $product->deskripsi_en }}</textarea>
 
                 </div>
 

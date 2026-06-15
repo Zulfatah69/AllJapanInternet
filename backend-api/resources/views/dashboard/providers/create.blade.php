@@ -82,6 +82,49 @@
 
             </div>
 
+            {{-- NAME (EN) --}}
+            <div class="mb-8">
+
+                <label
+                    class="
+                        block
+                        mb-3
+                        font-semibold
+                    "
+                >
+                    Provider Name (Inggris)
+                </label>
+
+                <input
+                    type="text"
+                    name="nama_en"
+                    value="{{ old('nama_en') }}"
+                    class="
+                        w-full
+                        border
+                        rounded-2xl
+                        px-5
+                        py-4
+                    "
+                    placeholder="Softbank"
+                >
+
+                @error('nama_en')
+
+                    <p
+                        class="
+                            text-red-500
+                            mt-2
+                            text-sm
+                        "
+                    >
+                        {{ $message }}
+                    </p>
+
+                @enderror
+
+            </div>
+
             {{-- LOGO --}}
             <div class="mb-10">
 

@@ -137,6 +137,11 @@ Route::middleware([
         SimpleProductController::class
     );
 
+    Route::resource(
+        'admins',
+        \App\Http\Controllers\Dashboard\AdminController::class
+    );
+
 });
 
 Route::middleware('auth')

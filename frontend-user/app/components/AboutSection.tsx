@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/app/context/LanguageContext';
 import SectionHeader from './SectionHeader';
 import { FaUsers, FaShippingFast, FaCheckCircle, FaHeadset } from 'react-icons/fa';
+import ScrollReveal from './ScrollReveal';
 
 export default function AboutSection() {
     const { t, theme, language } = useLanguage();
@@ -190,100 +191,106 @@ export default function AboutSection() {
             </svg>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <SectionHeader
-                    eyebrow={t('aboutEyebrow')}
-                    title={t('aboutTitle')}
-                    subtitle={t('aboutTagline')}
-                />
+                <ScrollReveal>
+                    <SectionHeader
+                        eyebrow={t('aboutEyebrow')}
+                        title={t('aboutTitle')}
+                        subtitle={t('aboutTagline')}
+                    />
+                </ScrollReveal>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 items-center mt-12">
                     {/* Left Column: Glassmorphic Content Card */}
-                    <div
-                        className="lg:col-span-6 p-8 md:p-12 space-y-6 text-left premium-glass-card border border-white/40 shadow-xl"
-                        style={{
-                            boxShadow: `0 20px 50px -12px ${currentTheme.glowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.7)`,
-                        }}
-                    >
-                        <div className="space-y-4">
+                    <ScrollReveal direction="right" delay={0.2} className="lg:col-span-6">
+                        <div
+                            className="p-8 md:p-12 space-y-6 text-left premium-glass-card border border-white/40 shadow-xl h-full"
+                            style={{
+                                boxShadow: `0 20px 50px -12px ${currentTheme.glowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.7)`,
+                            }}
+                        >
+                            <div className="space-y-4">
+                                <p
+                                    className="text-lg md:text-xl font-bold tracking-tight leading-snug"
+                                    style={{ color: currentTheme.accentDark }}
+                                >
+                                    {t('aboutIntro')}
+                                </p>
+                                <div className="h-0.5 w-16" style={{ background: currentTheme.accentMid }} />
+                            </div>
                             <p
-                                className="text-lg md:text-xl font-bold tracking-tight leading-snug"
-                                style={{ color: currentTheme.accentDark }}
+                                className="text-base md:text-lg leading-relaxed font-medium"
+                                style={{ color: 'var(--theme-muted)' }}
                             >
-                                {t('aboutIntro')}
+                                {t('aboutBody')}
                             </p>
-                            <div className="h-0.5 w-16" style={{ background: currentTheme.accentMid }} />
+                            <p
+                                className="text-base md:text-lg leading-relaxed font-medium"
+                                style={{ color: 'var(--theme-muted)' }}
+                            >
+                                {t('aboutClosing')}
+                            </p>
                         </div>
-                        <p
-                            className="text-base md:text-lg leading-relaxed font-medium"
-                            style={{ color: 'var(--theme-muted)' }}
-                        >
-                            {t('aboutBody')}
-                        </p>
-                        <p
-                            className="text-base md:text-lg leading-relaxed font-medium"
-                            style={{ color: 'var(--theme-muted)' }}
-                        >
-                            {t('aboutClosing')}
-                        </p>
-                    </div>
+                    </ScrollReveal>
 
                     {/* Right Column: Dynamic Concept Stats Dashboard */}
-                    <div className="lg:col-span-6 flex flex-col items-center justify-center space-y-8">
-                        {/* Custom Premium Logo Showcase */}
-                        <div className="relative w-40 h-40 flex items-center justify-center rounded-full bg-white/40 backdrop-blur-md shadow-lg border border-white/60 overflow-hidden group hover:scale-[1.03] transition-all duration-300">
-                            {/* Rotating delicate halo background */}
-                            <div
-                                className="absolute -inset-1.5 rounded-full border border-dashed opacity-35 animate-spin"
-                                style={{
-                                    borderColor: currentTheme.accentMid,
-                                    animationDuration: '35s',
-                                }}
-                            />
-                            <img
-                                src="/images/logoaji.png"
-                                alt="All Japan Internet Logo"
-                                className="w-full h-full object-cover rounded-full filter drop-shadow-sm transition-transform duration-700 group-hover:rotate-[360deg]"
-                            />
-                        </div>
+                    <ScrollReveal direction="left" delay={0.4} className="lg:col-span-6">
+                        <div className="flex flex-col items-center justify-center space-y-8 h-full">
+                            {/* Custom Premium Logo Showcase */}
+                            <div className="relative w-40 h-40 flex items-center justify-center rounded-full bg-white/40 backdrop-blur-md shadow-lg border border-white/60 overflow-hidden group hover:scale-[1.03] transition-all duration-300">
+                                {/* Rotating delicate halo background */}
+                                <div
+                                    className="absolute -inset-1.5 rounded-full border border-dashed opacity-35 animate-spin"
+                                    style={{
+                                        borderColor: currentTheme.accentMid,
+                                        animationDuration: '35s',
+                                    }}
+                                />
+                                <img
+                                    src="/images/logoaji.png"
+                                    alt="All Japan Internet Logo"
+                                    className="w-full h-full object-cover rounded-full filter drop-shadow-sm transition-transform duration-700 group-hover:rotate-[360deg]"
+                                />
+                            </div>
 
-                        {/* Stat Badges Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                            {stats.map((stat, i) => {
-                                const Icon = stat.icon;
-                                return (
-                                    <div
-                                        key={`stat-${i}`}
-                                        className="p-5 flex items-start gap-4 rounded-xl border transition-all duration-300 hover:scale-[1.02] bg-white/70 backdrop-blur-md"
-                                        style={{
-                                            borderColor: currentTheme.badgeBorder,
-                                            boxShadow: `0 4px 20px rgba(0,0,0,0.02)`,
-                                        }}
-                                    >
+                            {/* Stat Badges Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                                {stats.map((stat, i) => {
+                                    const Icon = stat.icon;
+                                    return (
                                         <div
-                                            className="p-3 rounded-lg text-white shrink-0"
+                                            key={`stat-${i}`}
+                                            className="p-5 flex items-start gap-4 rounded-xl border transition-all duration-300 hover:scale-[1.02] bg-white/70 backdrop-blur-md"
                                             style={{
-                                                background: `linear-gradient(135deg, ${currentTheme.accentMid} 0%, ${currentTheme.accentDark} 100%)`,
-                                                boxShadow: `0 6px 16px ${currentTheme.glowColor}`,
+                                                borderColor: currentTheme.badgeBorder,
+                                                boxShadow: `0 4px 20px rgba(0,0,0,0.02)`,
                                             }}
                                         >
-                                            <Icon className="text-lg" />
-                                        </div>
-                                        <div className="space-y-1 text-left">
-                                            <h4
-                                                className="font-display font-bold text-sm leading-tight"
-                                                style={{ color: 'var(--foreground)' }}
+                                            <div
+                                                className="p-3 rounded-lg text-white shrink-0"
+                                                style={{
+                                                    background: `linear-gradient(135deg, ${currentTheme.accentMid} 0%, ${currentTheme.accentDark} 100%)`,
+                                                    boxShadow: `0 6px 16px ${currentTheme.glowColor}`,
+                                                }}
                                             >
-                                                {stat.title}
-                                            </h4>
-                                            <p className="text-xs leading-normal text-slate-500 font-medium">
-                                                {stat.desc}
-                                            </p>
+                                                <Icon className="text-lg" />
+                                            </div>
+                                            <div className="space-y-1 text-left">
+                                                <h4
+                                                    className="font-display font-bold text-sm leading-tight"
+                                                    style={{ color: 'var(--foreground)' }}
+                                                >
+                                                    {stat.title}
+                                                </h4>
+                                                <p className="text-xs leading-normal text-slate-500 font-medium">
+                                                    {stat.desc}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
+                    </ScrollReveal>
                 </div>
             </div>
         </section>

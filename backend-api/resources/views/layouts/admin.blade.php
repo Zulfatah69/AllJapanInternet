@@ -177,6 +177,19 @@
                 Pengaturan
             </a>
 
+            <a
+                href="{{ route('admins.index') }}"
+                class="
+                    block
+                    px-5
+                    py-4
+                    rounded-2xl
+                    hover:bg-gray-900
+                "
+            >
+                Kelola Admin
+            </a>
+
         </nav>
 
         <div class="mt-auto pt-10">

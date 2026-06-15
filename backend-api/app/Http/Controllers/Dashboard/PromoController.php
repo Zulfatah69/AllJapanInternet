@@ -35,6 +35,7 @@ class PromoController extends Controller
 
             'judul'
                 => 'required',
+            'judul_en' => 'nullable|string|max:255',
 
             'gambar'
                 => 'nullable|image|max:2048',
@@ -67,8 +68,8 @@ class PromoController extends Controller
                 imagesy($image);
 
             $newImage = imagecreatetruecolor(
-                1200,
-                1200
+                2100,
+                900
             );
 
             imagecopyresampled(
@@ -82,8 +83,8 @@ class PromoController extends Controller
                 0,
                 0,
 
-                1200,
-                1200,
+                2100,
+                900,
 
                 $width,
                 $height
@@ -121,9 +122,11 @@ class PromoController extends Controller
 
             'judul'
                 => $request->judul,
+            'judul_en' => $request->judul_en,
 
             'deskripsi'
                 => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
             'gambar'
                 => $gambar,
@@ -163,6 +166,7 @@ class PromoController extends Controller
 
             'judul'
                 => 'required',
+            'judul_en' => 'nullable|string|max:255',
 
             'gambar'
                 => 'nullable|image|max:2048',
@@ -203,8 +207,8 @@ class PromoController extends Controller
                 imagesy($image);
 
             $newImage = imagecreatetruecolor(
-                1200,
-                1200
+                2100,
+                900
             );
 
             imagecopyresampled(
@@ -218,8 +222,8 @@ class PromoController extends Controller
                 0,
                 0,
 
-                1200,
-                1200,
+                2100,
+                900,
 
                 $width,
                 $height
@@ -257,9 +261,11 @@ class PromoController extends Controller
 
             'judul'
                 => $request->judul,
+            'judul_en' => $request->judul_en,
 
             'deskripsi'
                 => $request->deskripsi,
+            'deskripsi_en' => $request->deskripsi_en,
 
             'gambar'
                 => $gambar,

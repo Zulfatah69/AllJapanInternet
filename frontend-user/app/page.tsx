@@ -7,8 +7,9 @@ import { useLanguage } from './context/LanguageContext';
 import { splitCatalogProducts, isYearlyCategory, isPocketWifiCategory, isEsimCategory } from './lib/productGroups';
 import BenefitsSection from './components/BenefitsSection';
 import PromoCarousel from './components/PromoCarousel';
+import ProductCarouselWrapper from './components/ProductCarouselWrapper';
 import HowToSection from './components/HowToSection';
-import LoadingSpinner from './components/LoadingSpinner';
+
 import HomeWifiBanner from './components/HomeWifiBanner';
 import AboutSection from './components/AboutSection';
 import PaymentMethodsSection from './components/PaymentMethodsSection';
@@ -16,6 +17,7 @@ import FaqSection from './components/FaqSection';
 import ProductCatalogCard from './components/ProductCatalogCard';
 import SimpleWifiCard from './components/SimpleWifiCard';
 import SectionHeader from './components/SectionHeader';
+import TestimonialMarquee from './components/TestimonialMarquee';
 import {
     FaWhatsapp,
     FaBook,
@@ -199,66 +201,36 @@ export default function HomePage() {
         }
     }
 
-    const { simEsim: simEsimProducts, wifi: wifiProducts } = useMemo(
-        () => splitCatalogProducts(products),
-        [products]
-    );
-
-    const { monthlySim, monthlyEsim, yearlySim, yearlyEsim } = useMemo(() => {
-        const mSim: any[] = [];
-        const mEsim: any[] = [];
-        const ySim: any[] = [];
-        const yEsim: any[] = [];
+    // DYNAMIC CATEGORY GROUPING
+    const groupedProducts = useMemo(() => {
+        const groups: Record<string, { items: any[], sort_order: number }> = {};
         
-        for (const prod of simEsimProducts) {
-            const isYearly = isYearlyCategory(prod);
-            const isEsim = isEsimCategory(prod);
-            
-            if (isYearly) {
-                if (isEsim) {
-                    yEsim.push(prod);
-                } else {
-                    ySim.push(prod);
-                }
-            } else {
-                if (isEsim) {
-                    mEsim.push(prod);
-                } else {
-                    mSim.push(prod);
-                }
-            }
+        for (const prod of products) {
+            const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || 'Lainnya';
+            const sortOrder = (prod as any).category_sort_order || 0;
+            if (!groups[catName]) groups[catName] = { items: [], sort_order: sortOrder };
+            groups[catName].items.push({ ...prod, isSimple: false });
         }
         
-        return {
-            monthlySim: mSim,
-            monthlyEsim: mEsim,
-            yearlySim: ySim,
-            yearlyEsim: yEsim
-        };
-    }, [simEsimProducts]);
+        for (const prod of simpleProducts) {
+            const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || '';
+            if (catName.toLowerCase().includes('home wifi') || catName.toLowerCase().includes('homewifi')) continue;
 
-    const { pocketWifi, homeWifi } = useMemo(() => {
-        const pocket: any[] = [];
-        const home: any[] = [];
+            const actualCat = catName || 'Pocket WiFi';
+            const sortOrder = (prod as any).category_sort_order || 0;
+            if (!groups[actualCat]) groups[actualCat] = { items: [], sort_order: sortOrder };
+            groups[actualCat].items.push({ ...prod, isSimple: true });
+        }
         
-        for (const prod of wifiProducts) {
-            if (isPocketWifiCategory(prod)) {
-                pocket.push({ ...prod, isSimple: false });
-            } else {
-                home.push({ ...prod, isSimple: false });
-            }
-        }
+        return groups;
+    }, [products, simpleProducts]);
 
-        for (const item of simpleProducts) {
-            if (isPocketWifiCategory(item)) {
-                pocket.push({ ...item, isSimple: true });
-            } else {
-                home.push({ ...item, isSimple: true });
-            }
-        }
-
-        return { pocketWifi: pocket, homeWifi: home };
-    }, [wifiProducts, simpleProducts]);
+    const homeWifiItems = useMemo(() => {
+        return simpleProducts.filter(prod => {
+            const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || '';
+            return catName.toLowerCase().includes('home wifi') || catName.toLowerCase().includes('homewifi');
+        }).map(prod => ({ ...prod, isSimple: true }));
+    }, [simpleProducts]);
 
     return (
         <div className="overflow-x-hidden">
@@ -452,168 +424,77 @@ export default function HomePage() {
                         </div>
                     ) : (
                         <>
-                            {/* Monthly SIM Section */}
-                            {monthlySim.length > 0 && (
-                                <div className="mb-16 md:mb-20">
-                                    <h3
-                                        className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
-                                        style={{ color: 'var(--foreground)' }}
-                                    >
-                                        {getCategoryTitle(monthlySim, 'Kartu SIM Bulanan')}
-                                    </h3>
-                            <p
-                                className="text-sm mb-8 text-slate-500"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                {getCategorySubtitle(monthlySim, 'Pilihan kartu SIM internet fisik bulanan praktis')}
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {monthlySim.map((product) => (
-                                    <ProductCatalogCard
-                                        key={product.id}
-                                        product={product}
-                                        language={language}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                            {Object.entries(groupedProducts)
+                                .sort(([, a], [, b]) => a.sort_order - b.sort_order)
+                                .map(([categoryName, group]) => {
+                                const items = group.items;
+                                if (!items || items.length === 0) return null;
+                                
+                                return (
+                                    <div key={categoryName} className="mb-12 md:mb-16">
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <h3
+                                                className="font-display text-2xl md:text-3xl font-bold text-slate-800 tracking-tight"
+                                                style={{ color: 'var(--foreground)' }}
+                                            >
+                                                {categoryName}
+                                            </h3>
+                                            <div className="flex-1 h-px bg-slate-200"></div>
+                                        </div>
+                                        
+                                        <ProductCarouselWrapper>
+                                            {items.map((item, idx) => (
+                                                item.isSimple ? (
+                                                    <SimpleWifiCard
+                                                        key={`simple-${item.id || idx}`}
+                                                        item={item}
+                                                        whatsappLabel={t('wifiAskWhatsapp')}
+                                                    />
+                                                ) : (
+                                                    <ProductCatalogCard
+                                                        key={`prod-${item.id || idx}`}
+                                                        product={item}
+                                                        language={language}
+                                                    />
+                                                )
+                                            ))}
+                                        </ProductCarouselWrapper>
+                                    </div>
+                                );
+                            })}
+                            
+                            {/* Home WiFi Section */}
+                            {homeWifiItems.length > 0 && (
+                                <div className="mb-12 md:mb-16">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <h3
+                                            className="font-display text-2xl md:text-3xl font-bold text-slate-800 tracking-tight"
+                                            style={{ color: 'var(--foreground)' }}
+                                        >
+                                            Home WiFi
+                                        </h3>
+                                        <div className="flex-1 h-px bg-slate-200"></div>
+                                    </div>
 
-                    {/* Monthly eSIM Section */}
-                    {monthlyEsim.length > 0 && (
-                        <div className="mb-16 md:mb-20">
-                            <h3
-                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
-                                style={{ color: 'var(--foreground)' }}
-                            >
-                                {getCategoryTitle(monthlyEsim, 'eSIM Internet Bulanan')}
-                            </h3>
-                            <p
-                                className="text-sm mb-8 text-slate-500"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                {getCategorySubtitle(monthlyEsim, 'Paket eSIM dengan sistem bulanan fleksibel tanpa kontrak')}
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {monthlyEsim.map((product) => (
-                                    <ProductCatalogCard
-                                        key={product.id}
-                                        product={product}
-                                        language={language}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Yearly SIM Section */}
-                    {yearlySim.length > 0 && (
-                        <div className="mb-16 md:mb-20">
-                            <h3
-                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
-                                style={{ color: 'var(--foreground)' }}
-                            >
-                                {getCategoryTitle(yearlySim, 'Kartu SIM Tahunan')}
-                            </h3>
-                            <p
-                                className="text-sm mb-8 text-slate-500"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                {getCategorySubtitle(yearlySim, 'Kartu SIM internet fisik tahunan hemat')}
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {yearlySim.map((product) => (
-                                    <ProductCatalogCard
-                                        key={product.id}
-                                        product={product}
-                                        language={language}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Yearly eSIM Section */}
-                    {yearlyEsim.length > 0 && (
-                        <div className="mb-16 md:mb-20">
-                            <h3
-                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
-                                style={{ color: 'var(--foreground)' }}
-                            >
-                                {getCategoryTitle(yearlyEsim, 'eSIM Internet Tahunan')}
-                            </h3>
-                            <p
-                                className="text-sm mb-8 text-slate-500"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                {getCategorySubtitle(yearlyEsim, 'Paket eSIM hemat jangka panjang aktif hingga 1 tahun penuh')}
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {yearlyEsim.map((product) => (
-                                    <ProductCatalogCard
-                                        key={product.id}
-                                        product={product}
-                                        language={language}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Pocket WiFi Section */}
-                    {pocketWifi.length > 0 && (
-                        <div className="mb-16 md:mb-20">
-                            <h3
-                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
-                                style={{ color: 'var(--foreground)' }}
-                            >
-                                {getCategoryTitle(pocketWifi, 'Pocket WiFi')}
-                            </h3>
-                            <p
-                                className="text-sm mb-8 text-slate-500"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                {getCategorySubtitle(pocketWifi, 'Perangkat modem WiFi portable praktis')}
-                            </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                                {pocketWifi.map((item) => (
-                                    item.isSimple ? (
-                                        <SimpleWifiCard
-                                            key={`simple-${item.id}`}
-                                            item={item}
-                                            whatsappLabel={t('wifiAskWhatsapp')}
-                                        />
-                                    ) : (
-                                        <ProductCatalogCard
-                                            key={item.id}
-                                            product={item}
-                                            language={language}
-                                        />
-                                    )
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Home WiFi Section */}
-                    {homeWifi.length > 0 && (
-                        <div>
-                            <h3
-                                className="font-display text-2xl md:text-3xl mb-2 text-slate-800"
-                                style={{ color: 'var(--foreground)' }}
-                            >
-                                {getCategoryTitle(homeWifi, 'Home WiFi')}
-                            </h3>
-                            <p
-                                className="text-sm mb-8 text-slate-500"
-                                style={{ color: 'var(--theme-muted)' }}
-                            >
-                                {getCategorySubtitle(homeWifi, 'Modem WiFi rumah tanpa kabel dengan koneksi stabil')}
-                            </p>
-                            <HomeWifiBanner products={homeWifi} />
-                        </div>
-                    )}
-                    </>
+                                    <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8">
+                                        <div className="xl:col-span-5">
+                                            <HomeWifiBanner />
+                                        </div>
+                                        <div className="xl:col-span-7">
+                                            <ProductCarouselWrapper>
+                                                {homeWifiItems.map((item, idx) => (
+                                                    <SimpleWifiCard
+                                                        key={`home-${item.id || idx}`}
+                                                        item={item}
+                                                        whatsappLabel={t('wifiAskWhatsapp')}
+                                                    />
+                                                ))}
+                                            </ProductCarouselWrapper>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </section>
@@ -860,24 +741,9 @@ export default function HomePage() {
                         title={t('testimonialTitle')}
                         subtitle={t('testimonialSubtitle')}
                     />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {testimonials.map((item) => (
-                            <div
-                                key={item.id}
-                                className="premium-card overflow-hidden p-0"
-                            >
-                                <img
-                                    src={item.image_url}
-                                    alt="Testimonial"
-                                    className="w-full h-auto object-cover"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                    <TestimonialMarquee testimonials={testimonials} />
                 </div>
             </section>
-
-            {/* CONTACT */}
             <section
                 id="contact"
                 className="py-20 md:py-28 px-6 scroll-mt-20"

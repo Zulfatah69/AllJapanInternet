@@ -155,6 +155,32 @@
 
                 </div>
 
+                <div class="mb-6">
+
+                    <label
+                        class="
+                            block
+                            mb-3
+                            font-semibold
+                        "
+                    >
+                        Product Name (Inggris)
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nama_en"
+                        class="
+                            w-full
+                            border
+                            rounded-2xl
+                            px-5
+                            py-4
+                        "
+                    >
+
+                </div>
+
                 <div>
 
                     <label
@@ -204,6 +230,32 @@
 
                     <textarea
                         name="deskripsi"
+                        rows="6"
+                        class="
+                            w-full
+                            border
+                            rounded-2xl
+                            px-5
+                            py-4
+                        "
+                    ></textarea>
+
+                </div>
+
+                <div class="mb-6">
+
+                    <label
+                        class="
+                            block
+                            mb-3
+                            font-semibold
+                        "
+                    >
+                        Description (Inggris)
+                    </label>
+
+                    <textarea
+                        name="deskripsi_en"
                         rows="6"
                         class="
                             w-full

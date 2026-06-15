@@ -4,6 +4,7 @@ import { DM_Sans } from 'next/font/google';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { LanguageProvider } from './context/LanguageContext';
+import ThemeCursor from './components/ThemeCursor';
 
 const dmSans = DM_Sans({
     subsets: ['latin'],
@@ -42,6 +43,8 @@ export default function RootLayout({
                 }}
             >
                 <LanguageProvider>
+                    <ThemeCursor />
+
                     <Navbar />
                     <main className="pt-0">{children}</main>
                     <Footer />

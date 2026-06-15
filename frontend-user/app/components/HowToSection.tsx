@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { useLanguage } from '@/app/context/LanguageContext';
 import SectionHeader from './SectionHeader';
+import ScrollReveal from './ScrollReveal';
 
 const steps = [
     { icon: FaWifi, titleKey: 'pilihKuota', descKey: 'pilihKuotaDesc' },
@@ -30,11 +31,13 @@ export default function HowToSection() {
             <div className="absolute bottom-1/4 right-1/10 w-96 h-96 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <SectionHeader
-                    eyebrow={t('howtoEyebrow')}
-                    title={t('howtoTitle')}
-                    subtitle={t('howtoSubtitle')}
-                />
+                <ScrollReveal>
+                    <SectionHeader
+                        eyebrow={t('howtoEyebrow')}
+                        title={t('howtoTitle')}
+                        subtitle={t('howtoSubtitle')}
+                    />
+                </ScrollReveal>
 
                 <div className="relative mt-16 md:mt-24">
                     
@@ -72,8 +75,7 @@ export default function HowToSection() {
                             const num = String(index + 1).padStart(2, '0');
 
                             return (
-                                <div key={step.titleKey} className="flex flex-col items-center text-center group">
-                                    
+                                <ScrollReveal key={step.titleKey} delay={index * 0.15} direction="up" className="flex flex-col items-center text-center group">
                                     {/* Flow Portal Node */}
                                     <div className="relative w-20 h-20 rounded-full bg-white/40 backdrop-blur-md border border-white/60 flex items-center justify-center shadow-md transition-all duration-500 group-hover:scale-110 group-hover:bg-white/70 group-hover:border-white group-hover:shadow-lg">
                                         
@@ -110,7 +112,7 @@ export default function HowToSection() {
                                             {t(step.titleKey)}
                                         </h3>
                                     </div>
-                                </div>
+                                </ScrollReveal>
                             );
                         })}
                     </div>

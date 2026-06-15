@@ -5,37 +5,37 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrollReveal from './ScrollReveal';
 
-interface Promo {
+interface Testimonial {
     id: number;
     judul: string;
     gambar_url: string;
     link?: string;
 }
 
-export default function PromoCarousel({ promos }: { promos: Promo[] }) {
+export default function TestimonialCarousel({ testimonials }: { testimonials: any[] }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(1);
 
     // Auto-scroll
     useEffect(() => {
-        if (!promos || promos.length <= 1) return;
+        if (!testimonials || testimonials.length <= 1) return;
         const interval = setInterval(() => {
             setDirection(1);
-            setCurrentIndex((prev) => (prev + 1) % promos.length);
+            setCurrentIndex((prev) => (prev + 1) % testimonials.length);
         }, 5000);
         return () => clearInterval(interval);
-    }, [promos]);
+    }, [testimonials]);
 
-    if (!promos || promos.length === 0) return null;
+    if (!testimonials || testimonials.length === 0) return null;
 
     const nextSlide = () => {
         setDirection(1);
-        setCurrentIndex((prev) => (prev + 1) % promos.length);
+        setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     };
 
     const prevSlide = () => {
         setDirection(-1);
-        setCurrentIndex((prev) => (prev - 1 + promos.length) % promos.length);
+        setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     };
 
     const variants = {
@@ -69,7 +69,7 @@ export default function PromoCarousel({ promos }: { promos: Promo[] }) {
         <ScrollReveal direction="up" delay={0.2} duration={0.8}>
             <div className="relative w-full max-w-7xl mx-auto overflow-hidden py-8 md:py-12 flex items-center justify-center">
                 {/* Carousel Track */}
-                <div className="relative w-full h-[200px] sm:h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden">
+                <div className="relative w-full h-[60vh] sm:h-[70vh] flex items-center justify-center overflow-hidden">
                     <AnimatePresence initial={false} custom={direction}>
                         <motion.div
                             key={currentIndex}
@@ -84,31 +84,31 @@ export default function PromoCarousel({ promos }: { promos: Promo[] }) {
                                 scale: { duration: 0.4 },
                                 filter: { duration: 0.4 }
                             }}
-                            className="absolute w-[90%] md:w-[75%] max-w-5xl cursor-pointer shadow-2xl rounded-2xl overflow-hidden"
+                            className="absolute w-[85%] max-w-md cursor-pointer shadow-2xl rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10"
                         >
                             <img 
-                                src={promos[currentIndex].gambar_url} 
-                                alt={promos[currentIndex].judul} 
-                                className="w-full h-full object-cover aspect-[21/9]"
+                                src={testimonials[currentIndex].image_url} 
+                                alt="Testimonial" 
+                                className="w-full h-auto max-h-[70vh] object-contain"
                             />
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
                 {/* Controls */}
-                {promos.length > 1 && (
+                {testimonials.length > 1 && (
                     <>
                         <button
                             onClick={prevSlide}
                             className="absolute left-2 md:left-6 z-30 bg-black/40 backdrop-blur-md text-white p-3 md:p-4 rounded-full hover:bg-black/60 transition-colors border border-white/20 hover:scale-110 active:scale-95"
-                            aria-label="Previous Promo"
+                            aria-label="Previous Testimonial"
                         >
                             <FaChevronLeft size={20} />
                         </button>
                         <button
                             onClick={nextSlide}
                             className="absolute right-2 md:right-6 z-30 bg-black/40 backdrop-blur-md text-white p-3 md:p-4 rounded-full hover:bg-black/60 transition-colors border border-white/20 hover:scale-110 active:scale-95"
-                            aria-label="Next Promo"
+                            aria-label="Next Testimonial"
                         >
                             <FaChevronRight size={20} />
                         </button>

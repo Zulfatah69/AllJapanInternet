@@ -188,6 +188,8 @@ class HomeController extends Controller
 
             'nama'
                 => $product->nama,
+            'nama_en'
+                => $product->nama_en,
 
             'slug'
                 => $product->slug,

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BillingPeriod extends Model
 {
     protected $fillable = [
+        'nama_en',
 
         'product_variant_id',
 

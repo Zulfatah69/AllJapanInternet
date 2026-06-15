@@ -8,8 +8,8 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 const navLinks = [
     { href: '/#', labelKey: 'beranda' },
     { href: '/#about', labelKey: 'tentangKami' },
-    { href: '/#products', labelKey: 'produk' },
     { href: '/#benefits', labelKey: 'keunggulan' },
+    { href: '/#products', labelKey: 'produk' },
     { href: '/#howto', labelKey: 'caraOrder' },
     { href: '/#payment', labelKey: 'caraPembayaran' },
     { href: '/#guide', labelKey: 'bukuPanduan' },
@@ -59,6 +59,7 @@ export default function Navbar() {
     }, [lastScrollY]);
 
     return (
+        <>
         <nav className={`
             fixed top-0 left-0 w-full z-50
             transition-all duration-300 ease-out
@@ -71,7 +72,7 @@ export default function Navbar() {
             {/* Desktop Navbar (xl:flex, hidden on mobile/tablet) */}
             <div className="hidden xl:flex w-full px-8 py-4 items-center justify-between">
                 {/* Left: Logo */}
-                <Link href="/#" className="flex items-center gap-3 shrink-0 group hover:scale-105 transition-transform duration-300">
+                <a href="/" className="flex items-center gap-3 shrink-0 group hover:scale-105 transition-transform duration-300">
                     <img
                         src="/images/logoaji.png"
                         alt="All Japan Internet"
@@ -84,7 +85,7 @@ export default function Navbar() {
                         <span className="inline 2xl:hidden">AJI</span>
                         <span className="hidden 2xl:inline">AllJapanInternet</span>
                     </h1>
-                </Link>
+                </a>
 
                 {/* Centered links with responsive spacing and font sizes to prevent overlap and ensure consistency */}
                 <div className="flex flex-1 justify-center items-center gap-4 2xl:gap-6 text-xs 2xl:text-sm font-medium px-4">
@@ -122,7 +123,7 @@ export default function Navbar() {
             {/* Mobile/Tablet Navbar (xl:hidden, perfectly spaced flex layout) */}
             <div className="xl:hidden flex justify-between items-center px-5 py-3.5 w-full">
                 {/* Left Side: Logo & Brand Title */}
-                <Link href="/#" className="flex items-center gap-2.5 shrink-0">
+                <a href="/" className="flex items-center gap-2.5 shrink-0">
                     <img
                         src="/images/logoaji.png"
                         alt="All Japan Internet"
@@ -134,10 +135,10 @@ export default function Navbar() {
                     >
                         AJI
                     </h1>
-                </Link>
+                </a>
 
                 {/* Right Side: Language Switcher & Hamburger Toggle Button */}
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-3 shrink-0 relative z-[80] pointer-events-auto">
                     <div className="flex items-center gap-0.5 rounded-full p-0.5 bg-black/5 text-2xs scale-95 origin-right">
                         <button
                             type="button"
@@ -167,55 +168,57 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Sliding Drawer Menu for Mobile */}
-            {/* Backdrop Overlay */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300"
-                    onClick={() => setIsOpen(false)}
-                />
-            )}
-
-            {/* Drawer Container */}
-            <div
-                className={`
-                    fixed top-0 right-0 h-full w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-2xl z-50
-                    transform transition-transform duration-300 ease-out flex flex-col p-6
-                    ${isOpen ? 'translate-x-0' : 'translate-x-full'}
-                `}
-            >
-                {/* Drawer Header */}
-                <div className="flex items-center justify-between pb-4 border-b border-black/5 mb-6">
-                    <span className="font-display font-bold text-sm tracking-wide text-slate-400">MENU</span>
-                    <button
-                        type="button"
-                        onClick={() => setIsOpen(false)}
-                        className="p-2 rounded-lg hover:bg-black/5 text-lg transition-colors"
-                        style={{ color: 'var(--foreground)' }}
-                        aria-label="Close menu"
-                    >
-                        <FaTimes />
-                    </button>
-                </div>
-
-                {/* Drawer Links */}
-                <div className="flex flex-col gap-2 flex-1 pb-10 overflow-y-auto">
-                    {navLinks.map((link) => (
-                        <a
-                            key={link.href}
-                            href={link.href}
-                            onClick={() => setIsOpen(false)}
-                            className="py-3 px-4 rounded-xl text-base font-bold transition-all duration-300"
-                            style={{ 
-                                color: 'var(--foreground)',
-                                background: 'color-mix(in srgb, var(--theme-primary) 3%, transparent)'
-                            }}
-                        >
-                            {t(link.labelKey)}
-                        </a>
-                    ))}
-                </div>
-            </div>
         </nav>
+
+        {/* Sliding Drawer Menu for Mobile */}
+        {/* Backdrop Overlay */}
+        {isOpen && (
+            <div
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] transition-opacity duration-300"
+                onClick={() => setIsOpen(false)}
+            />
+        )}
+
+        {/* Drawer Container */}
+        <div
+            className={`
+                fixed top-0 right-0 h-full w-64 bg-white/95 backdrop-blur-md shadow-2xl z-[70]
+                transform transition-transform duration-300 ease-out flex flex-col p-6
+                ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+            `}
+        >
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-black/5 mb-6">
+                <span className="font-display font-bold text-sm tracking-wide text-slate-400">MENU</span>
+                <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 rounded-lg hover:bg-black/5 text-lg transition-colors"
+                    style={{ color: 'var(--foreground)' }}
+                    aria-label="Close menu"
+                >
+                    <FaTimes />
+                </button>
+            </div>
+
+            {/* Drawer Links */}
+            <div className="flex flex-col gap-2 flex-1 pb-10 overflow-y-auto">
+                {navLinks.map((link) => (
+                    <a
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsOpen(false)}
+                        className="py-3 px-4 rounded-xl text-base font-bold transition-all duration-300"
+                        style={{ 
+                            color: 'var(--foreground)',
+                            background: 'color-mix(in srgb, var(--theme-primary) 3%, transparent)'
+                        }}
+                    >
+                        {t(link.labelKey)}
+                    </a>
+                ))}
+            </div>
+        </div>
+        </>
     );
 }

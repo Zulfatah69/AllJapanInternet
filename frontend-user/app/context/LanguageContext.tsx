@@ -19,6 +19,7 @@ interface LanguageContextType {
     isThemeReady: boolean;
     t: (key: string) => string;
     translateDynamicText: (text: string | undefined | null) => string;
+    getLocalizedText: (idText: string | undefined | null, enText?: string | undefined | null) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
@@ -98,7 +99,41 @@ const translations: Record<string, { id: string; en: string }> = {
     payCodJpTitle: { id: 'COD - Japan Post', en: 'COD - Japan Post' },
     payCodJpDesc: {
         id: 'Bayar tunai ke kurir Japan Post saat paket tiba di alamat Anda.',
-        en: 'Pay cash to the Japan Post courier when the package arrives at your address.',
+        en: 'Pay cash to the Japan Post courier when your package arrives.',
+    },
+    hwSubtitle: {
+        id: 'Bisa pasang ke seluruh alamat Jepang',
+        en: 'Can be installed at any address in Japan',
+    },
+    hwFeat1: { id: 'Layanan 24 jam', en: '24-hour service' },
+    hwFeat2: {
+        id: 'Tidak ada pembayaran di awal',
+        en: 'No upfront payment',
+    },
+    hwFeat3: {
+        id: 'Pembayaran bulanan pertama setelah 1 bulan pemakaian',
+        en: 'First monthly payment after 1 month of use',
+    },
+    hwCostTitle: { id: 'Biaya Perbulan :', en: 'Monthly Cost :' },
+    hwCostApt: {
+        id: 'Tipe Apartment / Manshion',
+        en: 'Apartment / Mansion Type',
+    },
+    hwCostHouse: { id: 'Tipe Family House', en: 'Family House Type' },
+    hwStartingFrom: { id: 'Mulai Dari', en: 'Starting From' },
+    hwNetworkTitle: { id: 'Network Provider :', en: 'Network Provider :' },
+    hwReady: {
+        id: 'READY PEMASANGAN HOME WI-FI',
+        en: 'READY FOR HOME WI-FI INSTALLATION',
+    },
+    hwNoUpfront: { id: 'Tanpa Uang Awal', en: 'No Upfront Payment' },
+    hwFirstPayment: {
+        id: 'Pembayaran pertama adalah',
+        en: 'First payment is',
+    },
+    hwAfterInstall: {
+        id: '1 bulan setelah pemasangan',
+        en: '1 month after installation',
     },
     payCodKuronekoTitle: { id: 'COD - Kuroneko Yamato', en: 'COD - Kuroneko Yamato' },
     payCodKuronekoDesc: {
@@ -375,12 +410,28 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         return translations[key]?.[language] ?? key;
     };
 
+    const getLocalizedText = (idText: string | undefined | null, enText?: string | undefined | null): string => {
+        if (language === 'en') {
+            if (enText) return enText;
+            // Fallback to legacy regex translation if the english column is empty in the database
+            return translateDynamicText(idText);
+        }
+        return idText || '';
+    };
+
     const translateDynamicText = (text: string | undefined | null): string => {
         if (!text) return '';
         if (language === 'id') return text;
         let translated = text;
         
-        // Categories
+        // Exact Categories first
+        translated = translated.replace(/Kartu Internet Bulanan/gi, 'Monthly Internet Card');
+        translated = translated.replace(/Kartu SIM Bulanan/gi, 'Monthly SIM Card');
+        translated = translated.replace(/eSIM Internet Bulanan/gi, 'Monthly Internet eSIM');
+        translated = translated.replace(/Kartu SIM Tahunan/gi, 'Yearly SIM Card');
+        translated = translated.replace(/eSIM Internet Tahunan/gi, 'Yearly Internet eSIM');
+
+        // General Words
         translated = translated.replace(/Bulanan/gi, 'Monthly');
         translated = translated.replace(/Tahunan/gi, 'Yearly');
         translated = translated.replace(/Produk/gi, 'Product');
@@ -418,7 +469,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     return (
         <LanguageContext.Provider
-            value={{ language, setLanguage, theme, isThemeReady, t, translateDynamicText }}
+            value={{ language, setLanguage, theme, isThemeReady, t, translateDynamicText, getLocalizedText }}
         >
             {children}
         </LanguageContext.Provider>
