@@ -66,10 +66,22 @@ export default function ProductCatalogCard({
                     </div>
                 </div>
 
-                {/* ======== From ..... */}
-                <div className="text-sm md:text-base font-bold mt-auto border-t border-black/5 pt-3" style={{ color: 'var(--theme-primary)' }}>
-                    <span className="text-xs text-slate-400 font-normal mr-1">From</span>
-                    {formatLowestPrice(product as any, language)}
+                {/* ======== From / Price section */}
+                <div className="mt-auto border-t border-black/5 pt-3">
+                    {formatLowestPrice(product as any, language) ? (
+                        <div className="flex flex-col">
+                            <span className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-slate-400 mb-0.5">
+                                {language === 'id' ? 'Mulai Dari' : 'Starts From'}
+                            </span>
+                            <span className="text-base md:text-lg font-black tracking-tight" style={{ color: 'var(--theme-primary)' }}>
+                                {formatLowestPrice(product as any, language)}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="text-sm md:text-base font-bold text-slate-400 py-1">
+                            {language === 'id' ? 'Hubungi kami' : 'Contact us'}
+                        </div>
+                    )}
                 </div>
 
             </a>

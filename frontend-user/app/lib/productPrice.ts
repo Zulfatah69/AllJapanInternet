@@ -176,10 +176,10 @@ export function getLowestProductPrice(product: Product): number | null {
 export function formatLowestPrice(
     product: Product,
     language: 'id' | 'en' = 'id'
-): string {
+): string | null {
     const price = getLowestProductPrice(product);
     if (price === null || price <= 0) {
-        return language === 'id' ? 'Hubungi kami' : 'Contact us';
+        return null; // Let the component handle empty state
     }
-    return `from ¥${price.toLocaleString('ja-JP')}`;
+    return `¥${price.toLocaleString('ja-JP')}`;
 }
