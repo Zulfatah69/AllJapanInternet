@@ -234,35 +234,13 @@ export default function HomePage() {
             groups[catName].items.push({ ...prod, isSimple: false });
         }
         
-        for (const prod of simpleProducts) {
-            const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || '';
-            if (catName.toLowerCase().includes('home wifi') || catName.toLowerCase().includes('homewifi')) continue;
-
-            const actualCat = catName || 'KARTU INTERNET BULANAN UNTUK POCKET';
-            
-            let sortOrder = categoryOrderMap[actualCat];
-            if (sortOrder === undefined) {
-                // if they rename to "Pocket WiFi", check if we have a Pocket category
-                const pocketCat = categoriesList.find(c => c.nama.toUpperCase().includes('POCKET'));
-                if (pocketCat) {
-                    sortOrder = pocketCat.sort_order || 0;
-                } else {
-                    sortOrder = 99; // Fallback jika tidak ditemukan
-                }
-            }
-
-            if (!groups[actualCat]) groups[actualCat] = { items: [], sort_order: sortOrder };
-            groups[actualCat].items.push({ ...prod, isSimple: true });
-        }
+        // simpleProducts di-handle terpisah di komponen Home WiFi, tidak usah digabung ke groupedProducts
         
         return groups;
-    }, [products, simpleProducts, categoriesList]);
+    }, [products, categoriesList]);
 
     const homeWifiItems = useMemo(() => {
-        return simpleProducts.filter(prod => {
-            const catName = typeof prod.category === 'string' ? prod.category : prod.category?.nama || '';
-            return catName.toLowerCase().includes('home wifi') || catName.toLowerCase().includes('homewifi');
-        }).map(prod => ({ ...prod, isSimple: true }));
+        return simpleProducts.map(prod => ({ ...prod, isSimple: true }));
     }, [simpleProducts]);
 
     return (
