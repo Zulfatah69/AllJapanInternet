@@ -435,11 +435,46 @@ export default function HomePage() {
                         </div>
                     ) : (
                         <>
+                            {/* Best Sellers Section */}
+                            {products.filter(p => p.best_seller).length > 0 && (
+                                <div className="mb-12 md:mb-16">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <h3
+                                            className="font-display text-2xl md:text-3xl font-bold text-slate-800 tracking-tight"
+                                            style={{ color: 'var(--foreground)' }}
+                                        >
+                                            {language === 'en' ? 'Best Sellers' : 'Produk Terlaris'}
+                                        </h3>
+                                        <div className="flex-1 h-px bg-slate-200"></div>
+                                    </div>
+                                    
+                                    <ProductCarouselWrapper>
+                                        {products.filter(p => p.best_seller).map((item, idx) => (
+                                            item.isSimple ? (
+                                                <SimpleWifiCard
+                                                    key={`best-simple-${item.id || idx}`}
+                                                    item={item}
+                                                    whatsappLabel={t('wifiAskWhatsapp')}
+                                                />
+                                            ) : (
+                                                <ProductCatalogCard
+                                                    key={`best-prod-${item.id || idx}`}
+                                                    product={item}
+                                                    language={language}
+                                                />
+                                            )
+                                        ))}
+                                    </ProductCarouselWrapper>
+                                </div>
+                            )}
+
                             {Object.entries(groupedProducts)
                                 .sort(([, a], [, b]) => a.sort_order - b.sort_order)
                                 .map(([categoryName, group]) => {
                                 const items = group.items;
                                 if (!items || items.length === 0) return null;
+                                
+                                const displayCategoryName = language === 'en' && items[0]?.category?.nama_en ? items[0].category.nama_en : categoryName;
                                 
                                 return (
                                     <div key={categoryName} className="mb-12 md:mb-16">
@@ -448,7 +483,7 @@ export default function HomePage() {
                                                 className="font-display text-2xl md:text-3xl font-bold text-slate-800 tracking-tight"
                                                 style={{ color: 'var(--foreground)' }}
                                             >
-                                                {categoryName}
+                                                {displayCategoryName}
                                             </h3>
                                             <div className="flex-1 h-px bg-slate-200"></div>
                                         </div>

@@ -35,7 +35,7 @@ class YearlyProductController extends Controller
             $query->where('provider_id', $request->provider_id);
         }
 
-        $products = $query->latest()->get();
+        $products = $query->orderBy('best_seller', 'desc')->latest()->get();
         $categories = Category::whereIn('nama', [
             'KARTU INTERNET TAHUNAN',
             'E-SIM INTERNET TAHUNAN',

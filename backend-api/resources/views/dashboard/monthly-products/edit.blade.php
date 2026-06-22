@@ -4,22 +4,15 @@
 
 <div class="max-w-7xl">
 
-    <div class="mb-10">
-
-        <h1
-            class="
-                text-4xl
-                font-black
-                mb-2
-            "
-        >
-            Edit Produk Bulanan
-        </h1>
-
-        <p class="text-gray-500">
-            Perbarui produk internet bulanan
-        </p>
-
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-2 mb-2 text-sm font-medium text-slate-500">
+                <a href="{{ route('monthly-products.index') }}" class="hover:text-indigo-600 transition-colors">Produk Bulanan</a>
+                <span>/</span>
+                <span class="text-slate-800">Edit Produk</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Edit Produk Bulanan</h1>
+        </div>
     </div>
 
     <form
@@ -31,610 +24,201 @@
         @csrf
         @method('PUT')
 
-        <div class="grid grid-cols-2 gap-8">
-
-            <div
-                class="
-                    bg-white
-                    rounded-3xl
-                    shadow
-                    p-8
-                "
-            >
-
-                <h2
-                    class="
-                        text-2xl
-                        font-black
-                        mb-8
-                    "
-                >
-                    Informasi Produk
-                </h2>
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Kategori
-                    </label>
-
-                    <select
-                        name="category_id"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                        @foreach($categories as $category)
-
-                            <option
-                                value="{{ $category->id }}"
-                                @selected(
-                                    $product->category_id
-                                    == $category->id
-                                )
-                            >
-
-                                {{ $category->nama }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Provider
-                    </label>
-
-                    <select
-                        name="provider_id"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                        @foreach($providers as $provider)
-
-                            <option
-                                value="{{ $provider->id }}"
-                                @selected(
-                                    $product->provider_id
-                                    == $provider->id
-                                )
-                            >
-
-                                {{ $provider->nama }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Nama Produk
-                    </label>
-
-                    <input
-                        type="text"
-                        name="nama"
-                        value="{{ $product->nama }}"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Nama Produk (Inggris)
-                    </label>
-
-                    <input
-                        type="text"
-                        name="nama_en"
-                        value="{{ $product->nama_en }}"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div>
-
-                    <label
-                        class="
-                            block
-                            mb-2
-                            font-semibold
-                        "
-                    >
-                        Tipe Siklus
-                    </label>
-
-                    <select
-                        name="cycle_type"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                        <option
-                            value="VT"
-                            {{ $product->cycle_type == 'VT' ? 'selected' : '' }}
-                        >
-                            VT (20-28)
-                        </option>
-
-                        <option
-                            value="GJ"
-                            {{ $product->cycle_type == 'GJ' ? 'selected' : '' }}
-                        >
-                            GJ (18-24)
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Deskripsi
-                    </label>
-
-                    <textarea
-                        name="deskripsi"
-                        rows="6"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >{{ $product->deskripsi }}</textarea>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Deskripsi (Inggris)
-                    </label>
-
-                    <textarea
-                        name="deskripsi_en"
-                        rows="6"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >{{ $product->deskripsi_en }}</textarea>
-
-                </div>
-
-                @if($product->thumbnail)
-
-                    <div class="mb-6">
-
-                        <img
-                            src="{{ asset('storage/' . $product->thumbnail) }}"
-                            class="
-                                w-64
-                                rounded-3xl
-                                mb-4
-                            "
-                        >
-
-                        <a
-                            href="{{ route('monthly-products.delete-image', $product->id) }}"
-                            onclick="
-                                event.preventDefault();
-
-                                if(confirm('Delete image?')) {
-
-                                    document
-                                        .getElementById(
-                                            'delete-image-form'
-                                        )
-                                        .submit();
-                                }
-                            "
-                            class="
-                                inline-block
-                                bg-red-500
-                                text-white
-                                px-5
-                                py-3
-                                rounded-2xl
-                                font-semibold
-                            "
-                        >
-                            Hapus Gambar
-                        </a>
-
-                    </div>
-
-                @endif
-
-                <div class="mb-6">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Thumbnail
-                    </label>
-
-                    <input
-                        type="file"
-                        name="thumbnail"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div class="flex items-center gap-3">
-
-                    <input
-                        type="checkbox"
-                        name="best_seller"
-                        value="1"
-                        class="
-                            w-5
-                            h-5
-                        "
-                        @checked($product->best_seller)
-                    >
-
-                    <label class="font-semibold">
-                        Produk Terlaris
-                    </label>
-
-                </div>
-
-            </div>
-
-                <div
-                    class="
-                        bg-white
-                        rounded-3xl
-                        shadow
-                        p-8
-                    "
-                >
-
-                    <div
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            mb-8
-                        "
-                    >
-
-                        <h2
-                            class="
-                                text-2xl
-                                font-black
-                            "
-                        >
-                            Varian
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <div class="lg:col-span-8 space-y-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Informasi Produk
                         </h2>
-
-                        <button
-                            type="button"
-                            id="addVariant"
-                            class="
-                                bg-black
-                                text-white
-                                px-5
-                                py-3
-                                rounded-2xl
-                                font-semibold
-                            "
-                        >
-                            + Tambah Varian
-                        </button>
-
                     </div>
 
-                    <div
-                        id="variantContainer"
-                        class="space-y-8"
-                    >
-
-                        @foreach($product->variants as $index => $variant)
-
-                            <div
-                                class="
-                                    border
-                                    rounded-3xl
-                                    p-6
-                                    space-y-5
-                                "
-                            >
-
-                                <div class="flex justify-end items-center mb-4">
-                                    <input
-                                        type="hidden"
-                                        name="variants[{{ $index }}][id]"
-                                        value="{{ $variant->id }}"
-                                    >
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer toggle-variant-active" data-id="{{ $variant->id }}" {{ $variant->is_active ? 'checked' : '' }}>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                                        <span class="ml-3 text-sm font-medium text-gray-900">Aktif</span>
-                                    </label>
-                                </div>
-
-                                <div>
-
-                                    <label
-                                        class="
-                                            block
-                                            mb-2
-                                            font-semibold
-                                        "
-                                    >
-                                        GB
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="variants[{{ $index }}][gb]"
-                                        value="{{ $variant->gb }}"
-                                        class="
-                                            w-full
-                                            border
-                                            rounded-2xl
-                                            px-5
-                                            py-4
-                                        "
-                                    >
-
-                                </div>
-
-                                <div>
-
-                                    <label
-                                        class="
-                                            block
-                                            mb-2
-                                            font-semibold
-                                        "
-                                    >
-                                        Harga Bulanan
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        name="variants[{{ $index }}][monthly_price]"
-                                        value="{{ $variant->monthly_price }}"
-                                        class="
-                                            w-full
-                                            border
-                                            rounded-2xl
-                                            px-5
-                                            py-4
-                                        "
-                                    >
-
-                                </div>
-
-                                <div
-                                    class="
-                                        grid
-                                        grid-cols-3
-                                        gap-4
-                                    "
-                                >
-
-                                    @foreach($variant->billingPeriods as $period)
-
-                                        <div>
-
-                                            <label
-                                                class="
-                                                    block
-                                                    mb-2
-                                                    text-sm
-                                                    font-semibold
-                                                "
-                                            >
-                                                Tanggal {{ $period->nama }}
-                                            </label>
-
-                                            <input
-                                                type="number"
-                                                name="variants[{{ $index }}][billing_periods][{{ $period->nama }}]"
-                                                value="{{ $period->initial_price }}"
-                                                class="
-                                                    w-full
-                                                    border
-                                                    rounded-2xl
-                                                    px-4
-                                                    py-3
-                                                "
-                                            >
-
-                                        </div>
-
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block mb-2 text-sm font-semibold text-slate-700">Kategori</label>
+                                <select name="category_id" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                    <option value="">Pilih Kategori</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" @selected($product->category_id == $category->id)>
+                                            {{ $category->nama }}
+                                        </option>
                                     @endforeach
-
-                                </div>
-
+                                </select>
                             </div>
-
-                        @endforeach
-
-                    </div>
-
-                </div>
-
-                <div
-                    class="
-                        bg-white
-                        rounded-3xl
-                        shadow
-                        p-8
-                    "
-                >
-
-                    <h2
-                        class="
-                            text-2xl
-                            font-black
-                            mb-8
-                        "
-                    >
-                        Metode Pembayaran
-                    </h2>
-
-                    <div class="space-y-6">
-
-                        @foreach($product->paymentMethods as $index => $payment)
 
                             <div>
-
-                                <label
-                                    class="
-                                        block
-                                        mb-3
-                                        font-semibold
-                                    "
-                                >
-                                    {{ $payment->nama }}
-                                </label>
-
-                                <input
-                                    type="number"
-                                    name="payment_methods[{{ $index }}][additional_price]"
-                                    value="{{ $payment->additional_price }}"
-                                    class="
-                                        w-full
-                                        border
-                                        rounded-2xl
-                                        px-5
-                                        py-4
-                                    "
-                                >
-
-                                <input
-                                    type="hidden"
-                                    name="payment_methods[{{ $index }}][nama]"
-                                    value="{{ $payment->nama }}"
-                                >
-
+                                <label class="block mb-2 text-sm font-semibold text-slate-700">Penyedia (Provider)</label>
+                                <select name="provider_id" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                    <option value="">Pilih Penyedia</option>
+                                    @foreach($providers as $provider)
+                                        <option value="{{ $provider->id }}" @selected($product->provider_id == $provider->id)>
+                                            {{ $provider->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
+                        </div>
 
-                        @endforeach
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Nama Produk</label>
+                            <input type="text" name="nama" value="{{ $product->nama }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                        </div>
 
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Nama Produk (Inggris)</label>
+                            <input type="text" name="nama_en" value="{{ $product->nama_en }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Tipe Siklus (Cycle)</label>
+                            <select name="cycle_type" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                <option value="VT" {{ $product->cycle_type == 'VT' ? 'selected' : '' }}>VT (Tgl 20-28)</option>
+                                <option value="GJ" {{ $product->cycle_type == 'GJ' ? 'selected' : '' }}>GJ (Tgl 18-24)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Deskripsi</label>
+                            <textarea name="deskripsi" rows="4" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">{{ $product->deskripsi }}</textarea>
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Deskripsi (Inggris)</label>
+                            <textarea name="deskripsi_en" rows="4" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">{{ $product->deskripsi_en }}</textarea>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-semibold text-slate-700">Thumbnail Produk</label>
+                                @if($product->thumbnail)
+                                <a href="{{ route('monthly-products.delete-image', $product->id) }}" onclick="event.preventDefault(); if(confirm('Hapus gambar saat ini?')) { document.getElementById('delete-image-form').submit(); }" class="text-xs font-semibold text-red-500 hover:text-red-600">
+                                    Hapus Gambar Saat Ini
+                                </a>
+                                @endif
+                            </div>
+                            <x-image-upload name="thumbnail" :existingUrl="$product->thumbnail ? asset('storage/' . $product->thumbnail) : null" />
+                        </div>
+
+                        <div class="flex items-center gap-3 bg-amber-50 border border-amber-100 p-4 rounded-xl">
+                            <input type="checkbox" name="best_seller" value="1" id="best_seller" class="w-5 h-5 rounded text-amber-500 border-amber-300 focus:ring-amber-500" @checked($product->best_seller)>
+                            <label for="best_seller" class="font-semibold text-amber-700 cursor-pointer">
+                                Tandai sebagai Best Seller
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variants Section -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Varian Produk
+                        </h2>
+                        <button type="button" id="addVariant" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2 rounded-xl font-semibold transition-colors flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Tambah Varian
+                        </button>
                     </div>
 
+                    <div id="variantContainer" class="space-y-6">
+                        @foreach($product->variants as $index => $variant)
+                            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-5 relative group transition-all hover:border-indigo-300">
+                                <div class="absolute top-4 right-4 flex items-center gap-3">
+                                    <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
+                                    <label class="relative inline-flex items-center cursor-pointer" title="Aktif / Nonaktifkan Varian">
+                                        <input type="checkbox" class="sr-only peer toggle-variant-active" data-id="{{ $variant->id }}" {{ $variant->is_active ? 'checked' : '' }}>
+                                        <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div>
+                                        <span class="ml-2 text-sm font-semibold text-slate-600">Aktif</span>
+                                    </label>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4 pt-2">
+                                    <div>
+                                        <label class="block mb-2 text-sm font-semibold text-slate-700">Kapasitas (GB / Mbps)</label>
+                                        <input type="text" name="variants[{{ $index }}][gb]" value="{{ $variant->gb }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 text-sm font-semibold text-slate-700">Harga Dasar Bulanan (¥)</label>
+                                        <input type="number" name="variants[{{ $index }}][monthly_price]" value="{{ $variant->monthly_price }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500">
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-slate-200">
+                                    <p class="text-sm font-bold text-slate-700 mb-3">Harga Berdasarkan Siklus Penagihan</p>
+                                    <div class="grid grid-cols-3 gap-4">
+                                        @foreach($variant->billingPeriods as $period)
+                                            <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                                                <label class="block mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Tanggal {{ $period->nama }}</label>
+                                                <div class="relative">
+                                                    <span class="absolute left-3 top-2.5 text-slate-400 font-medium">¥</span>
+                                                    <input type="number" name="variants[{{ $index }}][billing_periods][{{ $period->nama }}]" value="{{ $period->initial_price }}" class="w-full border-slate-200 rounded-lg pl-8 pr-3 py-2 text-center focus:ring-indigo-500 focus:border-indigo-500">
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-8">
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden sticky top-8">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Metode Pembayaran
+                        </h2>
+                    </div>
+
+                    <div class="p-6">
+                        <p class="text-sm text-slate-500 mb-6">Tentukan biaya tambahan untuk setiap metode pembayaran.</p>
+                        
+                        <div class="space-y-4">
+                            @foreach($product->paymentMethods as $index => $payment)
+                                <div class="grid grid-cols-2 gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div>
+                                        <span class="font-bold text-slate-700 flex items-center gap-2">
+                                            @if($payment->nama == 'COD')
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                            @elseif($payment->nama == 'TF')
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                            @else
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            @endif
+                                            {{ $payment->nama }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-xs font-semibold text-slate-500 uppercase">Harga Tambahan (¥)</label>
+                                        <input type="number" name="payment_methods[{{ $index }}][additional_price]" value="{{ $payment->additional_price }}" class="w-full border-slate-200 rounded-lg px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                        <input type="hidden" name="payment_methods[{{ $index }}][nama]" value="{{ $payment->nama }}">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-slate-50 border-t border-slate-100">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-4 rounded-xl font-bold shadow-sm shadow-indigo-200 transition-colors flex justify-center items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Simpan Perubahan
+                        </button>
+                        <a href="{{ route('monthly-products.index') }}" class="block w-full text-center mt-3 px-6 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-200 hover:text-slate-800 transition-colors">
+                            Batal
+                        </a>
+                    </div>
                 </div>
 
             </div>
 
         </div>
-
-        <button
-            class="
-                mt-10
-                bg-black
-                text-white
-                px-10
-                py-5
-                rounded-3xl
-                font-bold
-                text-lg
-            "
-        >
-            Simpan Perubahan
-        </button>
-
-    </form>
     </form>
 
     <form
@@ -661,136 +245,50 @@
             variantIndex;
 
         const html = `
-
-            <div
-                class="
-                    border
-                    rounded-3xl
-                    p-6
-                    space-y-5
-                    relative
-                "
-            >
-
-                <button
-                    type="button"
-                    onclick="this.parentElement.remove()"
-                    class="
-                        absolute
-                        top-4
-                        right-4
-                        text-red-500
-                        font-bold
-                    "
-                >
-                    ✕
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-5 relative group transition-all hover:border-indigo-300">
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-4 right-4 bg-white text-red-500 border border-red-100 hover:bg-red-50 hover:text-red-600 p-2 rounded-lg text-sm font-semibold flex items-center gap-1 shadow-sm opacity-100 transition-opacity">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus
                 </button>
 
-                <div>
-
-                    <label class="block mb-2 font-semibold">
-                        GB
-                    </label>
-
-                    <input
-                        type="text"
-                        name="variants[${currentIndex}][gb]"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-                <div>
-
-                    <label class="block mb-2 font-semibold">
-                        Harga Bulanan
-                    </label>
-
-                    <input
-                        type="number"
-                        name="variants[${currentIndex}][monthly_price]"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block mb-2 text-sm font-semibold text-slate-700">Kapasitas (GB / Mbps)</label>
+                        <input type="text" name="variants[${currentIndex}][gb]" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Misal: 50 GB">
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm font-semibold text-slate-700">Harga Dasar Bulanan (¥)</label>
+                        <input type="number" name="variants[${currentIndex}][monthly_price]" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500" placeholder="0">
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4">
-
-                    <div>
-
-                        <label class="block mb-2 text-sm font-semibold">
-                           Tanggal 1-10
-                        </label>
-
-                        <input
-                            type="number"
-                            name="variants[${currentIndex}][billing_periods][1-10]"
-                            class="
-                                w-full
-                                border
-                                rounded-2xl
-                                px-4
-                                py-3
-                            "
-                        >
-
+                <div class="pt-4 border-t border-slate-200">
+                    <p class="text-sm font-bold text-slate-700 mb-3">Harga Berdasarkan Siklus Penagihan (Billing Periods)</p>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <label class="block mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Tanggal 1-10</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-medium">¥</span>
+                                <input type="number" name="variants[${currentIndex}][billing_periods][1-10]" class="w-full border-slate-200 rounded-lg pl-8 pr-3 py-2 text-center focus:ring-indigo-500 focus:border-indigo-500" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <label class="block mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Tanggal 11-19</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-medium">¥</span>
+                                <input type="number" name="variants[${currentIndex}][billing_periods][11-19]" class="w-full border-slate-200 rounded-lg pl-8 pr-3 py-2 text-center focus:ring-indigo-500 focus:border-indigo-500" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <label class="block mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Tanggal 20-31</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-slate-400 font-medium">¥</span>
+                                <input type="number" name="variants[${currentIndex}][billing_periods][20-31]" class="w-full border-slate-200 rounded-lg pl-8 pr-3 py-2 text-center focus:ring-indigo-500 focus:border-indigo-500" placeholder="0">
+                            </div>
+                        </div>
                     </div>
-
-                    <div>
-
-                        <label class="block mb-2 text-sm font-semibold">
-                            Tanggal 11-19
-                        </label>
-
-                        <input
-                            type="number"
-                            name="variants[${currentIndex}][billing_periods][11-19]"
-                            class="
-                                w-full
-                                border
-                                rounded-2xl
-                                px-4
-                                py-3
-                            "
-                        >
-
-                    </div>
-
-                    <div>
-
-                        <label class="block mb-2 text-sm font-semibold">
-                           Tanggal 20-31
-                        </label>
-
-                        <input
-                            type="number"
-                            name="variants[${currentIndex}][billing_periods][20-31]"
-                            class="
-                                w-full
-                                border
-                                rounded-2xl
-                                px-4
-                                py-3
-                            "
-                        >
-
-                    </div>
-
                 </div>
-
             </div>
-
         `;
 
         document

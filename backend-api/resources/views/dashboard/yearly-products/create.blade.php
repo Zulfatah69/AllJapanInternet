@@ -2,526 +2,261 @@
 
 @section('content')
 
-<div class="max-w-7xl">
+<div class="max-w-7xl mx-auto">
 
-    <div class="mb-10">
-
-        <h1
-            class="
-                text-4xl
-                font-black
-                mb-2
-            "
-        >
-            Add Yearly Product
-        </h1>
-
-        <p class="text-gray-500">
-            Create yearly internet product
-        </p>
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-2 mb-2 text-sm font-medium text-slate-500">
+                <a href="{{ route('yearly-products.index') }}" class="hover:text-indigo-600 transition-colors">Produk Tahunan</a>
+                <span>/</span>
+                <span class="text-slate-800">Tambah Baru</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Tambah Produk Tahunan</h1>
+        </div>
+    </div>
 
     @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-8 font-semibold">
-            <ul class="list-disc pl-5 space-y-1">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-8">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                    <h3 class="text-sm font-semibold text-red-800 mb-1">Terdapat kesalahan pengisian form:</h3>
+                    <ul class="list-disc pl-4 text-sm text-red-700 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
     @endif
 
-    <form
-        action="{{ route('yearly-products.store') }}"
-        method="POST"
-        enctype="multipart/form-data"
-    >
-
+    <form action="{{ route('yearly-products.store') }}" method="POST" enctype="multipart/form-data" class="pb-20">
         @csrf
 
-        <div class="grid grid-cols-2 gap-8">
-
-            <div
-                class="
-                    bg-white
-                    rounded-3xl
-                    shadow
-                    p-8
-                "
-            >
-
-                <h2
-                    class="
-                        text-2xl
-                        font-black
-                        mb-8
-                    "
-                >
-                    Product Information
-                </h2>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Category
-                    </label>
-
-                    <select
-                        name="category_id"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                        @foreach($categories as $category)
-
-                            <option
-                                value="{{ $category->id }}"
-                            >
-
-                                {{ $category->nama }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Provider
-                    </label>
-
-                    <select
-                        name="provider_id"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                        @foreach($providers as $provider)
-
-                            <option
-                                value="{{ $provider->id }}"
-                            >
-
-                                {{ $provider->nama }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Product Name
-                    </label>
-
-                    <input
-                        type="text"
-                        name="nama"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Product Name (Inggris)
-                    </label>
-
-                    <input
-                        type="text"
-                        name="nama_en"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Description
-                    </label>
-
-                    <textarea
-                        name="deskripsi"
-                        rows="6"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    ></textarea>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Description (Inggris)
-                    </label>
-
-                    <textarea
-                        name="deskripsi_en"
-                        rows="6"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    ></textarea>
-
-                </div>
-
-                <div class="mb-6">
-
-                    <label class="block mb-3 font-semibold">
-                        Thumbnail
-                    </label>
-
-                    <input
-                        type="file"
-                        name="thumbnail"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div class="flex items-center gap-3">
-
-                    <input
-                        type="checkbox"
-                        name="best_seller"
-                        value="1"
-                        class="
-                            w-5
-                            h-5
-                        "
-                    >
-
-                    <label class="font-semibold">
-                        Best Seller
-                    </label>
-
-                </div>
-
-            </div>
-
-            <div class="space-y-8">
-
-                <div
-                    class="
-                        bg-white
-                        rounded-3xl
-                        shadow
-                        p-8
-                    "
-                >
-
-                    <div
-                        class="
-                            flex
-                            items-center
-                            justify-between
-                            mb-8
-                        "
-                    >
-
-                        <h2
-                            class="
-                                text-2xl
-                                font-black
-                            "
-                        >
-                            Variants
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            {{-- KOLOM KIRI - INFORMASI PRODUK --}}
+            <div class="lg:col-span-8 space-y-8">
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Informasi Produk
                         </h2>
-
-                        <button
-                            type="button"
-                            id="addVariant"
-                            class="
-                                bg-black
-                                text-white
-                                px-5
-                                py-3
-                                rounded-2xl
-                                font-semibold
-                            "
-                        >
-                            + Add Variant
-                        </button>
-
                     </div>
-
-                    <div
-                        id="variantContainer"
-                        class="space-y-6"
-                    ></div>
-
-                </div>
-
-                <div
-                    class="
-                        bg-white
-                        rounded-3xl
-                        shadow
-                        p-8
-                    "
-                >
-
-                    <h2
-                        class="
-                            text-2xl
-                            font-black
-                            mb-8
-                        "
-                    >
-                        Payment Methods
-                    </h2>
-
-                    <div class="space-y-6">
-
-                        @php
-
-                            $methods = [
-
-                                'COD',
-                                'TF',
-                                'MOTOBARAI',
-                                'SMARTPIT',
-
-                            ];
-
-                        @endphp
-
-                        @foreach($methods as $index => $method)
-
+                    
+                    <div class="p-6 space-y-6">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-
-                                <label
-                                    class="
-                                        block
-                                        mb-3
-                                        font-semibold
-                                    "
-                                >
-                                    {{ $method }}
-                                </label>
-
-                                <input
-                                    type="number"
-                                    name="payment_methods[{{ $index }}][additional_price]"
-                                    class="
-                                        w-full
-                                        border
-                                        rounded-2xl
-                                        px-5
-                                        py-4
-                                    "
-                                >
-
-                                <input
-                                    type="hidden"
-                                    name="payment_methods[{{ $index }}][nama]"
-                                    value="{{ $method }}"
-                                >
-
+                                <label class="block mb-2 text-sm font-semibold text-slate-700">Kategori</label>
+                                <select name="category_id" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                    <option value="">Pilih Kategori...</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
+                            
+                            <div>
+                                <label class="block mb-2 text-sm font-semibold text-slate-700">Penyedia Layanan (Provider)</label>
+                                <select name="provider_id" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                                    <option value="">Pilih Penyedia...</option>
+                                    @foreach($providers as $provider)
+                                        <option value="{{ $provider->id }}" {{ old('provider_id') == $provider->id ? 'selected' : '' }}>
+                                            {{ $provider->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
-                        @endforeach
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Nama Produk</label>
+                            <input type="text" name="nama" value="{{ old('nama') }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" placeholder="Contoh: Softbank 100GB Tahunan">
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Nama Produk (Inggris)</label>
+                            <input type="text" name="nama_en" value="{{ old('nama_en') }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors" placeholder="Example: Softbank 100GB Yearly">
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Deskripsi Produk</label>
+                            <textarea name="deskripsi" rows="4" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">{{ old('deskripsi') }}</textarea>
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Deskripsi Produk (Inggris)</label>
+                            <textarea name="deskripsi_en" rows="4" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">{{ old('deskripsi_en') }}</textarea>
+                        </div>
+
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold text-slate-700">Gambar Produk (Thumbnail)</label>
+                            <x-image-upload name="thumbnail" />
+                        </div>
+                        
+                        <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="best_seller" value="1" class="sr-only peer" {{ old('best_seller') ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                <span class="ml-3 text-sm font-semibold text-slate-700">Tandai sebagai Best Seller</span>
+                            </label>
+                        </div>
 
                     </div>
-
+                </div>
+                
+                {{-- VARIAN PRODUK --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" x-data="variantManager()">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Varian & Harga
+                        </h2>
+                        <button type="button" @click="addVariant()" class="text-sm bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg font-semibold transition-colors flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Tambah Varian
+                        </button>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <template x-for="(variant, index) in variants" :key="variant.id">
+                                <div class="relative bg-slate-50 border border-slate-200 rounded-xl p-5 pt-8 transition-all">
+                                    
+                                    <button type="button" @click="removeVariant(index)" class="absolute top-3 right-3 text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors" title="Hapus Varian">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                    
+                                    <div class="mb-5">
+                                        <label class="block mb-2 text-sm font-semibold text-slate-700">Nama Varian</label>
+                                        <input type="text" :name="`variants[${index}][nama]`" x-model="variant.nama" placeholder="Contoh: 35GB" class="w-full sm:w-1/2 border-slate-200 rounded-xl px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block mb-3 text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2">Harga berdasarkan Masa Aktif</label>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                            <template x-for="period in periods" :key="period">
+                                                <div>
+                                                    <label class="block mb-1.5 text-xs font-bold text-slate-500" x-text="period"></label>
+                                                    <div class="relative">
+                                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <span class="text-slate-400 font-medium">¥</span>
+                                                        </div>
+                                                        <input type="number" :name="`variants[${index}][periods][${period}]`" class="w-full border-slate-200 rounded-lg pl-8 pr-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white">
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </template>
+                            
+                            <div x-show="variants.length === 0" class="text-center py-10 bg-slate-50 border border-slate-200 border-dashed rounded-xl">
+                                <svg class="w-12 h-12 text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                <p class="text-slate-500 font-medium mb-1">Belum ada varian ditambahkan</p>
+                                <p class="text-sm text-slate-400 mb-4">Klik tombol di atas untuk menambahkan varian.</p>
+                                <button type="button" @click="addVariant()" class="text-sm bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-indigo-600 px-4 py-2 rounded-lg font-semibold transition-colors shadow-sm">
+                                    Tambah Varian Pertama
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
 
+            {{-- KOLOM KANAN - METODE PEMBAYARAN & SUBMIT --}}
+            <div class="lg:col-span-4 space-y-8">
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden sticky top-8">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Metode Pembayaran
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <p class="text-sm text-slate-500 mb-6">Tentukan biaya tambahan untuk setiap metode pembayaran.</p>
+                        
+                        <div class="space-y-4">
+                            @php
+                                $methods = ['COD', 'TF', 'MOTOBARAI', 'SMARTPIT'];
+                            @endphp
+
+                            @foreach($methods as $index => $method)
+                                <div class="grid grid-cols-2 gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                    <div>
+                                        <span class="font-bold text-slate-700 flex items-center gap-2">
+                                            @if($method == 'COD')
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                            @elseif($method == 'TF')
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                            @else
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            @endif
+                                            {{ $method }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1 text-xs font-semibold text-slate-500 uppercase">Harga Tambahan (¥)</label>
+                                        <input type="number" name="payment_methods[{{ $index }}][additional_price]" value="{{ old('payment_methods.'.$index.'.additional_price', 0) }}" class="w-full border-slate-200 rounded-lg px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-white">
+                                        <input type="hidden" name="payment_methods[{{ $index }}][nama]" value="{{ $method }}">
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-slate-50 border-t border-slate-100">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-4 rounded-xl font-bold shadow-sm shadow-indigo-200 transition-colors flex justify-center items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Simpan Produk
+                        </button>
+                        <a href="{{ route('yearly-products.index') }}" class="block w-full text-center mt-3 px-6 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-200 hover:text-slate-800 transition-colors">
+                            Batal
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            
         </div>
-
-        <button
-            class="
-                mt-10
-                bg-black
-                text-white
-                px-10
-                py-5
-                rounded-3xl
-                font-bold
-                text-lg
-            "
-        >
-            Save Product
-        </button>
-
     </form>
 
 </div>
 
 <script>
-
-    let variantIndex = 0;
-
-    function addVariant() {
-
-        const currentIndex =
-            variantIndex;
-
-        const html = `
-
-            <div
-                class="
-                    border
-                    rounded-3xl
-                    p-6
-                    space-y-5
-                    relative
-                "
-            >
-
-                <button
-                    type="button"
-                    onclick="this.parentElement.remove()"
-                    class="
-                        absolute
-                        top-4
-                        right-4
-                        text-red-500
-                        font-bold
-                    "
-                >
-                    ✕
-                </button>
-
-                <div>
-
-                    <label class="block mb-2 font-semibold">
-                        Variant Name
-                    </label>
-
-                    <input
-                        type="text"
-                        name="variants[${currentIndex}][nama]"
-                        placeholder="35GB"
-                        class="
-                            w-full
-                            border
-                            rounded-2xl
-                            px-5
-                            py-4
-                        "
-                    >
-
-                </div>
-
-                <div
-                    class="
-                        grid
-                        grid-cols-2
-                        lg:grid-cols-3
-                        gap-4
-                    "
-                >
-
-                    ${[
-                        '13 BULAN',
-                        '12 BULAN',
-                        '9 BULAN',
-                        '6 BULAN',
-                        '3 BULAN',
-                    ].map(period => `
-
-                        <div>
-
-                            <label
-                                class="
-                                    block
-                                    mb-2
-                                    text-sm
-                                    font-semibold
-                                "
-                            >
-                                ${period}
-                            </label>
-
-                            <input
-                                type="number"
-                                name="variants[${currentIndex}][periods][${period}]"
-                                class="
-                                    w-full
-                                    border
-                                    rounded-2xl
-                                    px-4
-                                    py-3
-                                "
-                            >
-
-                        </div>
-
-                    `).join('')}
-
-                </div>
-
-            </div>
-
-        `;
-
-        document
-            .getElementById(
-                'variantContainer'
-            )
-            .insertAdjacentHTML(
-                'beforeend',
-                html
-            );
-
-        variantIndex++;
-    }
-
-    document
-        .getElementById('addVariant')
-        .addEventListener(
-            'click',
-            addVariant
-        );
-
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('variantManager', () => ({
+            variants: [],
+            variantIdCounter: 0,
+            periods: ['13 BULAN', '12 BULAN', '9 BULAN', '6 BULAN', '3 BULAN'],
+            
+            init() {
+                // Add initial variant on load
+                this.addVariant();
+            },
+            
+            addVariant() {
+                this.variants.push({
+                    id: this.variantIdCounter++,
+                    nama: ''
+                });
+            },
+            
+            removeVariant(index) {
+                this.variants.splice(index, 1);
+            }
+        }));
+    });
 </script>
 
 @endsection

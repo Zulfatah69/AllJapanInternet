@@ -191,6 +191,7 @@ class ProductController extends Controller
         }
 
         $products = $query
+            ->orderBy('best_seller', 'desc')
             ->latest()
             ->get();
 

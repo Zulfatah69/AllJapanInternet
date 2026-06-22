@@ -42,40 +42,39 @@
         
         .input-glass:focus {
             background: rgba(255, 255, 255, 0.1);
-            border-color: #ef4444;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+            border-color: #6366f1; /* indigo-500 */
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
             outline: none;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%); /* indigo-600 to indigo-900 */
             transition: all 0.3s ease;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
         }
     </style>
 </head>
 <body class="antialiased min-h-screen flex items-center justify-center p-4">
 
-    <!-- Ambient particles/glow -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/20 rounded-full blur-[100px]"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px]"></div>
         <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-slate-800/50 rounded-full blur-[100px]"></div>
     </div>
 
     <div class="w-full max-w-md glass-panel rounded-3xl p-8 sm:p-10 z-10 relative overflow-hidden">
         
         <!-- Decorative line -->
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-red-500 to-transparent"></div>
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-transparent"></div>
 
         <div class="text-center mb-10">
             <h1 class="text-3xl font-black tracking-tight mb-2">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600">AJI</span> Admin
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-600">AJI</span> Admin
             </h1>
-            <p class="text-slate-400 text-sm font-medium">Welcome back, please sign in to your account.</p>
+            <p class="text-slate-400 text-sm font-medium">Selamat datang kembali, silakan masuk ke akun Anda.</p>
         </div>
 
         <!-- Session Status -->
@@ -90,7 +89,7 @@
 
             <!-- Email Address -->
             <div>
-                <label for="email" class="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+                <label for="email" class="block text-sm font-medium text-slate-300 mb-2">Alamat Email</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
@@ -106,10 +105,10 @@
             <!-- Password -->
             <div>
                 <div class="flex items-center justify-between mb-2">
-                    <label for="password" class="block text-sm font-medium text-slate-300">Password</label>
+                    <label for="password" class="block text-sm font-medium text-slate-300">Kata Sandi</label>
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-xs font-medium text-red-400 hover:text-red-300 transition-colors">
-                            Forgot password?
+                        <a href="{{ route('password.request') }}" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors">
+                            Lupa kata sandi?
                         </a>
                     @endif
                 </div>
@@ -127,14 +126,14 @@
 
             <!-- Remember Me -->
             <div class="flex items-center">
-                <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-red-500 focus:ring-red-500 focus:ring-offset-gray-900">
+                <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-gray-900">
                 <label for="remember_me" class="ml-2 block text-sm text-slate-300">
-                    Remember me
+                    Ingat saya
                 </label>
             </div>
 
             <button type="submit" class="btn-primary w-full flex justify-center py-3.5 px-4 rounded-xl text-sm font-bold text-white shadow-lg tracking-wide">
-                SIGN IN TO DASHBOARD
+                MASUK KE DASBOR
             </button>
         </form>
     </div>

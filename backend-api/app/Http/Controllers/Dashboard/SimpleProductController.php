@@ -13,8 +13,7 @@ class SimpleProductController extends Controller
 {
     public function index()
     {
-        $products = SimpleProduct::latest()
-            ->get();
+        $products = SimpleProduct::latest()->get();
 
         return view(
             'dashboard.simple-products.index',

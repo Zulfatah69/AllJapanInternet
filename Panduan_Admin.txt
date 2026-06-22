@@ -30,7 +30,7 @@ B. FOTO PRODUK (BULANAN, TAHUNAN, DLL)
 - Catatan: Gambar ini akan ditampilkan berbentuk persegi
   (square) pada katalog produk.
 
-C. FOTO PRODUK SIMPLE WIFI
+C. FOTO PRODUK WIFI
 - Rasio yang disarankan: 4:3 (Landscape Pendek)
 - Ukuran ideal: 800 x 600 pixel
 - Format yang disarankan: JPG, PNG, atau WEBP

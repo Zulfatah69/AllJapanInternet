@@ -23,36 +23,42 @@
 
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-slate-50 font-sans antialiased text-slate-800">
 
 <div class="flex min-h-screen">
 
     <aside
         class="
             w-72
-            bg-black
-            text-white
+            bg-slate-900
+            text-slate-300
             p-8
             flex
             flex-col
+            shadow-xl
+            z-10
         "
     >
 
-        <div class="mb-12">
+        <div class="mb-10">
 
             <h1
                 class="
-                    text-4xl
+                    text-3xl
                     font-black
+                    tracking-tight
+                    text-white
                 "
             >
-                AJI Admin
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-500">AJI</span> Admin
             </h1>
 
             <p
                 class="
-                    text-gray-400
-                    mt-2
+                    text-slate-500
+                    text-sm
+                    font-medium
+                    mt-1
                 "
             >
                 All Japan Internet
@@ -60,16 +66,17 @@
 
         </div>
 
-        <nav class="space-y-3">
+        <nav class="space-y-2 font-medium">
 
             <a
                 href="{{ route('dashboard') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('dashboard') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Dasbor
@@ -79,10 +86,11 @@
                 href="{{ route('categories.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('categories.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Kategori
@@ -92,23 +100,25 @@
                 href="{{ route('providers.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('providers.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
-                Providers
+                Penyedia (Providers)
             </a>
 
             <a
                 href="{{ route('monthly-products.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('monthly-products.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Produk Bulanan
@@ -118,10 +128,11 @@
                 href="{{ route('yearly-products.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('yearly-products.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Produk Tahunan
@@ -130,10 +141,11 @@
                 href="{{ route('simple-products.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('simple-products.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Produk Wifi
@@ -142,10 +154,11 @@
                 href="{{ route('testimonials.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('testimonials.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Testimoni
@@ -155,10 +168,11 @@
                 href="{{ route('promos.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('promos.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Promo
@@ -168,10 +182,11 @@
                 href="{{ route('settings.edit') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('settings.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Pengaturan
@@ -181,10 +196,11 @@
                 href="{{ route('admins.index') }}"
                 class="
                     block
-                    px-5
-                    py-4
-                    rounded-2xl
-                    hover:bg-gray-900
+                    px-4
+                    py-3
+                    rounded-xl
+                    transition-colors
+                    {{ request()->routeIs('admins.*') ? 'bg-indigo-600/10 text-indigo-400' : 'hover:bg-slate-800 hover:text-white' }}
                 "
             >
                 Kelola Admin
@@ -204,11 +220,13 @@
                 <button
                     class="
                         w-full
-                        bg-red-500
-                        hover:bg-red-600
-                        transition
-                        py-4
-                        rounded-2xl
+                        bg-red-500/10
+                        text-red-500
+                        hover:bg-red-500
+                        hover:text-white
+                        transition-colors
+                        py-3
+                        rounded-xl
                         font-bold
                     "
                 >
@@ -225,10 +243,13 @@
         class="
             flex-1
             p-10
+            overflow-y-auto
+            h-screen
         "
     >
-
-        @yield('content')
+        <div class="max-w-7xl mx-auto">
+            @yield('content')
+        </div>
 
     </main>
 

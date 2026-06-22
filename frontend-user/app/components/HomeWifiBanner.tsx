@@ -9,7 +9,7 @@ export default function HomeWifiBanner({ items = [] }: { items?: any[] }) {
     const { language } = useLanguage();
 
     const handleWhatsappClick = () => {
-        const adminPhone = "818042571217"; // Nomor admin sesuai yang ada di header/footer
+        const adminPhone = "818075558719";
         const message = language === 'id' 
             ? "Halo, saya ingin bertanya tentang informasi pemasangan Home Wi-Fi yang ada di website."
             : "Hello, I would like to ask about the Home Wi-Fi installation information on the website.";

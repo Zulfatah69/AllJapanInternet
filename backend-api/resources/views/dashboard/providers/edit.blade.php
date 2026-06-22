@@ -4,226 +4,69 @@
 
 <div class="max-w-3xl">
 
-    <div class="mb-10">
-
-        <h1
-            class="
-                text-4xl
-                font-black
-                mb-2
-            "
-        >
-            Edit Provider
-        </h1>
-
-        <p class="text-gray-500">
-            Update provider information
-        </p>
-
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-2 mb-2 text-sm font-medium text-slate-500">
+                <a href="{{ route('providers.index') }}" class="hover:text-indigo-600 transition-colors">Penyedia Layanan</a>
+                <span>/</span>
+                <span class="text-slate-800">Edit Penyedia</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">Edit Penyedia</h1>
+        </div>
     </div>
 
-    <div
-        class="
-            bg-white
-            rounded-3xl
-            shadow
-            p-10
-        "
-    >
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
 
-        <form
-            action="{{ route('providers.update', $provider->id) }}"
-            method="POST"
-            enctype="multipart/form-data"
-        >
-
+        <form action="{{ route('providers.update', $provider->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
-            {{-- NAME --}}
-            <div class="mb-8">
-
-                <label
-                    class="
-                        block
-                        mb-3
-                        font-semibold
-                    "
-                >
-                    Provider Name
-                </label>
-
-                <input
-                    type="text"
-                    name="nama"
-                    value="{{ old('nama', $provider->nama) }}"
-                    class="
-                        w-full
-                        border
-                        rounded-2xl
-                        px-5
-                        py-4
-                    "
-                >
-
-                @error('nama')
-
-                    <p
-                        class="
-                            text-red-500
-                            mt-2
-                            text-sm
-                        "
-                    >
-                        {{ $message }}
-                    </p>
-
-                @enderror
-
-            </div>
-
-            {{-- NAME (EN) --}}
-            <div class="mb-8">
-
-                <label
-                    class="
-                        block
-                        mb-3
-                        font-semibold
-                    "
-                >
-                    Provider Name (Inggris)
-                </label>
-
-                <input
-                    type="text"
-                    name="nama_en"
-                    value="{{ old('nama_en', $provider->nama_en) }}"
-                    class="
-                        w-full
-                        border
-                        rounded-2xl
-                        px-5
-                        py-4
-                    "
-                >
-
-                @error('nama_en')
-
-                    <p
-                        class="
-                            text-red-500
-                            mt-2
-                            text-sm
-                        "
-                    >
-                        {{ $message }}
-                    </p>
-
-                @enderror
-
-            </div>
-
-            {{-- CURRENT LOGO --}}
-            @if($provider->logo)
-
-                <div class="mb-8">
-
-                    <label
-                        class="
-                            block
-                            mb-3
-                            font-semibold
-                        "
-                    >
-                        Current Logo
+            <div class="space-y-6">
+                {{-- NAME --}}
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-slate-700">
+                        Nama Penyedia Layanan
                     </label>
-
-                    <img
-                        src="{{ asset('storage/' . $provider->logo) }}"
-                        class="
-                            w-32
-                            h-32
-                            rounded-3xl
-                            object-cover
-                            border
-                        "
-                    >
-
+                    <input type="text" name="nama" value="{{ old('nama', $provider->nama) }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    @error('nama')
+                        <p class="text-red-500 mt-2 text-sm">{{ $message }}</p>
+                    @enderror
                 </div>
 
-            @endif
+                {{-- NAME (EN) --}}
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-slate-700">
+                        Nama Penyedia Layanan (Inggris)
+                    </label>
+                    <input type="text" name="nama_en" value="{{ old('nama_en', $provider->nama_en) }}" class="w-full border-slate-200 rounded-xl px-4 py-3 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
+                    @error('nama_en')
+                        <p class="text-red-500 mt-2 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
 
-            {{-- LOGO --}}
-            <div class="mb-10">
-
-                <label
-                    class="
-                        block
-                        mb-3
-                        font-semibold
-                    "
-                >
-                    New Logo
-                </label>
-
-                <input
-                    type="file"
-                    name="logo"
-                    class="
-                        w-full
-                        border
-                        rounded-2xl
-                        px-5
-                        py-4
-                    "
-                >
-
-                @error('logo')
-
-                    <p
-                        class="
-                            text-red-500
-                            mt-2
-                            text-sm
-                        "
-                    >
-                        {{ $message }}
-                    </p>
-
-                @enderror
-
+                {{-- LOGO --}}
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-slate-700">
+                        Logo Penyedia Layanan
+                    </label>
+                    <x-image-upload 
+                        name="logo" 
+                        :existingImage="$provider->logo ? asset('storage/' . $provider->logo) : null" 
+                    />
+                    @error('logo')
+                        <p class="text-red-500 mt-2 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             {{-- BUTTON --}}
-            <div class="flex items-center gap-4">
-
-                <button
-                    class="
-                        bg-black
-                        text-white
-                        px-8
-                        py-4
-                        rounded-2xl
-                        font-bold
-                    "
-                >
-                    Update Provider
-                </button>
-
-                <a
-                    href="{{ route('providers.index') }}"
-                    class="
-                        border
-                        px-8
-                        py-4
-                        rounded-2xl
-                        font-semibold
-                    "
-                >
-                    Cancel
+            <div class="mt-8 flex justify-end gap-4 border-t border-slate-100 pt-6">
+                <a href="{{ route('providers.index') }}" class="px-8 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                    Batal
                 </a>
-
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-sm shadow-indigo-200 transition-colors">
+                    Simpan Perubahan
+                </button>
             </div>
 
         </form>

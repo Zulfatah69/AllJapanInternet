@@ -40,7 +40,7 @@ class MonthlyProductController extends Controller
             $query->where('cycle_type', $request->cycle_type);
         }
 
-        $products = $query->latest()->get();
+        $products = $query->orderBy('best_seller', 'desc')->latest()->get();
         $categories = Category::whereIn('nama', [
             'KARTU INTERNET BULANAN',
             'E-SIM INTERNET BULANAN',

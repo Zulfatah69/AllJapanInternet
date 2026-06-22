@@ -24,6 +24,8 @@ Route::get('/products', function () {
 
     ])
     ->where('is_active', true)
+    ->orderBy('best_seller', 'desc')
+    ->latest()
     ->get()
     ->map(function ($product) {
 
@@ -68,8 +70,8 @@ Route::get('/products', function () {
             'payment_methods'
                 => $product->paymentMethods,
 
-            'is_best_seller'
-                => $product->is_best_seller,
+            'best_seller'
+                => $product->best_seller,
 
             'lowest_price'
                 => $product->variants

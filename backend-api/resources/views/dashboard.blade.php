@@ -6,16 +6,18 @@
 
     <h1
         class="
-            text-4xl
+            text-3xl
             font-black
+            tracking-tight
+            text-slate-900
             mb-2
         "
     >
-        Dashboard
+        Ringkasan Dasbor
     </h1>
 
-    <p class="text-gray-500">
-        All Japan Internet admin overview
+    <p class="text-slate-500 font-medium">
+        Ringkasan statistik data All Japan Internet
     </p>
 
 </div>
@@ -31,16 +33,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Total Produk
@@ -48,8 +55,9 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
+                text-slate-800
             "
         >
             {{ $totalProducts }}
@@ -60,16 +68,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Produk Bulanan
@@ -77,7 +90,7 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
                 text-blue-600
             "
@@ -90,16 +103,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Produk Tahunan
@@ -107,9 +125,9 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
-                text-green-600
+                text-teal-600
             "
         >
             {{ $yearlyProducts }}
@@ -120,16 +138,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Kategori
@@ -137,9 +160,9 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
-                text-pink-500
+                text-pink-600
             "
         >
             {{ $totalCategories }}
@@ -161,26 +184,31 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
-            Provider
+            Penyedia (Provider)
         </p>
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
-                text-orange-500
+                text-amber-600
             "
         >
             {{ $totalProviders }}
@@ -191,16 +219,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Testimoni
@@ -208,7 +241,7 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
                 text-purple-600
             "
@@ -221,16 +254,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Promo
@@ -238,9 +276,9 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
-                text-red-500
+                text-red-600
             "
         >
             {{ $totalPromos }}
@@ -251,16 +289,21 @@
     <div
         class="
             bg-white
-            rounded-3xl
-            shadow
-            p-8
+            rounded-2xl
+            shadow-sm
+            border
+            border-slate-100
+            p-6
+            transition-shadow
+            hover:shadow-md
         "
     >
 
         <p
             class="
-                text-gray-500
-                mb-3
+                text-slate-500
+                font-medium
+                mb-2
             "
         >
             Produk Wifi
@@ -268,9 +311,9 @@
 
         <h2
             class="
-                text-5xl
+                text-4xl
                 font-black
-                text-indigo-500
+                text-indigo-600
             "
         >
             {{ $totalWifiProducts }}
