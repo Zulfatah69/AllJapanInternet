@@ -23,7 +23,7 @@ export default function HowToSection() {
     return (
         <section
             id="howto"
-            className="py-12 md:py-16 px-6 relative overflow-hidden scroll-mt-20"
+            className="py-16 md:py-24 px-6 relative overflow-hidden scroll-mt-20"
             style={{ background: 'var(--theme-section)' }}
         >
             {/* Dynamic blurred background accents for premium aesthetic */}
@@ -104,13 +104,19 @@ export default function HowToSection() {
                                         </span>
                                     </div>
 
-                                    <div className="mt-8 px-4">
+                                    <div className="mt-8 px-4 flex flex-col gap-3">
                                         <h3 
                                             className="font-display font-extrabold text-lg md:text-xl transition-colors duration-300"
                                             style={{ color: 'var(--foreground)' }}
                                         >
                                             {t(step.titleKey)}
                                         </h3>
+                                        <p 
+                                            className="text-sm leading-relaxed"
+                                            style={{ color: 'var(--theme-muted)' }}
+                                        >
+                                            {t(step.descKey)}
+                                        </p>
                                     </div>
                                 </ScrollReveal>
                             );

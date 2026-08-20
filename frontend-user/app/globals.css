@@ -66,6 +66,7 @@
 body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   letter-spacing: -0.01em;
+  font-kerning: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -125,6 +126,14 @@ html {
 }
 .animate-ken-burns {
   animation: kenburns 30s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns {
+    animation: none;
+    transform: scale(1.02);
+  }
 }
 
 /* Floating Seasonal Animations (Rich 3D Paths) */
@@ -230,33 +239,33 @@ html {
   }
 }
 .animate-bg-fade-in {
-  animation: bg-fade-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: bg-fade-in 0.8s var(--ease-out-expo) forwards;
 }
 
 /* Premium Entrance Staggered Reveals */
 .animate-reveal-eyebrow {
   opacity: 0;
-  animation: revealEyebrow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.2s;
+  animation: revealEyebrow 0.6s var(--ease-out-expo) forwards;
+  animation-delay: 0.05s;
 }
 
 .animate-reveal-title {
   opacity: 0;
-  filter: blur(8px);
-  animation: revealTitle 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.5s;
+  filter: blur(4px);
+  animation: revealTitle 0.8s var(--ease-out-expo) forwards;
+  animation-delay: 0.15s;
 }
 
 .animate-reveal-desc {
   opacity: 0;
-  animation: revealDesc 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.85s;
+  animation: revealDesc 0.6s var(--ease-out-expo) forwards;
+  animation-delay: 0.25s;
 }
 
 .animate-reveal-btn {
   opacity: 0;
-  animation: revealBtn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 1.15s;
+  animation: revealBtn 0.6s var(--ease-out-expo) forwards;
+  animation-delay: 0.35s;
 }
 
 @keyframes revealEyebrow {
@@ -345,47 +354,35 @@ body {
 }
 
 .premium-glass-nav {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--background);
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
 }
 
 .premium-glass-nav-transparent {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.03);
+  background: transparent;
+  border-bottom: 1px solid transparent;
   box-shadow: none;
 }
 
 .premium-glass-nav-solid {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--background);
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 /* Premium High-End Glass Cards */
 .premium-glass-card {
-  background: rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: var(--background);
+  border: 1px solid rgba(15, 23, 42, 0.05);
   border-radius: 1.5rem;
-  box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.03),
-              inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px 0 rgba(15, 23, 42, 0.03);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .premium-glass-card:hover {
-  transform: translateY(-6px);
-  background: rgba(255, 255, 255, 0.6);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 20px 40px 0 rgba(15, 23, 42, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px 0 rgba(15, 23, 42, 0.06);
 }
 
 .premium-card {
@@ -468,10 +465,8 @@ body {
 }
 
 .premium-eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 500;
   color: var(--theme-primary);
 }
 
@@ -787,69 +782,47 @@ body {
   filter: drop-shadow(0 0 6px var(--theme-primary));
 }
 
-/* Season Specific Card Animations */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Season Specific Card Animations (Refined Feedback) */
 .theme-spring-hover-sakura {
-  position: relative;
-  overflow: hidden;
+  transition: transform 0.3s var(--ease-out-quart), box-shadow 0.3s var(--ease-out-quart), border-color 0.3s var(--ease-out-quart);
 }
-.theme-spring-hover-sakura::after {
-  content: "";
-  position: absolute;
- bottom: -20px;
- right: -20px;
- width: 40px;
- height: 40px;
- background: radial-gradient(circle, rgba(244,114,182,0.8) 0%, rgba(244,114,182,0) 70%);
- border-radius: 50%;
- transform: scale(0);
- transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
- pointer-events: none;
-}
-.theme-spring-hover-sakura:hover::after {
- transform: scale(2.5) translate(-10px, -10px);
- opacity: 0.2;
+.theme-spring-hover-sakura:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244,114,182,0.3);
+  box-shadow: 0 10px 25px -5px rgba(244,114,182,0.15);
 }
 
 .theme-summer-sun-glare {
- position: relative;
- overflow: hidden;
+  transition: transform 0.3s var(--ease-out-quart), box-shadow 0.3s var(--ease-out-quart), border-color 0.3s var(--ease-out-quart);
 }
-.theme-summer-sun-glare::before {
-  content: "";
-  position: absolute;
- top: 0;
- left: -150%;
- width: 50%;
- height: 100%;
- background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
- transform: skewX(-25deg);
- transition: left 0.7s ease-in-out;
- pointer-events: none;
- z-index: 10;
-}
-.theme-summer-sun-glare:hover::before {
- left: 200%;
+.theme-summer-sun-glare:hover {
+  transform: translateY(-2px);
+  border-color: rgba(250,204,21,0.3);
+  box-shadow: 0 10px 25px -5px rgba(250,204,21,0.15);
 }
 
 .theme-autumn-wind-sweep {
- transition: transform 0.5s ease-out;
+  transition: transform 0.3s var(--ease-out-quart), box-shadow 0.3s var(--ease-out-quart), border-color 0.3s var(--ease-out-quart);
 }
 .theme-autumn-wind-sweep:hover {
- transform: translate(6px, -6px) rotate(1deg);
- box-shadow: -8px 12px 24px rgba(234, 88, 12, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(234,88,12,0.3);
+  box-shadow: 0 10px 25px -5px rgba(234,88,12,0.15);
 }
 
 .theme-winter-frost-melt {
- backdrop-filter: blur(4px) saturate(1.1);
- -webkit-backdrop-filter: blur(4px) saturate(1.1);
- background: rgba(255, 255, 255, 0.85);
- transition: backdrop-filter 0.6s ease, background 0.6s ease, box-shadow 0.6s ease;
+  transition: transform 0.3s var(--ease-out-quart), box-shadow 0.3s var(--ease-out-quart), border-color 0.3s var(--ease-out-quart);
 }
 .theme-winter-frost-melt:hover {
- backdrop-filter: blur(0px) saturate(1);
- -webkit-backdrop-filter: blur(0px) saturate(1);
- background: rgba(255, 255, 255, 1);
- box-shadow: 0 0 15px 5px rgba(147, 197, 253, 0.3);
+  transform: translateY(-2px);
+  border-color: rgba(147,197,253,0.3);
+  box-shadow: 0 10px 25px -5px rgba(147,197,253,0.15);
 }
 
 

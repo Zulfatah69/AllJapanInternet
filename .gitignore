@@ -20,3 +20,14 @@ yarn-error.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# AI & Editor Tooling
+.cursor/
+.gemini/
+.impeccable/
+semgrep-results.json
+
+# Misc
+Start-Project.zip
+node_modules/
+venv/

@@ -53,13 +53,8 @@ class ProviderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
-            'nama'
-                => 'required|max:255',
-
-            'logo'
-                => 'nullable|image',
-
+            'nama' => 'required|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $logo = null;
@@ -125,13 +120,8 @@ class ProviderController extends Controller
     ) {
 
         $request->validate([
-
-            'nama'
-                => 'required|max:255',
-
-            'logo'
-                => 'nullable|image',
-
+            'nama' => 'required|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $logo = $provider->logo;

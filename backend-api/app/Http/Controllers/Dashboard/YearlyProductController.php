@@ -77,7 +77,7 @@ class YearlyProductController extends Controller
             'provider_id' => 'required|exists:providers,id',
             'nama'        => 'required|max:255',
             'nama_en' => 'nullable|string|max:255',
-            'thumbnail'   => 'nullable|image|max:2048',
+            'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         DB::beginTransaction();
@@ -324,7 +324,7 @@ class YearlyProductController extends Controller
             'provider_id' => 'required|exists:providers,id',
             'nama'        => 'required|max:255',
             'nama_en' => 'nullable|string|max:255',
-            'thumbnail'   => 'nullable|image|max:2048',
+            'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         DB::beginTransaction();

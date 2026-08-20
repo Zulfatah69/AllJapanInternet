@@ -85,20 +85,12 @@ class MonthlyProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-
-            'category_id'
-                => 'required',
-
-            'provider_id'
-                => 'required',
-
-            'nama'
-                => 'required|max:255',
+            'category_id' => 'required',
+            'provider_id' => 'required',
+            'nama' => 'required|max:255',
             'nama_en' => 'nullable|string|max:255',
-
-            'thumbnail'
-                => 'nullable|image',
-
+            'cycle_type' => 'required|in:VT,GJ',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         DB::beginTransaction();
@@ -298,20 +290,12 @@ class MonthlyProductController extends Controller
     ) {
 
         $request->validate([
-
-            'category_id'
-                => 'required',
-
-            'provider_id'
-                => 'required',
-
-            'nama'
-                => 'required|max:255',
+            'category_id' => 'required',
+            'provider_id' => 'required',
+            'nama' => 'required|max:255',
             'nama_en' => 'nullable|string|max:255',
-
-            'cycle_type'
-                => 'required|in:VT,GJ',
-
+            'cycle_type' => 'required|in:VT,GJ',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         DB::beginTransaction();

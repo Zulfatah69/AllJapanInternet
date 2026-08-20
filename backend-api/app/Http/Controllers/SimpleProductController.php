@@ -31,6 +31,12 @@ class SimpleProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'nama' => 'required|max:255',
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
         $gambar = null;
 
         if ($request->hasFile('gambar')) {
@@ -80,6 +86,12 @@ class SimpleProductController extends Controller
         Request $request,
         SimpleProduct $simple_product
     ) {
+
+        $request->validate([
+            'nama' => 'required|max:255',
+            'deskripsi' => 'nullable|string',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
 
         $gambar =
             $simple_product->gambar;

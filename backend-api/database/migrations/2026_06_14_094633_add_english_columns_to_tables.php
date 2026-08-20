@@ -33,7 +33,7 @@ return new class extends Migration
 
         if (!Schema::hasColumn('product_variants', 'nama_en')) {
             Schema::table('product_variants', function (Blueprint $table) {
-                $table->string('nama_en')->nullable()->after('nama');
+                $table->string('nama_en')->nullable();
             });
         }
 

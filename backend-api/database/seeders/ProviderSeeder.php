@@ -22,12 +22,6 @@ class ProviderSeeder extends Seeder
 
             'Rakuten',
 
-            'Ymobile',
-
-            'IIJmio',
-
-            'GTN',
-
         ];
 
         foreach ($providers as $provider) {

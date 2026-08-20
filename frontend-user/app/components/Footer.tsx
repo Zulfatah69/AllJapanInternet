@@ -25,7 +25,7 @@ export default function Footer() {
                 >
                     {t('footerTagline')}
                 </p>
-                <p className="text-[11px] md:text-xs opacity-60">
+                <p className="text-xs md:text-sm opacity-60">
                     © {year} All Japan Internet. {t('footerRights')}
                 </p>
             </div>

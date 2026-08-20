@@ -18,8 +18,8 @@ class UserSeeder extends Seeder
         if (!User::where('email', 'admin@alljapaninternet.com')->exists()) {
             User::create([
                 'name' => 'Master Admin',
-                'email' => 'admin@alljapaninternet.com',
-                'password' => Hash::make('password123'),
+                'email' => 'adminAJI@gmail.com',
+                'password' => Hash::make('ItenasxAJI'),
             ]);
         }
     }

@@ -33,7 +33,7 @@ export default function PaymentMethodsSection() {
     return (
         <section
             id="payment"
-            className="py-12 md:py-16 px-6 premium-mesh scroll-mt-20"
+            className="py-16 md:py-24 px-6 premium-mesh scroll-mt-20"
         >
             <div className="max-w-7xl mx-auto">
                 <ScrollReveal>

@@ -28,7 +28,7 @@ export default function BenefitsSection() {
     return (
         <section
             id="benefits"
-            className="py-12 md:py-16 px-6 relative overflow-hidden scroll-mt-20"
+            className="py-16 md:py-24 px-6 relative overflow-hidden scroll-mt-20"
         >
             {/* Ambient background glows */}
             <div className="absolute top-1/3 left-1/4 w-80 h-80 rounded-full blur-[100px] pointer-events-none opacity-10" style={{ background: 'var(--theme-primary)' }} />

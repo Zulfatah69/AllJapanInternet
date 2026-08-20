@@ -41,7 +41,7 @@ export default function ProductCatalogCard({
 
     return (
         <ScrollReveal direction="up" duration={0.6}>
-            <a href={link} className={`premium-product-card group block h-full flex flex-col p-3 md:p-4 bg-white/80 backdrop-blur border border-black/5 rounded-2xl shadow-sm hover:shadow-md transition-all ${themeHoverClass}`}>
+            <a href={link} className={`premium-product-card group block h-full flex flex-col p-3 md:p-4 bg-[var(--background)] border border-black/5 rounded-2xl shadow-sm hover:shadow-md transition-all ${themeHoverClass}`}>
 
                 {/* foto           = Nama produk */}
                 <div className="flex flex-row items-center gap-3 mb-3 flex-1">
@@ -49,16 +49,17 @@ export default function ProductCatalogCard({
                         <img
                             src={product.thumbnail_url || product.gambar_url}
                             alt={product.nama}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            className="w-full h-full object-cover"
+                            loading="lazy"
                         />
                     </div>
                     <div className="flex flex-col">
-                        <h3 className="text-sm md:text-base font-bold leading-tight" style={{ color: 'var(--foreground)' }}>
+                        <h3 className="text-base md:text-lg font-bold leading-tight" style={{ color: 'var(--foreground)' }}>
                             {getLocalizedText(product.nama, product.nama_en)}
                         </h3>
                         
                         {product.type === 'monthly' && product.cycle_type && (
-                            <p className="text-[10px] md:text-xs font-semibold mt-1" style={{ color: 'var(--theme-muted)' }}>
+                            <p className="text-xs md:text-sm font-semibold mt-1.5" style={{ color: 'var(--theme-muted)' }}>
                                 {product.cycle_type.toUpperCase() === 'VT' ? 'Tgl 20-28' : 
                                  product.cycle_type.toUpperCase() === 'GJ' ? 'Tgl 18-24' : product.cycle_type.toUpperCase()}
                             </p>
@@ -70,15 +71,15 @@ export default function ProductCatalogCard({
                 <div className="mt-auto border-t border-black/5 pt-3">
                     {formatLowestPrice(product as any, language) ? (
                         <div className="flex flex-col">
-                            <span className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-slate-400 mb-0.5">
+                            <span className="text-xs md:text-sm font-medium uppercase tracking-wider text-slate-600 mb-1">
                                 {language === 'id' ? 'Mulai Dari' : 'Starts From'}
                             </span>
-                            <span className="text-base md:text-lg font-black tracking-tight" style={{ color: 'var(--theme-primary)' }}>
+                            <span className="text-xl md:text-2xl font-black tracking-tight tabular-nums" style={{ color: 'var(--theme-primary)' }}>
                                 {formatLowestPrice(product as any, language)}
                             </span>
                         </div>
                     ) : (
-                        <div className="text-sm md:text-base font-bold text-slate-400 py-1">
+                        <div className="text-sm md:text-base font-bold text-slate-600 py-1">
                             {language === 'id' ? 'Hubungi kami' : 'Contact us'}
                         </div>
                     )}

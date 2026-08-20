@@ -221,7 +221,7 @@ export default function Lightbox({
                                         : 'border-white/20 opacity-60 hover:opacity-100 hover:scale-102'
                                 }`}
                             >
-                                <img src={img} alt="" className="w-full h-full object-cover" />
+                                <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
                             </button>
                         ))}
                     </div>

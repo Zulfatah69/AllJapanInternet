@@ -22,7 +22,7 @@ export default function FaqSection() {
     return (
         <section
             id="faq"
-            className="py-12 md:py-16 px-6 relative overflow-hidden scroll-mt-20"
+            className="py-16 md:py-24 px-6 relative overflow-hidden scroll-mt-20"
             style={{ background: 'var(--background)' }}
         >
             <div className="max-w-3xl mx-auto">

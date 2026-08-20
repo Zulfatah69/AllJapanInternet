@@ -143,14 +143,14 @@ export default function Navbar() {
                         <button
                             type="button"
                             onClick={() => setLanguage('id')}
-                            className={`premium-lang-pill py-1 px-2.5 text-[10px] ${language === 'id' ? 'active' : 'inactive'}`}
+                            className={`premium-lang-pill min-h-[44px] min-w-[44px] flex items-center justify-center py-1 px-2.5 text-xs ${language === 'id' ? 'active' : 'inactive'}`}
                         >
                             ID
                         </button>
                         <button
                             type="button"
                             onClick={() => setLanguage('en')}
-                            className={`premium-lang-pill py-1 px-2.5 text-[10px] ${language === 'en' ? 'active' : 'inactive'}`}
+                            className={`premium-lang-pill min-h-[44px] min-w-[44px] flex items-center justify-center py-1 px-2.5 text-xs ${language === 'en' ? 'active' : 'inactive'}`}
                         >
                             EN
                         </button>
@@ -159,7 +159,7 @@ export default function Navbar() {
                     <button
                         type="button"
                         onClick={() => setIsOpen(true)}
-                        className="p-2 rounded-xl hover:bg-black/5 transition-colors text-lg"
+                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors text-lg"
                         style={{ color: 'var(--foreground)' }}
                         aria-label="Open menu"
                     >
@@ -193,7 +193,7 @@ export default function Navbar() {
                 <button
                     type="button"
                     onClick={() => setIsOpen(false)}
-                    className="p-2 rounded-lg hover:bg-black/5 text-lg transition-colors"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-black/5 text-lg transition-colors"
                     style={{ color: 'var(--foreground)' }}
                     aria-label="Close menu"
                 >

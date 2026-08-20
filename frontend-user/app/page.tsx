@@ -110,28 +110,8 @@ export default function HomePage() {
     const [isLoadingProducts, setIsLoadingProducts] = useState(true);
     const [currentPromo, setCurrentPromo] = useState(0);
     const [isMounted, setIsMounted] = useState(false);
-    const [heroParticles, setHeroParticles] = useState<any[]>([]);
 
-    useEffect(() => {
-        if (!isMounted) return;
-        
-        let count = 10;
-        if (theme === 'spring') count = 15;
-        else if (theme === 'winter') count = 20;
-        else if (theme === 'autumn') count = 12;
-        else if (theme === 'summer') count = 15;
-        
-        const generated = [...Array(count)].map((_, i) => ({
-            id: i,
-            left: `${Math.random() * 100}%`,
-            size: Math.random(),
-            delay: Math.random(),
-            duration: Math.random(),
-            rotation: `${Math.random() * 360}deg`
-        }));
-        
-        setHeroParticles(generated);
-    }, [theme, isMounted]);
+
 
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [activeShippingTab, setActiveShippingTab] = useState<'info' | 'map'>('info');
@@ -246,144 +226,25 @@ export default function HomePage() {
     return (
         <div className="overflow-x-hidden">
             {/* HERO */}
-            <section className="relative mt-0 min-h-screen overflow-hidden pt-24 flex items-center justify-center">
+            <section className="py-16 md:py-24 px-6 relative min-h-screen overflow-hidden pt-24 flex items-center justify-center">
                 {/* Dynamic seasonal background image */}
                 {isMounted && isThemeReady && (
                     <div className="absolute inset-0 z-0 animate-bg-fade-in">
                         <img
                             src={seasonalBackgrounds[theme] || '/images/winter-background.png'}
                             alt="Seasonal Hero Background"
-                            className="w-full h-full object-cover animate-ken-burns"
+                            className="w-full h-full object-cover"
+                            fetchPriority="high"
                         />
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2.5px]" />
+                        <div className="absolute inset-0 bg-black/60" />
                     </div>
                 )}
 
-                {/* Floating Ambient seasonal particles over image background */}
-                {isMounted && isThemeReady && (
-                    <div className="absolute inset-0 pointer-events-none select-none z-10 overflow-hidden">
-                        {theme === 'spring' && (
-                            <>
-                                {heroParticles.map((p) => {
-                                    const width = 10 + p.size * 12;
-                                    const duration = 10 + p.duration * 8;
-                                    const delay = p.delay * 8;
-                                    return (
-                                        <svg
-                                            key={`hero-petal-${p.id}`}
-                                            className="absolute opacity-75"
-                                            style={{
-                                                left: p.left,
-                                                top: `-40px`,
-                                                width: `${width}px`,
-                                                height: `${width}px`,
-                                                fill: '#FF69B4',
-                                                animation: `float-sakura ${duration}s linear infinite`,
-                                                animationDelay: `${delay}s`,
-                                            }}
-                                            viewBox="0 0 30 30"
-                                        >
-                                            <path d="M15 0 C25 10, 25 20, 15 30 C5 20, 5 10, 15 0" />
-                                        </svg>
-                                    );
-                                })}
-                            </>
-                        )}
-                        {theme === 'winter' && (
-                            <>
-                                {heroParticles.map((p) => {
-                                    const width = 3 + p.size * 5;
-                                    const duration = 8 + p.duration * 6;
-                                    const delay = p.delay * 6;
-                                    return (
-                                        <div
-                                            key={`hero-snow-${p.id}`}
-                                            className="absolute rounded-full bg-white opacity-60"
-                                            style={{
-                                                left: p.left,
-                                                top: `-20px`,
-                                                width: `${width}px`,
-                                                height: `${width}px`,
-                                                boxShadow: `0 0 6px #fff`,
-                                                animation: `float-snow ${duration}s linear infinite`,
-                                                animationDelay: `${delay}s`,
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </>
-                        )}
-                        {theme === 'autumn' && (
-                            <>
-                                {heroParticles.map((p) => {
-                                    const width = 14 + p.size * 10;
-                                    const duration = 11 + p.duration * 8;
-                                    const delay = p.delay * 8;
-                                    return (
-                                        <svg
-                                            key={`hero-leaf-${p.id}`}
-                                            className="absolute opacity-75"
-                                            style={{
-                                                left: p.left,
-                                                top: `-40px`,
-                                                width: `${width}px`,
-                                                height: `${width}px`,
-                                                fill: '#EA580C',
-                                                animation: `float-leaf ${duration}s linear infinite`,
-                                                animationDelay: `${delay}s`,
-                                                transform: `rotate(${p.rotation})`,
-                                            }}
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path d="M12 2C11.5 4 8.5 7 7 9C5.5 11 3 12 3 13.5C3 15.5 5 17 7 17C9 17 11 15 12 13.5C13 15 15 17 17 17C19 17 21 15.5 21 13.5C21 12 18.5 11 17 9C15.5 7 12.5 4 12 2Z" />
-                                        </svg>
-                                    );
-                                })}
-                            </>
-                        )}
-                        {theme === 'summer' && (
-                            <>
-                                {/* Glowing Sunlight Ray */}
-                                <div className="absolute inset-0 opacity-15 overflow-hidden">
-                                    <div
-                                        className="absolute -top-[15%] -right-[15%] w-[80%] aspect-square rounded-full mix-blend-screen"
-                                        style={{
-                                            background: 'radial-gradient(circle, #FEF08A 0%, transparent 60%)',
-                                            animation: 'sunbeam-pulse 10s ease-in-out infinite',
-                                        }}
-                                    />
-                                </div>
-                                {/* Sunlight Floating Particles */}
-                                {heroParticles.map((p) => {
-                                    const width = 6 + p.size * 14;
-                                    const duration = 12 + p.duration * 10;
-                                    const delay = p.delay * 8;
-                                    return (
-                                        <div
-                                            key={`hero-bokeh-${p.id}`}
-                                            className="absolute rounded-full mix-blend-screen"
-                                            style={{
-                                                left: p.left,
-                                                bottom: `-40px`,
-                                                width: `${width}px`,
-                                                height: `${width}px`,
-                                                background: 'radial-gradient(circle, rgba(254, 240, 138, 0.85) 0%, rgba(251, 191, 36, 0.3) 60%, transparent 100%)',
-                                                filter: 'blur(1px)',
-                                                boxShadow: '0 0 8px rgba(254, 240, 138, 0.35)',
-                                                animation: `float-bokeh ${duration}s ease-in-out infinite`,
-                                                animationDelay: `${delay}s`,
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </>
-                        )}
-                    </div>
-                )}
+
 
                 {/* Centered Hero Content (staggered animated reveals) */}
                 <div className="relative z-20 max-w-4xl mx-auto px-6 text-center text-white">
-                    <p className="premium-eyebrow text-white/90 mb-4 tracking-widest font-bold text-xs md:text-sm animate-reveal-eyebrow">
+                    <p className="premium-eyebrow text-white/90 mb-4 animate-reveal-eyebrow md:text-lg">
                         {t('heroEyebrow')}
                     </p>
                     <h1 className="font-display text-4xl md:text-6xl lg:text-7xl mb-6 max-w-4xl font-extrabold leading-tight tracking-tight drop-shadow-md text-white animate-reveal-title">
@@ -411,7 +272,7 @@ export default function HomePage() {
 
             <section
                 id="products"
-                className="py-12 md:py-16 px-6 scroll-mt-20"
+                className="py-16 md:py-24 px-6 scroll-mt-20"
                 style={{ background: 'var(--background)' }}
             >
                 <div className="max-w-7xl mx-auto">
@@ -541,7 +402,7 @@ export default function HomePage() {
             {/* GUIDE */}
             <section
                 id="guide"
-                className="py-12 md:py-16 px-6 premium-mesh text-center scroll-mt-20"
+                className="py-16 md:py-24 px-6 premium-mesh text-center scroll-mt-20"
             >
                 <div className="max-w-3xl mx-auto premium-fade-up">
                     <FaBook
@@ -577,7 +438,7 @@ export default function HomePage() {
             {/* SHIPPING */}
             <section
                 id="shipping"
-                className="py-12 md:py-16 px-6 scroll-mt-20"
+                className="py-16 md:py-24 px-6 relative scroll-mt-20"
                 style={{ background: 'var(--theme-section)' }}
             >
                 <div className="max-w-7xl mx-auto">
