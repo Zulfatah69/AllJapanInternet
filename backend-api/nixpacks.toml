@@ -11,5 +11,3 @@ cmds = [
     "php artisan view:cache"
 ]
 
-[start]
-cmd = "echo 'Waiting for MySQL...' && until php artisan db:show > /dev/null 2>&1; do echo 'MySQL not ready, retrying in 3s...'; sleep 3; done && echo 'MySQL ready!' && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT"
