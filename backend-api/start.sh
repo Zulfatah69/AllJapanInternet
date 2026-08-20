@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+echo "==> Clearing stale config cache..."
+php artisan config:clear
+
+echo "==> Caching config with runtime env vars..."
+php artisan config:cache
+
 echo "==> Waiting for MySQL to be ready..."
 MAX_TRIES=30
 TRIES=0
@@ -40,3 +46,4 @@ php artisan db:seed --force || true
 
 echo "==> Starting Laravel server on port $PORT..."
 php artisan serve --host=0.0.0.0 --port=$PORT
+
